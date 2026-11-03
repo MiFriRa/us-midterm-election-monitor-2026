@@ -1,0 +1,84 @@
+{
+  "timestamp": "2026-11-03T23:15:00Z",
+  "nationalReportingPct": 18,
+  "sourceSummary": "Live Feed Test Payload (Early Poll Closures: IN, KY, GA, NC, VA, FL, OH)",
+  "states": [
+    {
+      "stateCode": "IN",
+      "reportingPct": 74,
+      "demVotes": 612400,
+      "gopVotes": 988200,
+      "demPct": 38.3,
+      "gopPct": 61.7,
+      "status": "called_gop",
+      "houseDemSeats": 2,
+      "houseGopSeats": 7
+    },
+    {
+      "stateCode": "KY",
+      "reportingPct": 81,
+      "demVotes": 544100,
+      "gopVotes": 918500,
+      "demPct": 37.2,
+      "gopPct": 62.8,
+      "status": "called_gop",
+      "houseDemSeats": 1,
+      "houseGopSeats": 5
+    },
+    {
+      "stateCode": "GA",
+      "reportingPct": 58,
+      "demVotes": 1492000,
+      "gopVotes": 1418000,
+      "demPct": 51.3,
+      "gopPct": 48.7,
+      "status": "too_close_to_call",
+      "houseDemSeats": 5,
+      "houseGopSeats": 9
+    },
+    {
+      "stateCode": "NC",
+      "reportingPct": 62,
+      "demVotes": 1685000,
+      "gopVotes": 1612000,
+      "demPct": 51.1,
+      "gopPct": 48.9,
+      "status": "too_close_to_call",
+      "houseDemSeats": 7,
+      "houseGopSeats": 7
+    },
+    {
+      "stateCode": "VA",
+      "reportingPct": 69,
+      "demVotes": 1520000,
+      "gopVotes": 1295000,
+      "demPct": 54.0,
+      "gopPct": 46.0,
+      "status": "called_dem",
+      "houseDemSeats": 6,
+      "houseGopSeats": 5
+    },
+    {
+      "stateCode": "FL",
+      "reportingPct": 84,
+      "demVotes": 3180000,
+      "gopVotes": 4620000,
+      "demPct": 40.8,
+      "gopPct": 59.2,
+      "status": "called_gop",
+      "houseDemSeats": 8,
+      "houseGopSeats": 20
+    },
+    {
+      "stateCode": "OH",
+      "reportingPct": 54,
+      "demVotes": 1510000,
+      "gopVotes": 1790000,
+      "demPct": 45.8,
+      "gopPct": 54.2,
+      "status": "uncalled",
+      "houseDemSeats": 5,
+      "houseGopSeats": 10
+    }
+  ]
+}

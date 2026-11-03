@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, RefreshCw, Radio, CheckCircle, AlertTriangle, ShieldCheck, Play, Pause, Database, Key, Globe, Sparkles } from 'lucide-react';
+import { X, RefreshCw, Radio, CheckCircle, AlertTriangle, ShieldCheck, Play, Pause, Database, Key, Globe, Sparkles, FlaskConical, RotateCcw } from 'lucide-react';
 import { LiveFeedProvider } from '../utils/liveElectionFeed';
 
 interface LiveAdapterModalProps {
@@ -11,6 +11,9 @@ interface LiveAdapterModalProps {
   onSetPollingInterval: (sec: number) => void;
   lastSyncTime: Date | null;
   onManualSync: () => Promise<void>;
+  onTestLivePipeline: () => Promise<void>;
+  onClearLiveSync: () => void;
+  hasActiveLiveSync: boolean;
   recordedSnapshotsCount: number;
   selectedFeed: LiveFeedProvider;
   onSelectFeed: (feed: LiveFeedProvider) => void;
@@ -30,6 +33,9 @@ export const LiveAdapterModal: React.FC<LiveAdapterModalProps> = ({
   onSetPollingInterval,
   lastSyncTime,
   onManualSync,
+  onTestLivePipeline,
+  onClearLiveSync,
+  hasActiveLiveSync,
   recordedSnapshotsCount,
   selectedFeed,
   onSelectFeed,
@@ -40,6 +46,7 @@ export const LiveAdapterModal: React.FC<LiveAdapterModalProps> = ({
   lastSyncStatus
 }) => {
   const [isSyncing, setIsSyncing] = useState(false);
+  const [isTesting, setIsTesting] = useState(false);
 
   const handleSyncNow = async () => {
     setIsSyncing(true);
@@ -47,6 +54,15 @@ export const LiveAdapterModal: React.FC<LiveAdapterModalProps> = ({
       await onManualSync();
     } finally {
       setIsSyncing(false);
+    }
+  };
+
+  const handleRunTest = async () => {
+    setIsTesting(true);
+    try {
+      await onTestLivePipeline();
+    } finally {
+      setIsTesting(false);
     }
   };
 
@@ -124,6 +140,39 @@ export const LiveAdapterModal: React.FC<LiveAdapterModalProps> = ({
                 <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? 'animate-spin' : ''}`} />
                 <span>{isSyncing ? 'Fetching Live Data...' : 'Fetch Live Now'}</span>
               </button>
+            </div>
+          </div>
+
+          {/* 1-Click Pipeline Verification Box */}
+          <div className="p-3.5 bg-blue-950/30 border border-blue-700/50 rounded-xl flex flex-wrap items-center justify-between gap-3">
+            <div className="space-y-0.5">
+              <div className="font-bold text-blue-200 text-xs flex items-center gap-1.5">
+                <FlaskConical className="w-4 h-4 text-blue-400" />
+                <span>Test Dataforbindelse & Live Pipeline (End-to-End Test)</span>
+              </div>
+              <div className="text-[11px] text-slate-300">
+                Henter en ægte HTTP JSON-testpakke (<code className="text-blue-300">/live-test-feed.json</code>) med 7 stater (GA, NC, VA, FL, OH, IN, KY) og opdaterer hele kortet + Top Surprises.
+              </div>
+            </div>
+            <div className="flex items-center gap-2 shrink-0">
+              <button
+                onClick={handleRunTest}
+                disabled={isTesting}
+                className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-mono font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
+              >
+                <FlaskConical className="w-3.5 h-3.5" />
+                <span>{isTesting ? 'Tester...' : 'Kør Forbindelsestest'}</span>
+              </button>
+              {hasActiveLiveSync && (
+                <button
+                  onClick={onClearLiveSync}
+                  className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg font-mono font-semibold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                  title="Nulstil til 0% (Polls Open)"
+                >
+                  <RotateCcw className="w-3.5 h-3.5" />
+                  <span>Nulstil til 0%</span>
+                </button>
+              )}
             </div>
           </div>
 

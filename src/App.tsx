@@ -44,7 +44,7 @@ export default function App() {
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [recordedSnapshotsCount, setRecordedSnapshotsCount] = useState<number>(HOURLY_TIMELINE.length);
   const [selectedFeed, setSelectedFeed] = useState<LiveFeedProvider>('gemini_live_search');
-  const [customUrl, setCustomUrl] = useState<string>('https://api.elections.org/v2/midterms/2026/live.json');
+  const [customUrl, setCustomUrl] = useState<string>('/live-test-feed.json');
   const [geminiApiKey, setGeminiApiKey] = useState<string>(() => {
     try {
       return localStorage.getItem('GEMINI_API_KEY') || '';
@@ -128,7 +128,40 @@ export default function App() {
     }
   }, [selectedFeed, geminiApiKey, customUrl]);
 
-  // Live adapter polling interval timer
+  const handleTestLivePipeline = useCallback(async () => {
+    setIsSyncingLive(true);
+    const startMs = performance.now();
+    try {
+      const response = await fetchFromCustomJsonEndpoint('/live-test-feed.json');
+      const latencyMs = Math.round(performance.now() - startMs);
+      setLiveSyncData(response);
+      setIsBacktestMode(false);
+      setLastSyncTime(new Date());
+      setRecordedSnapshotsCount(prev => prev + 1);
+      setLastSyncStatus({
+        ok: true,
+        message: `END-TO-END TEST OK (${latencyMs}ms): Modtog ${response.statesUpdated} stater (IN, KY, GA, NC, VA, FL, OH) via JSON-feed. National optælling sat til ${response.nationalReportingPct}%, og Top Surprises + Equal-Area kort er opdateret!`,
+        latencyMs
+      });
+    } catch (err: any) {
+      const latencyMs = Math.round(performance.now() - startMs);
+      setLastSyncStatus({
+        ok: false,
+        message: `Test fejlede: ${err?.message || 'Ukendt fejl'}`,
+        latencyMs
+      });
+    } finally {
+      setIsSyncingLive(false);
+    }
+  }, []);
+
+  const handleClearLiveSync = useCallback(() => {
+    setLiveSyncData(null);
+    setLastSyncStatus({
+      ok: true,
+      message: 'Nulstillet til 0% (Polls Open) — klar til rigtig optælling kl. 00:00 CET.'
+    });
+  }, []);
   useEffect(() => {
     if (!isLivePolling) return;
     const interval = setInterval(() => {
@@ -484,6 +517,9 @@ export default function App() {
         onSetPollingInterval={(sec) => setPollingIntervalSeconds(sec)}
         lastSyncTime={lastSyncTime}
         onManualSync={handleManualSync}
+        onTestLivePipeline={handleTestLivePipeline}
+        onClearLiveSync={handleClearLiveSync}
+        hasActiveLiveSync={liveSyncData !== null}
         recordedSnapshotsCount={recordedSnapshotsCount}
         selectedFeed={selectedFeed}
         onSelectFeed={(feed) => setSelectedFeed(feed)}

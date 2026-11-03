@@ -263,4 +263,32 @@ test('parseExternalElectionJson and applyLivePatchesToStates normalize and apply
   assert.equal(patched['GA'].house?.uncalledSeats, 0);
 });
 
+import fs from 'node:fs';
+import path from 'node:path';
+import { BASE_STATES } from '../data/electionData2026.js';
+
+test('end-to-end live-test-feed.json parses, updates 50 states, and computes Top Surprises accurately', () => {
+  const feedPath = path.resolve(process.cwd(), 'public/live-test-feed.json');
+  const rawJson = JSON.parse(fs.readFileSync(feedPath, 'utf-8'));
+
+  const { nationalReportingPct, patches } = parseExternalElectionJson(rawJson);
+  assert.equal(nationalReportingPct, 18);
+  assert.equal(Object.keys(patches).length, 7);
+
+  const updatedStatesMap = applyLivePatchesToStates(BASE_STATES, patches);
+  const updatedStatesList = Object.values(updatedStatesMap);
+
+  // Check that GA has 58% reporting and MI (which is not in the early feed) still has 0% reporting
+  assert.equal(updatedStatesMap['GA'].senate?.reportingPct, 58);
+  assert.equal(updatedStatesMap['MI'].senate?.reportingPct, 0);
+  assert.equal(updatedStatesMap['CA'].house?.reportingPct, 0);
+
+  // Check that Top Surprises only includes states from the 7 reporting states
+  const surprises = getTopElectionSurprises(updatedStatesList, 'senate', 6);
+  assert.ok(surprises.length > 0);
+  for (const s of surprises) {
+    assert.ok(s.reportingPct > 0, `Expected ${s.stateCode} to have reportingPct > 0`);
+  }
+});
+
 

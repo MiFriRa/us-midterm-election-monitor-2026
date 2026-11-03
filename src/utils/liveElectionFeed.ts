@@ -231,10 +231,17 @@ export async function fetchFromCustomJsonEndpoint(url: string): Promise<LiveSync
   const { nationalReportingPct, patches } = parseExternalElectionJson(rawData);
   const statesUpdated = Object.keys(patches).length;
 
+  let sourceHost = url;
+  try {
+    sourceHost = new URL(url, typeof window !== 'undefined' ? window.location.origin : 'http://localhost').hostname;
+  } catch {
+    // Keep raw url
+  }
+
   return {
     timestamp: new Date().toISOString(),
     provider: 'custom_json',
-    sourceSummary: `External JSON Feed (${new URL(url).hostname})`,
+    sourceSummary: rawData.sourceSummary || `External JSON Feed (${sourceHost})`,
     nationalReportingPct,
     statesUpdated,
     patches,
