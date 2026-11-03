@@ -140,14 +140,14 @@ export default function App() {
       setRecordedSnapshotsCount(prev => prev + 1);
       setLastSyncStatus({
         ok: true,
-        message: `END-TO-END TEST OK (${latencyMs}ms): Modtog ${response.statesUpdated} stater (IN, KY, GA, NC, VA, FL, OH) via JSON-feed. National optælling sat til ${response.nationalReportingPct}%, og Top Surprises + Equal-Area kort er opdateret!`,
+        message: `END-TO-END TEST OK (${latencyMs}ms): Received ${response.statesUpdated} states (IN, KY, GA, NC, VA, FL, OH) via JSON feed. National reporting set to ${response.nationalReportingPct}%, and Biggest Surprises + Equal-Area map updated!`,
         latencyMs
       });
     } catch (err: any) {
       const latencyMs = Math.round(performance.now() - startMs);
       setLastSyncStatus({
         ok: false,
-        message: `Test fejlede: ${err?.message || 'Ukendt fejl'}`,
+        message: `Test failed: ${err?.message || 'Unknown error'}`,
         latencyMs
       });
     } finally {
@@ -159,7 +159,7 @@ export default function App() {
     setLiveSyncData(null);
     setLastSyncStatus({
       ok: true,
-      message: 'Nulstillet til 0% (Polls Open) — klar til rigtig optælling kl. 00:00 CET.'
+      message: 'Reset to 0% (Polls Open) — ready for official counting at 00:00 CET.'
     });
   }, []);
   useEffect(() => {
@@ -309,7 +309,7 @@ export default function App() {
   // Compute CET time representation accurately for each snapshot
   const cetHourMap = ['21:00 CET (Tue)', '01:00 CET', '02:00 CET', '03:00 CET', '04:00 CET', '05:00 CET', '08:00 CET'];
   const currentCetLabel = isLiveFeedActive
-    ? `LIVE SYNC (${new Date(liveSyncData.timestamp).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })} CET)`
+    ? `LIVE SYNC (${new Date(liveSyncData.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET)`
     : cetHourMap[currentHourIndex] || '00:00 CET';
   const currentHourLabel = isBacktestMode
     ? '2022 Certified Archive'

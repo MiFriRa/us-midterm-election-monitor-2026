@@ -43,13 +43,13 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
               <Clock className="w-6 h-6" />
             </div>
             <div className="text-base font-bold text-white font-mono">
-              Ingen overraskelser endnu
+              No Surprises Yet
             </div>
             <p className="text-xs text-slate-300 leading-relaxed max-w-xs">
-              Optællingen er ikke startet endnu (0% optalt). De største udsving og overraskelser i forhold til 2022 dukker automatisk op her, så snart de første valgsteder lukker kl. <strong>00:00 CET</strong>.
+              Vote counting has not started yet (0% counted). The biggest swings and flips relative to 2022 will appear here automatically as soon as the first polls close at <strong>00:00 CET (18:00 EST)</strong>.
             </p>
             <div className="pt-2 text-[11px] font-mono text-purple-300 bg-purple-950/40 border border-purple-800/50 rounded-lg px-3 py-2">
-              Tip: Klik på <strong>Play</strong> eller vælg et klokkeslæt nederst for at teste optællingen.
+              Tip: Click <strong>Play</strong> or select a timestamp on the bottom bar to preview election night counting.
             </div>
           </div>
         ) : (

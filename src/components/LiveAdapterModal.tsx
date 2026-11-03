@@ -148,10 +148,10 @@ export const LiveAdapterModal: React.FC<LiveAdapterModalProps> = ({
             <div className="space-y-0.5">
               <div className="font-bold text-blue-200 text-xs flex items-center gap-1.5">
                 <FlaskConical className="w-4 h-4 text-blue-400" />
-                <span>Test Dataforbindelse & Live Pipeline (End-to-End Test)</span>
+                <span>Test Data Connection & Live Pipeline (End-to-End Test)</span>
               </div>
               <div className="text-[11px] text-slate-300">
-                Henter en ægte HTTP JSON-testpakke (<code className="text-blue-300">/live-test-feed.json</code>) med 7 stater (GA, NC, VA, FL, OH, IN, KY) og opdaterer hele kortet + Top Surprises.
+                Fetches a live HTTP JSON test payload (<code className="text-blue-300">/live-test-feed.json</code>) with 7 early states (GA, NC, VA, FL, OH, IN, KY) and updates the map + Biggest Surprises.
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -161,16 +161,16 @@ export const LiveAdapterModal: React.FC<LiveAdapterModalProps> = ({
                 className="px-3 py-1.5 bg-blue-600 hover:bg-blue-500 text-white rounded-lg font-mono font-bold text-xs flex items-center gap-1.5 transition-colors cursor-pointer"
               >
                 <FlaskConical className="w-3.5 h-3.5" />
-                <span>{isTesting ? 'Tester...' : 'Kør Forbindelsestest'}</span>
+                <span>{isTesting ? 'Testing...' : 'Run Connection Test'}</span>
               </button>
               {hasActiveLiveSync && (
                 <button
                   onClick={onClearLiveSync}
                   className="px-2.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 rounded-lg font-mono font-semibold text-xs flex items-center gap-1 transition-colors cursor-pointer"
-                  title="Nulstil til 0% (Polls Open)"
+                  title="Reset to 0% (Polls Open)"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
-                  <span>Nulstil til 0%</span>
+                  <span>Reset to 0%</span>
                 </button>
               )}
             </div>

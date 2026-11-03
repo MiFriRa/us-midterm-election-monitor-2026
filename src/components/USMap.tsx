@@ -556,7 +556,7 @@ export const USMap: React.FC<USMapProps> = ({
               </>
             ) : (
               <p className="text-slate-400 text-xs">
-                Ingen valg i dette kammer i 2026.
+                No contest in this chamber in 2026.
               </p>
             )}
           </div>
