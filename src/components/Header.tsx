@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Radio, RefreshCw, Layers, Download, Video, Settings, ChevronDown, Info, Clock } from 'lucide-react';
+import { Radio, RefreshCw, Layers, Download, Video, Settings, ChevronDown, Info, Clock, ExternalLink } from 'lucide-react';
 
 interface HeaderProps {
   onOpenApiModal: () => void;
@@ -49,10 +49,21 @@ export const Header: React.FC<HeaderProps> = ({
           <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 via-purple-600 to-red-600 flex items-center justify-center shadow-md shadow-purple-950/50">
             <Radio className="w-3.5 h-3.5 text-white" />
           </div>
-          <div className="flex items-baseline gap-2">
+          <div className="flex items-baseline gap-2.5">
             <span className="text-sm sm:text-base font-extrabold tracking-tight text-white whitespace-nowrap font-mono">
               US Midterm Election Monitor <span className="text-purple-400">2026</span>
             </span>
+            <span className="text-slate-700 hidden md:inline">|</span>
+            <a
+              href="https://frimer-rasmussen.dk"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:inline-flex items-center gap-1 text-xs font-mono font-semibold text-slate-300 hover:text-purple-300 bg-slate-900/80 hover:bg-slate-800/90 px-2.5 py-0.5 rounded-md border border-slate-800 hover:border-purple-500/50 transition-all"
+              title="Visit Frimer-Rasmussen Consulting (frimer-rasmussen.dk)"
+            >
+              <span>by Frimer-Rasmussen Consulting</span>
+              <ExternalLink className="w-3 h-3 text-purple-400" />
+            </a>
           </div>
         </div>
 

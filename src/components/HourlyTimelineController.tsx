@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, ChevronLeft, ChevronRight, Clock, History, FastForward } from 'lucide-react';
+import { Play, Pause, ChevronLeft, ChevronRight, Clock, History, FastForward, ExternalLink } from 'lucide-react';
 import { HOURLY_TIMELINE } from '../data/electionData2026';
 
 interface HourlyTimelineControllerProps {
@@ -66,7 +66,7 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
               <span className="text-xs font-bold text-white leading-none">
                 {currentSnapshot.hourLabel}
               </span>
-              <span className="text-[10px] text-slate-400 truncate hidden sm:inline">
+              <span className="text-[10px] text-slate-400 truncate hidden lg:inline">
                 ({currentSnapshot.timeString})
               </span>
             </div>
@@ -106,8 +106,8 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
           })}
         </div>
 
-        {/* Mode Quick Jumps */}
-        <div className="flex items-center gap-2 w-full md:w-auto justify-end">
+        {/* Mode Quick Jumps & Company Credit */}
+        <div className="flex items-center gap-2 w-full md:w-auto justify-end shrink-0">
           <button
             onClick={() => onHourChange(HOURLY_TIMELINE.length - 1)}
             className="px-2.5 py-1 text-[11px] font-mono text-slate-400 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 rounded transition-colors flex items-center gap-1"
@@ -127,6 +127,17 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
             <History className="w-3 h-3" />
             <span>{isBacktestMode ? 'Backtest Active' : '2022 Backtest'}</span>
           </button>
+
+          <a
+            href="https://frimer-rasmussen.dk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-2.5 py-1 text-[11px] font-mono font-bold text-purple-300 hover:text-white bg-purple-950/40 hover:bg-purple-900/60 border border-purple-700/50 hover:border-purple-400 rounded transition-all flex items-center gap-1.5 whitespace-nowrap"
+            title="Frimer-Rasmussen Consulting — https://frimer-rasmussen.dk"
+          >
+            <span>Frimer-Rasmussen Consulting</span>
+            <ExternalLink className="w-3 h-3 text-purple-400 shrink-0" />
+          </a>
         </div>
 
       </div>
