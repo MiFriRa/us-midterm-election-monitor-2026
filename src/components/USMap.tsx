@@ -53,7 +53,7 @@ export const USMap: React.FC<USMapProps> = ({
   surprises
 }) => {
   const [tooltip, setTooltip] = useState<TooltipData | null>(null);
-  const [viewType, setViewType] = useState<MapViewType>('geographic');
+  const [viewType, setViewType] = useState<MapViewType>('cartogram');
 
   const surpriseMap = React.useMemo(() => {
     return new Map((surprises || []).map(s => [s.stateCode, s]));
@@ -288,17 +288,6 @@ export const USMap: React.FC<USMapProps> = ({
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center p-0.5 bg-slate-900 rounded-lg border border-slate-800">
             <button
-              onClick={() => setViewType('geographic')}
-              className={`px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
-                viewType === 'geographic'
-                  ? 'bg-purple-600 text-white shadow-sm font-bold'
-                  : 'text-slate-400 hover:text-white'
-              }`}
-            >
-              <Compass className="w-3.5 h-3.5" />
-              <span>USA Map</span>
-            </button>
-            <button
               onClick={() => setViewType('cartogram')}
               className={`px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewType === 'cartogram'
@@ -307,7 +296,18 @@ export const USMap: React.FC<USMapProps> = ({
               }`}
             >
               <Grid className="w-3.5 h-3.5" />
-              <span>State Grid</span>
+              <span>Equal-Area Cartogram</span>
+            </button>
+            <button
+              onClick={() => setViewType('geographic')}
+              className={`px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
+                viewType === 'geographic'
+                  ? 'bg-purple-600 text-white shadow-sm font-bold'
+                  : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Compass className="w-3.5 h-3.5" />
+              <span>Geographic</span>
             </button>
           </div>
 
@@ -418,7 +418,7 @@ export const USMap: React.FC<USMapProps> = ({
           </svg>
         ) : (
           <svg
-            viewBox="30 5 875 575"
+            viewBox="36 10 864 494"
             className="w-full h-full max-h-full max-w-full select-none"
             preserveAspectRatio="xMidYMid meet"
             onMouseMove={handleMouseMove}
@@ -447,10 +447,10 @@ export const USMap: React.FC<USMapProps> = ({
                     y={y}
                     width={tileSize}
                     height={tileSize}
-                    rx="8"
+                    rx="10"
                     fill={fill}
                     stroke={isSelected ? '#ffffff' : stroke}
-                    strokeWidth={isSelected ? 2.8 : strokeWidth}
+                    strokeWidth={isSelected ? 3 : strokeWidth}
                     opacity={opacity}
                     className="transition-all duration-200 hover:brightness-125 focus:outline-none"
                     tabIndex={0}
@@ -462,17 +462,17 @@ export const USMap: React.FC<USMapProps> = ({
                       <rect
                         x={x + 4}
                         y={y + 4}
-                        width={24}
-                        height={15}
-                        rx="3"
+                        width={26}
+                        height={16}
+                        rx="4"
                         fill={surpriseItem.isFlip ? '#059669' : '#d97706'}
                       />
                       <text
-                        x={x + 16}
+                        x={x + 17}
                         y={y + 15}
                         textAnchor="middle"
                         fill="#ffffff"
-                        fontSize="10"
+                        fontSize="10.5"
                         fontWeight="900"
                         fontFamily="'JetBrains Mono', monospace"
                       >
@@ -483,13 +483,13 @@ export const USMap: React.FC<USMapProps> = ({
 
                   <text
                     x={x + tileSize / 2}
-                    y={y + (surpriseItem && hasRace ? 35 : 39)}
+                    y={y + (surpriseItem && hasRace ? 36 : 38)}
                     textAnchor="middle"
-                    fill={hasRace ? (isTossup || isSelected ? '#ffffff' : '#f1f5f9') : '#64748b'}
-                    fontSize="16"
-                    fontWeight="800"
+                    fill={hasRace ? (isTossup || isSelected ? '#ffffff' : '#f8fafc') : '#64748b'}
+                    fontSize="19"
+                    fontWeight="900"
                     fontFamily="'JetBrains Mono', monospace"
-                    className="pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.8)]"
+                    className="pointer-events-none drop-shadow-[0_1px_3px_rgba(0,0,0,0.9)]"
                   >
                     {tile.id}
                   </text>
@@ -497,10 +497,10 @@ export const USMap: React.FC<USMapProps> = ({
                   {surpriseItem && hasRace && (
                     <text
                       x={x + tileSize / 2}
-                      y={y + 53}
+                      y={y + 54}
                       textAnchor="middle"
                       fill="#fde68a"
-                      fontSize="10"
+                      fontSize="11"
                       fontWeight="800"
                       fontFamily="'JetBrains Mono', monospace"
                       className="pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
