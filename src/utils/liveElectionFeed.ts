@@ -1,16 +1,17 @@
 /**
  * Real-Time Election Data Ingestion Service (2026 Midterms)
  *
- * Supports three live ingestion strategies:
- * 1. Public JSON API / Custom Endpoint (DDHQ, AP / State Board JSON, or user webhook)
- * 2. Gemini 3.8 Flash Live Grounding with Google Search (Fetches real-time AP/Reuters/NYT/CNN 2026 election results)
- * 3. Deterministic Simulation Fallback (when polls are not yet closed or offline)
+ * 100% Free & Zero-API-Key Architecture:
+ * 1. Public Election JSON Feed (`/live-election-2026.json` or any custom public JSON URL)
+ * 2. Automatic CET Real-Time Election Night Schedule Engine
+ * 3. Manual / Replay Timeline Mode
+ *
+ * No paid LLM or Gemini API keys are used or required.
  */
 
-import { GoogleGenAI } from '@google/genai';
 import { StateElectionResult } from './electionMath';
 
-export type LiveFeedProvider = 'gemini_live_search' | 'custom_json' | 'simulation';
+export type LiveFeedProvider = 'public_json' | 'cet_live_clock' | 'simulation';
 
 export interface LiveStatePatch {
   stateCode: string;
@@ -44,16 +45,14 @@ export interface LiveSyncResponse {
   nationalReportingPct: number;
   statesUpdated: number;
   patches: Record<string, LiveStatePatch>;
-  citations?: string[];
   rawPayload?: unknown;
 }
 
 /**
- * Normalizes an arbitrary external JSON payload into our internal `LiveStatePatch` map.
+ * Normalizes an external JSON payload into our internal `LiveStatePatch` map.
  * Supports:
- * - Standard `{ patches: { PA: { ... } } }` or `{ states: [ { stateCode: 'PA', ... } ] }`
+ * - Standard `{ states: [ { stateCode: 'PA', ... } ] }` or `{ races: [...] }`
  * - Direct key-value `{ PA: { reportingPct: 45, demVotes: 120000, gopVotes: 118000 } }`
- * - DDHQ / AP style race arrays
  */
 export function parseExternalElectionJson(raw: any): {
   nationalReportingPct: number;
@@ -67,7 +66,6 @@ export function parseExternalElectionJson(raw: any): {
     return { nationalReportingPct: 0, patches };
   }
 
-  // Case 1: Array of state objects (either root array or raw.states / raw.races / raw.results)
   const list = Array.isArray(raw)
     ? raw
     : Array.isArray(raw.states)
@@ -92,7 +90,6 @@ export function parseExternalElectionJson(raw: any): {
         reportingPct: Math.min(100, Math.max(0, repPct))
       };
 
-      // Check nested senate or flat demVotes/gopVotes
       const sen = item.senate || (item.chamber === 'senate' ? item : null);
       if (sen || (item.demVotes !== undefined && item.gopVotes !== undefined)) {
         const src = sen || item;
@@ -111,18 +108,19 @@ export function parseExternalElectionJson(raw: any): {
       }
 
       const gov = item.governor || (item.chamber === 'governor' ? item : null);
-      if (gov) {
-        const dVotes = Number(gov.demVotes ?? gov.dem_votes ?? 0);
-        const gVotes = Number(gov.gopVotes ?? gov.gop_votes ?? 0);
+      if (gov || (item.demVotes !== undefined && item.gopVotes !== undefined)) {
+        const src = gov || item;
+        const dVotes = Number(src.demVotes ?? src.dem_votes ?? 0);
+        const gVotes = Number(src.gopVotes ?? src.gop_votes ?? 0);
         const tot = dVotes + gVotes;
-        const dPct = Number(gov.demPct ?? gov.dem_pct ?? (tot > 0 ? ((dVotes / tot) * 100).toFixed(1) : 50));
-        const gPct = Number(gov.gopPct ?? gov.gop_pct ?? (tot > 0 ? ((gVotes / tot) * 100).toFixed(1) : 50));
+        const dPct = Number(src.demPct ?? src.dem_pct ?? (tot > 0 ? ((dVotes / tot) * 100).toFixed(1) : 50));
+        const gPct = Number(src.gopPct ?? src.gop_pct ?? (tot > 0 ? ((gVotes / tot) * 100).toFixed(1) : 50));
         patch.governor = {
           demVotes: dVotes,
           gopVotes: gVotes,
           demPct: dPct,
           gopPct: gPct,
-          status: normalizeCallStatus(gov.status || gov.called)
+          status: normalizeCallStatus(src.status || src.called)
         };
       }
 
@@ -139,7 +137,6 @@ export function parseExternalElectionJson(raw: any): {
       patches[code] = patch;
     }
   } else {
-    // Case 2: Map of stateCode -> object (e.g. raw.patches or raw.stateProgress or direct object)
     const mapObj = raw.patches || raw.stateProgress || raw;
     for (const [key, val] of Object.entries(mapObj)) {
       const code = key.toUpperCase();
@@ -215,7 +212,7 @@ function normalizeCallStatus(rawStatus: any): 'uncalled' | 'called_dem' | 'calle
 }
 
 /**
- * Fetches live 2026 US Midterm election results via a custom JSON URL.
+ * Fetches live 2026 US Midterm election results via a public JSON URL (zero API keys, zero cost).
  */
 export async function fetchFromCustomJsonEndpoint(url: string): Promise<LiveSyncResponse> {
   const response = await fetch(url, {
@@ -240,8 +237,8 @@ export async function fetchFromCustomJsonEndpoint(url: string): Promise<LiveSync
 
   return {
     timestamp: new Date().toISOString(),
-    provider: 'custom_json',
-    sourceSummary: rawData.sourceSummary || `External JSON Feed (${sourceHost})`,
+    provider: 'public_json',
+    sourceSummary: rawData.sourceSummary || `Public JSON Feed (${sourceHost})`,
     nationalReportingPct,
     statesUpdated,
     patches,
@@ -250,85 +247,27 @@ export async function fetchFromCustomJsonEndpoint(url: string): Promise<LiveSync
 }
 
 /**
- * Fetches live 2026 US Midterm election results using Gemini 3.8 Flash with Google Search Grounding.
- * Queries Associated Press (AP), Decision Desk HQ, Reuters, NYT, and state election boards in real time.
+ * Computes the appropriate hourly timeline index based on the real-world CET/UTC clock
+ * for Election Night (Nov 3-4, 2026):
+ * - Before Nov 3 23:00 UTC (00:00 CET): index 0 (0% Pre-Close)
+ * - Nov 4 00:00 UTC (01:00 CET): index 1 (19:00 EST / 01:00 CET)
+ * - Nov 4 01:00 UTC (02:00 CET): index 2 (20:00 EST / 02:00 CET)
+ * - Nov 4 02:00 UTC (03:00 CET): index 3 (21:00 EST / 03:00 CET)
+ * - Nov 4 03:00 UTC (04:00 CET): index 4 (22:00 EST / 04:00 CET)
+ * - Nov 4 04:00 UTC (05:00 CET): index 5 (23:00 EST / 05:00 CET)
+ * - Nov 4 06:00+ UTC (07:00+ CET): index 6 (Final Call)
  */
-export async function fetchLiveViaGeminiSearch(apiKey?: string): Promise<LiveSyncResponse> {
-  const resolvedKey =
-    apiKey ||
-    (typeof import.meta !== 'undefined' && (import.meta as any).env?.VITE_GEMINI_API_KEY) ||
-    (typeof process !== 'undefined' && (process as any).env?.GEMINI_API_KEY) ||
-    localStorage.getItem('GEMINI_API_KEY') ||
-    '';
+export function getTimelineIndexForRealTime(now: Date = new Date()): number {
+  const electionCloseStartUtc = Date.UTC(2026, 10, 3, 23, 30, 0); // Nov 3, 2026 23:30 UTC (00:30 CET)
+  const diffHours = (now.getTime() - electionCloseStartUtc) / (1000 * 60 * 60);
 
-  if (!resolvedKey || resolvedKey === 'MY_GEMINI_API_KEY') {
-    throw new Error(
-      'Missing Gemini API Key. Enter your Gemini API Key in Data & Tools -> Live Ingestion, or set VITE_GEMINI_API_KEY.'
-    );
-  }
-
-  const client = new GoogleGenAI({ apiKey: resolvedKey });
-
-  const prompt = `Search for the latest live 2026 US Midterm Election results (November 3, 2026) from Associated Press (AP), Decision Desk HQ, NBC, CNN, NYT, or official State Boards of Elections.
-If polls have not closed yet or 0% of votes are reported in a state, set reportingPct to 0 and votes to 0.
-Do NOT invent or hallucinate vote counts if polls are still open! Only report actual counted votes and projections that have been reported so far today (Nov 3, 2026).
-Return a JSON object containing:
-- nationalReportingPct (0 to 100)
-- sourceSummary (short description of current election status and sources used)
-- states: array of key reporting states (or battlegrounds IN, KY, GA, NC, VA, PA, OH, FL, MI, WI, TX, AZ, NV, ME, NH, IA, CA, NY) with their current reportingPct, Senate/Governor/House vote counts and percentages.`;
-
-  const interaction = await client.interactions.create({
-    model: 'gemini-3.8-flash',
-    input: prompt,
-    tools: [{ type: 'google_search' }],
-    response_format: {
-      type: 'text',
-      mime_type: 'application/json',
-      schema: {
-        type: 'object',
-        properties: {
-          nationalReportingPct: { type: 'number' },
-          sourceSummary: { type: 'string' },
-          states: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                stateCode: { type: 'string' },
-                reportingPct: { type: 'number' },
-                demVotes: { type: 'number' },
-                gopVotes: { type: 'number' },
-                demPct: { type: 'number' },
-                gopPct: { type: 'number' },
-                status: {
-                  type: 'string',
-                  enum: ['uncalled', 'called_dem', 'called_gop', 'too_close_to_call']
-                },
-                houseDemSeats: { type: 'number' },
-                houseGopSeats: { type: 'number' }
-              },
-              required: ['stateCode', 'reportingPct', 'demVotes', 'gopVotes', 'status']
-            }
-          }
-        },
-        required: ['nationalReportingPct', 'sourceSummary', 'states']
-      }
-    }
-  });
-
-  const text = interaction.output_text || '{}';
-  const parsed = JSON.parse(text);
-  const { nationalReportingPct, patches } = parseExternalElectionJson(parsed);
-
-  return {
-    timestamp: new Date().toISOString(),
-    provider: 'gemini_live_search',
-    sourceSummary: parsed.sourceSummary || 'Gemini 3.8 Flash + Google Search Grounding (AP / DDHQ)',
-    nationalReportingPct,
-    statesUpdated: Object.keys(patches).length,
-    patches,
-    rawPayload: parsed
-  };
+  if (diffHours < 0) return 0; // Polls still open (0% counted)
+  if (diffHours < 1.2) return 1; // 01:00 CET wave
+  if (diffHours < 2.2) return 2; // 02:00 CET wave
+  if (diffHours < 3.2) return 3; // 03:00 CET wave
+  if (diffHours < 4.2) return 4; // 04:00 CET wave
+  if (diffHours < 6.0) return 5; // 05:00 CET wave
+  return 6; // Final Call
 }
 
 /**
@@ -372,7 +311,6 @@ export function applyLivePatchesToStates(
         }
       }
     } else {
-      // State has 0% reporting in the live feed
       if (copy.senate) {
         copy.senate.reportingPct = 0;
         copy.senate.status = 'uncalled';

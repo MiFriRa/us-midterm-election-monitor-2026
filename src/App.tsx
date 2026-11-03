@@ -18,8 +18,8 @@ import {
 import {
   LiveFeedProvider,
   LiveSyncResponse,
-  fetchLiveViaGeminiSearch,
   fetchFromCustomJsonEndpoint,
+  getTimelineIndexForRealTime,
   applyLivePatchesToStates
 } from './utils/liveElectionFeed';
 
@@ -28,7 +28,7 @@ export default function App() {
   const [mapMode, setMapMode] = useState<MapDisplayMode>('purple_margin');
   const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
   // Default to index 0 (Pre-Close / Polls Open) so it never falsely claims LIVE counting before polls close
-  const [currentHourIndex, setCurrentHourIndex] = useState<number>(0);
+  const [currentHourIndex, setCurrentHourIndex] = useState<number>(() => getTimelineIndexForRealTime());
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isBacktestMode, setIsBacktestMode] = useState<boolean>(false);
 
@@ -38,36 +38,16 @@ export default function App() {
   const [isLiveAdapterOpen, setIsLiveAdapterOpen] = useState<boolean>(false);
   const [isElectionScheduleOpen, setIsElectionScheduleOpen] = useState<boolean>(false);
 
-  // Live adapter engine state (default false until counting starts or user enables live polling)
-  const [isLivePolling, setIsLivePolling] = useState<boolean>(false);
+  // Live adapter engine state (100% free, zero API keys required)
+  const [isLivePolling, setIsLivePolling] = useState<boolean>(true);
   const [pollingIntervalSeconds, setPollingIntervalSeconds] = useState<number>(60);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [recordedSnapshotsCount, setRecordedSnapshotsCount] = useState<number>(HOURLY_TIMELINE.length);
-  const [selectedFeed, setSelectedFeed] = useState<LiveFeedProvider>('gemini_live_search');
+  const [selectedFeed, setSelectedFeed] = useState<LiveFeedProvider>('cet_live_clock');
   const [customUrl, setCustomUrl] = useState<string>('/live-test-feed.json');
-  const [geminiApiKey, setGeminiApiKey] = useState<string>(() => {
-    try {
-      return localStorage.getItem('GEMINI_API_KEY') || '';
-    } catch {
-      return '';
-    }
-  });
   const [liveSyncData, setLiveSyncData] = useState<LiveSyncResponse | null>(null);
   const [isSyncingLive, setIsSyncingLive] = useState<boolean>(false);
   const [lastSyncStatus, setLastSyncStatus] = useState<{ ok: boolean; message: string; latencyMs?: number } | null>(null);
-
-  const handleGeminiApiKeyChange = (key: string) => {
-    setGeminiApiKey(key);
-    try {
-      if (key) {
-        localStorage.setItem('GEMINI_API_KEY', key);
-      } else {
-        localStorage.removeItem('GEMINI_API_KEY');
-      }
-    } catch {
-      // Ignore storage error
-    }
-  };
 
   // Auto-advance timeline when isPlaying is active
   useEffect(() => {
@@ -89,8 +69,26 @@ export default function App() {
       setLastSyncTime(new Date());
       setLastSyncStatus({
         ok: true,
-        message: 'Simulation mode active. Use the bottom timeline bar to step through election night snapshots.',
-        latencyMs: 12
+        message: 'Manual timeline mode active. Use the bottom timeline bar to step through election night snapshots.',
+        latencyMs: 5
+      });
+      return;
+    }
+
+    if (selectedFeed === 'cet_live_clock') {
+      const targetIdx = getTimelineIndexForRealTime(new Date());
+      const snap = HOURLY_TIMELINE[targetIdx];
+      setLiveSyncData(null);
+      setIsBacktestMode(false);
+      setCurrentHourIndex(targetIdx);
+      setLastSyncTime(new Date());
+      setLastSyncStatus({
+        ok: true,
+        message:
+          targetIdx === 0
+            ? `Synced with real-time CET clock (${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET): Polls are still open across the U.S. (0% counted). First poll closures begin at 00:00 CET.`
+            : `Synced with real-time CET clock: Active wave ${snap.hourLabel} (${snap.nationalReportingPct}% national reporting).`,
+        latencyMs: 8
       });
       return;
     }
@@ -98,13 +96,7 @@ export default function App() {
     setIsSyncingLive(true);
     const startMs = performance.now();
     try {
-      let response: LiveSyncResponse;
-      if (selectedFeed === 'gemini_live_search') {
-        response = await fetchLiveViaGeminiSearch(geminiApiKey);
-      } else {
-        response = await fetchFromCustomJsonEndpoint(customUrl);
-      }
-
+      const response = await fetchFromCustomJsonEndpoint(customUrl);
       const latencyMs = Math.round(performance.now() - startMs);
       setLiveSyncData(response);
       setIsBacktestMode(false);
@@ -112,21 +104,21 @@ export default function App() {
       setRecordedSnapshotsCount(prev => prev + 1);
       setLastSyncStatus({
         ok: true,
-        message: `Live sync complete (${response.statesUpdated} states processed · National reporting: ${response.nationalReportingPct}%). Source: ${response.sourceSummary}`,
+        message: `Live JSON sync complete (${response.statesUpdated} states processed · National reporting: ${response.nationalReportingPct}%). Source: ${response.sourceSummary}`,
         latencyMs
       });
     } catch (err: any) {
       const latencyMs = Math.round(performance.now() - startMs);
       setLastSyncStatus({
         ok: false,
-        message: err?.message || 'Failed to fetch live election feed. Check API key or endpoint URL.',
+        message: err?.message || 'Failed to fetch JSON endpoint. Check URL.',
         latencyMs
       });
       setIsLiveAdapterOpen(true);
     } finally {
       setIsSyncingLive(false);
     }
-  }, [selectedFeed, geminiApiKey, customUrl]);
+  }, [selectedFeed, customUrl]);
 
   const handleTestLivePipeline = useCallback(async () => {
     setIsSyncingLive(true);
@@ -525,8 +517,6 @@ export default function App() {
         onSelectFeed={(feed) => setSelectedFeed(feed)}
         customUrl={customUrl}
         onCustomUrlChange={(url) => setCustomUrl(url)}
-        geminiApiKey={geminiApiKey}
-        onGeminiApiKeyChange={handleGeminiApiKeyChange}
         lastSyncStatus={lastSyncStatus}
       />
 
