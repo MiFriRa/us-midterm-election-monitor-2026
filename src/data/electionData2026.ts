@@ -64,11 +64,11 @@ export const BASE_STATES: StateElectionResult[] = [
     hasGovernorRace: true,
     houseSeats: 1,
     senate: {
-      demCandidate: { name: 'Mary Peltola', party: 'DEM', votes: 148200, pct: 50.8 },
-      gopCandidate: { name: 'Dan Sullivan', party: 'GOP', votes: 143500, pct: 49.2 },
+      demCandidate: { name: 'Mary Peltola', party: 'DEM', votes: 144500, pct: 49.4 },
+      gopCandidate: { name: 'Dan Sullivan', party: 'GOP', votes: 147800, pct: 50.6 },
       otherVotes: 3200,
       reportingPct: 100,
-      status: 'called_dem',
+      status: 'called_gop',
       historical2022: { demPct: 46.1, gopPct: 53.9, margin: -7.8, winner: 'gop', reportingPct: 100 }
     },
     governor: {
@@ -81,11 +81,11 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 1,
-      demSeats: 1,
-      gopSeats: 0,
+      demSeats: 0,
+      gopSeats: 1,
       uncalledSeats: 0,
-      popularDemVotes: 152000,
-      popularGopVotes: 141000,
+      popularDemVotes: 145000,
+      popularGopVotes: 148000,
       reportingPct: 100,
       historical2022: { demSeats: 1, gopSeats: 0, demPopularPct: 54.9, gopPopularPct: 45.1, margin: 9.8 }
     }
@@ -107,16 +107,16 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 9,
-      demSeats: 4,
-      gopSeats: 5,
+      demSeats: 3,
+      gopSeats: 6,
       uncalledSeats: 0,
       popularDemVotes: 1280000,
       popularGopVotes: 1315000,
       reportingPct: 100,
       historical2022: { demSeats: 3, gopSeats: 6, demPopularPct: 47.8, gopPopularPct: 52.2, margin: -4.4 },
       keyBattlegroundDistricts: [
-        { district: 'AZ-01', demName: 'Amish Shah', gopName: 'David Schweikert', demVotes: 189400, gopVotes: 187600, demPct: 50.2, gopPct: 49.8, reportingPct: 100, status: 'called_dem', swingVs2022: 2.4 },
-        { district: 'AZ-06', demName: 'Kirsten Engel', gopName: 'Juan Ciscomani', demVotes: 174200, gopVotes: 172900, demPct: 50.2, gopPct: 49.8, reportingPct: 100, status: 'called_dem', swingVs2022: 3.1 }
+        { district: 'AZ-01', demName: 'Amish Shah', gopName: 'David Schweikert', demVotes: 185400, gopVotes: 189600, demPct: 49.4, gopPct: 50.6, reportingPct: 100, status: 'called_gop', swingVs2022: 0.8 },
+        { district: 'AZ-06', demName: 'Kirsten Engel', gopName: 'Juan Ciscomani', demVotes: 171200, gopVotes: 174900, demPct: 49.5, gopPct: 50.5, reportingPct: 100, status: 'called_gop', swingVs2022: 1.1 }
       ]
     }
   },
@@ -210,11 +210,11 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 8,
-      demSeats: 5,
-      gopSeats: 3,
+      demSeats: 4,
+      gopSeats: 4,
       uncalledSeats: 0,
-      popularDemVotes: 1460000,
-      popularGopVotes: 1110000,
+      popularDemVotes: 1390000,
+      popularGopVotes: 1180000,
       reportingPct: 100,
       historical2022: { demSeats: 5, gopSeats: 3, demPopularPct: 53.4, gopPopularPct: 45.1, margin: 8.3 }
     }
@@ -288,8 +288,8 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 28,
-      demSeats: 10,
-      gopSeats: 18,
+      demSeats: 8,
+      gopSeats: 20,
       uncalledSeats: 0,
       popularDemVotes: 3750000,
       popularGopVotes: 4410000,
@@ -468,8 +468,8 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 4,
-      demSeats: 1,
-      gopSeats: 3,
+      demSeats: 0,
+      gopSeats: 4,
       uncalledSeats: 0,
       popularDemVotes: 625000,
       popularGopVotes: 672000,
@@ -682,15 +682,15 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 13,
-      demSeats: 7,
-      gopSeats: 6,
+      demSeats: 6,
+      gopSeats: 7,
       uncalledSeats: 0,
-      popularDemVotes: 2300000,
-      popularGopVotes: 2210000,
+      popularDemVotes: 2230000,
+      popularGopVotes: 2280000,
       reportingPct: 100,
       historical2022: { demSeats: 7, gopSeats: 6, demPopularPct: 50.5, gopPopularPct: 49.5, margin: 1.0 },
       keyBattlegroundDistricts: [
-        { district: 'MI-07', demName: 'Curtis Hertel', gopName: 'Tom Barrett', demVotes: 187200, gopVotes: 184500, demPct: 50.4, gopPct: 49.6, reportingPct: 100, status: 'called_dem', swingVs2022: -1.2 },
+        { district: 'MI-07', demName: 'Curtis Hertel', gopName: 'Tom Barrett', demVotes: 181200, gopVotes: 190500, demPct: 48.7, gopPct: 51.3, reportingPct: 100, status: 'called_gop', swingVs2022: -4.2 },
         { district: 'MI-08', demName: 'Kristen McDonald Rivet', gopName: 'Paul Junge', demVotes: 178900, gopVotes: 171300, demPct: 51.1, gopPct: 48.9, reportingPct: 100, status: 'called_dem', swingVs2022: 1.5 }
       ]
     }
@@ -824,15 +824,15 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 3,
-      demSeats: 1,
-      gopSeats: 2,
+      demSeats: 0,
+      gopSeats: 3,
       uncalledSeats: 0,
       popularDemVotes: 320000,
       popularGopVotes: 405000,
       reportingPct: 100,
       historical2022: { demSeats: 0, gopSeats: 3, demPopularPct: 38.6, gopPopularPct: 61.4, margin: -22.8 },
       keyBattlegroundDistricts: [
-        { district: 'NE-02', demName: 'Tony Vargas', gopName: 'Don Bacon', demVotes: 142300, gopVotes: 139700, demPct: 50.5, gopPct: 49.5, reportingPct: 100, status: 'called_dem', swingVs2022: 3.2 }
+        { district: 'NE-02', demName: 'Tony Vargas', gopName: 'Don Bacon', demVotes: 138700, gopVotes: 143300, demPct: 49.2, gopPct: 50.8, reportingPct: 100, status: 'called_gop', swingVs2022: 1.1 }
       ]
     }
   },
@@ -878,11 +878,11 @@ export const BASE_STATES: StateElectionResult[] = [
       historical2022: { demPct: 53.5, gopPct: 44.4, margin: 9.1, winner: 'dem', reportingPct: 100 }
     },
     governor: {
-      demCandidate: { name: 'Joyce Craig', party: 'DEM', votes: 372000, pct: 50.8 },
-      gopCandidate: { name: 'Kelly Ayotte', party: 'GOP', votes: 360000, pct: 49.2 },
+      demCandidate: { name: 'Joyce Craig', party: 'DEM', votes: 348000, pct: 47.6 },
+      gopCandidate: { name: 'Kelly Ayotte', party: 'GOP', votes: 384000, pct: 52.4 },
       otherVotes: 6800,
       reportingPct: 100,
-      status: 'called_dem',
+      status: 'called_gop',
       historical2022: { demPct: 41.5, gopPct: 57.0, margin: -15.5, winner: 'gop', reportingPct: 100 }
     },
     house: {
@@ -1141,17 +1141,17 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 17,
-      demSeats: 9,
-      gopSeats: 8,
+      demSeats: 7,
+      gopSeats: 10,
       uncalledSeats: 0,
-      popularDemVotes: 2840000,
-      popularGopVotes: 2680000,
+      popularDemVotes: 2710000,
+      popularGopVotes: 2810000,
       reportingPct: 100,
       historical2022: { demSeats: 9, gopSeats: 8, demPopularPct: 50.8, gopPopularPct: 49.2, margin: 1.6 },
       keyBattlegroundDistricts: [
-        { district: 'PA-07', demName: 'Susan Wild', gopName: 'Ryan Mackenzie', demVotes: 181200, gopVotes: 179500, demPct: 50.2, gopPct: 49.8, reportingPct: 100, status: 'called_dem', swingVs2022: 0.8 },
-        { district: 'PA-08', demName: 'Matt Cartwright', gopName: 'Rob Bresnahan', demVotes: 169800, gopVotes: 168400, demPct: 50.2, gopPct: 49.8, reportingPct: 100, status: 'called_dem', swingVs2022: -1.2 },
-        { district: 'PA-10', demName: 'Janelle Stelson', gopName: 'Scott Perry', demVotes: 191400, gopVotes: 189100, demPct: 50.3, gopPct: 49.7, reportingPct: 100, status: 'called_dem', swingVs2022: 4.8 }
+        { district: 'PA-07', demName: 'Susan Wild', gopName: 'Ryan Mackenzie', demVotes: 177500, gopVotes: 183200, demPct: 49.2, gopPct: 50.8, reportingPct: 100, status: 'called_gop', swingVs2022: -2.6 },
+        { district: 'PA-08', demName: 'Matt Cartwright', gopName: 'Rob Bresnahan', demVotes: 165400, gopVotes: 171800, demPct: 49.0, gopPct: 51.0, reportingPct: 100, status: 'called_gop', swingVs2022: -3.2 },
+        { district: 'PA-10', demName: 'Janelle Stelson', gopName: 'Scott Perry', demVotes: 187100, gopVotes: 192400, demPct: 49.3, gopPct: 50.7, reportingPct: 100, status: 'called_gop', swingVs2022: 1.8 }
       ]
     }
   },
@@ -1316,8 +1316,8 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 38,
-      demSeats: 14,
-      gopSeats: 24,
+      demSeats: 13,
+      gopSeats: 25,
       uncalledSeats: 0,
       popularDemVotes: 4580000,
       popularGopVotes: 4950000,
@@ -1463,11 +1463,11 @@ export const BASE_STATES: StateElectionResult[] = [
     },
     house: {
       totalSeats: 8,
-      demSeats: 3,
-      gopSeats: 5,
+      demSeats: 2,
+      gopSeats: 6,
       uncalledSeats: 0,
-      popularDemVotes: 1380000,
-      popularGopVotes: 1370000,
+      popularDemVotes: 1350000,
+      popularGopVotes: 1400000,
       reportingPct: 100,
       historical2022: { demSeats: 2, gopSeats: 6, demPopularPct: 48.9, gopPopularPct: 51.1, margin: -2.2 }
     }
@@ -1532,6 +1532,13 @@ export const BASE_STATES: StateElectionResult[] = [
  */
 export const HOURLY_TIMELINE: HourlySnapshot[] = [
   {
+    hourLabel: '15:00 EST (Pre-Close)',
+    timeString: 'Polls Open — First Closures at 18:00 EST / 00:00 CET',
+    description: 'Voting underway across all 50 states. No precincts reporting yet. First polls close in Indiana & Kentucky in ~3 hours.',
+    nationalReportingPct: 0,
+    stateProgress: {}
+  },
+  {
     hourLabel: '19:00 EST',
     timeString: 'Poll Closures: IN, KY, GA, SC, VA, VT',
     description: 'Initial eastern polls close. Early exit tallies and initial precincts reporting.',
@@ -1551,14 +1558,19 @@ export const HOURLY_TIMELINE: HourlySnapshot[] = [
     description: 'Major eastern battlegrounds open counts. Pennsylvania & North Carolina enter tight purple margins.',
     nationalReportingPct: 28,
     stateProgress: {
-      PA: { reportingPct: 35, demVotes: 980000, gopVotes: 940000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 4 },
-      NC: { reportingPct: 40, demVotes: 920000, gopVotes: 910000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 4 },
-      FL: { reportingPct: 75, demVotes: 2650000, gopVotes: 3340000, status: 'called_gop', houseDemSeats: 8, houseGopSeats: 16 },
-      OH: { reportingPct: 45, demVotes: 860000, gopVotes: 1080000, status: 'uncalled', houseDemSeats: 3, houseGopSeats: 7 },
+      IN: { reportingPct: 68, demVotes: 510000, gopVotes: 820000, status: 'called_gop', houseDemSeats: 2, houseGopSeats: 7 },
+      KY: { reportingPct: 65, demVotes: 380000, gopVotes: 610000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 5 },
+      SC: { reportingPct: 55, demVotes: 520000, gopVotes: 710000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 6 },
+      VA: { reportingPct: 58, demVotes: 1180000, gopVotes: 990000, status: 'called_dem', houseDemSeats: 5, houseGopSeats: 4 },
+      VT: { reportingPct: 62, demVotes: 110000, gopVotes: 58000, status: 'called_dem', houseDemSeats: 1, houseGopSeats: 0 },
+      PA: { reportingPct: 35, demVotes: 940000, gopVotes: 980000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 5 },
+      NC: { reportingPct: 40, demVotes: 920000, gopVotes: 910000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 6 },
+      FL: { reportingPct: 75, demVotes: 2650000, gopVotes: 3340000, status: 'called_gop', houseDemSeats: 7, houseGopSeats: 18 },
+      OH: { reportingPct: 45, demVotes: 860000, gopVotes: 1080000, status: 'uncalled', houseDemSeats: 3, houseGopSeats: 8 },
       IL: { reportingPct: 42, demVotes: 1020000, gopVotes: 730000, status: 'called_dem', houseDemSeats: 8, houseGopSeats: 2 },
       NH: { reportingPct: 38, demVotes: 145000, gopVotes: 132000, status: 'uncalled', houseDemSeats: 1, houseGopSeats: 0 },
       ME: { reportingPct: 32, demVotes: 120000, gopVotes: 118000, status: 'too_close_to_call', houseDemSeats: 1, houseGopSeats: 0 },
-      GA: { reportingPct: 52, demVotes: 1040000, gopVotes: 1015000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 6 }
+      GA: { reportingPct: 52, demVotes: 1040000, gopVotes: 1015000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 7 }
     }
   },
   {
@@ -1567,52 +1579,65 @@ export const HOURLY_TIMELINE: HourlySnapshot[] = [
     description: 'Rust Belt and Midwest battlegrounds reporting. Texas, Michigan, and Wisconsin count rapidly.',
     nationalReportingPct: 54,
     stateProgress: {
-      MI: { reportingPct: 50, demVotes: 1180000, gopVotes: 1110000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 4 },
-      WI: { reportingPct: 55, demVotes: 760000, gopVotes: 735000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 3 },
-      TX: { reportingPct: 62, demVotes: 2890000, gopVotes: 3040000, status: 'uncalled', houseDemSeats: 9, houseGopSeats: 17 },
-      CO: { reportingPct: 48, demVotes: 710000, gopVotes: 540000, status: 'called_dem', houseDemSeats: 4, houseGopSeats: 2 },
-      AZ: { reportingPct: 38, demVotes: 480000, gopVotes: 472000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 3 },
-      PA: { reportingPct: 68, demVotes: 1980000, gopVotes: 1750000, status: 'uncalled', houseDemSeats: 6, houseGopSeats: 6 },
-      NC: { reportingPct: 72, demVotes: 1780000, gopVotes: 1740000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 7 },
+      IN: { reportingPct: 92, demVotes: 810000, gopVotes: 1210000, status: 'called_gop', houseDemSeats: 2, houseGopSeats: 7 },
+      KY: { reportingPct: 94, demVotes: 580000, gopVotes: 860000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 5 },
+      SC: { reportingPct: 88, demVotes: 890000, gopVotes: 1190000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 6 },
+      VA: { reportingPct: 86, demVotes: 1920000, gopVotes: 1580000, status: 'called_dem', houseDemSeats: 6, houseGopSeats: 5 },
+      FL: { reportingPct: 95, demVotes: 3550000, gopVotes: 4280000, status: 'called_gop', houseDemSeats: 8, houseGopSeats: 20 },
+      OH: { reportingPct: 82, demVotes: 1680000, gopVotes: 2120000, status: 'called_gop', houseDemSeats: 5, houseGopSeats: 10 },
+      IL: { reportingPct: 78, demVotes: 1980000, gopVotes: 1410000, status: 'called_dem', houseDemSeats: 13, houseGopSeats: 3 },
+      MI: { reportingPct: 50, demVotes: 1140000, gopVotes: 1160000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 5 },
+      WI: { reportingPct: 55, demVotes: 750000, gopVotes: 745000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 5 },
+      TX: { reportingPct: 62, demVotes: 2890000, gopVotes: 3140000, status: 'uncalled', houseDemSeats: 10, houseGopSeats: 21 },
+      CO: { reportingPct: 48, demVotes: 710000, gopVotes: 540000, status: 'called_dem', houseDemSeats: 3, houseGopSeats: 3 },
+      AZ: { reportingPct: 38, demVotes: 472000, gopVotes: 485000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 4 },
+      PA: { reportingPct: 68, demVotes: 1850000, gopVotes: 1920000, status: 'uncalled', houseDemSeats: 6, houseGopSeats: 8 },
+      NC: { reportingPct: 72, demVotes: 1780000, gopVotes: 1740000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 9 },
       GA: { reportingPct: 78, demVotes: 1610000, gopVotes: 1560000, status: 'uncalled', houseDemSeats: 5, houseGopSeats: 8 }
     }
   },
   {
     hourLabel: '22:00 EST',
     timeString: 'Poll Closures: NV, UT, MT, IA, ID',
-    description: 'Mountain West polls close. Nevada joins razor-thin purple corridor; Senate balance reaches critical threshold.',
+    description: 'Mountain West polls close. Nevada joins razor-thin purple corridor; Senate and House balance reach critical threshold.',
     nationalReportingPct: 72,
     stateProgress: {
+      IN: { reportingPct: 99, demVotes: 880000, gopVotes: 1310000, status: 'called_gop', houseDemSeats: 2, houseGopSeats: 7 },
+      FL: { reportingPct: 99, demVotes: 3720000, gopVotes: 4400000, status: 'called_gop', houseDemSeats: 8, houseGopSeats: 20 },
+      OH: { reportingPct: 96, demVotes: 1950000, gopVotes: 2450000, status: 'called_gop', houseDemSeats: 5, houseGopSeats: 10 },
+      NC: { reportingPct: 90, demVotes: 2290000, gopVotes: 2250000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 10 },
       NV: { reportingPct: 45, demVotes: 232000, gopVotes: 236000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 1 },
-      AZ: { reportingPct: 65, demVotes: 855000, gopVotes: 832000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 4 },
-      PA: { reportingPct: 88, demVotes: 2680000, gopVotes: 2150000, status: 'called_dem', houseDemSeats: 8, houseGopSeats: 7 },
-      MI: { reportingPct: 76, demVotes: 1780000, gopVotes: 1680000, status: 'uncalled', houseDemSeats: 5, houseGopSeats: 5 },
-      WI: { reportingPct: 80, demVotes: 1140000, gopVotes: 1090000, status: 'uncalled', houseDemSeats: 3, houseGopSeats: 4 },
-      TX: { reportingPct: 86, demVotes: 4120000, gopVotes: 4320000, status: 'called_gop', houseDemSeats: 12, houseGopSeats: 21 },
+      AZ: { reportingPct: 65, demVotes: 832000, gopVotes: 855000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 5 },
+      PA: { reportingPct: 88, demVotes: 2420000, gopVotes: 2480000, status: 'called_gop', houseDemSeats: 7, houseGopSeats: 10 },
+      MI: { reportingPct: 76, demVotes: 1780000, gopVotes: 1710000, status: 'uncalled', houseDemSeats: 5, houseGopSeats: 6 },
+      WI: { reportingPct: 80, demVotes: 1140000, gopVotes: 1110000, status: 'uncalled', houseDemSeats: 2, houseGopSeats: 6 },
+      TX: { reportingPct: 86, demVotes: 4120000, gopVotes: 4450000, status: 'called_gop', houseDemSeats: 13, houseGopSeats: 24 },
       GA: { reportingPct: 92, demVotes: 1890000, gopVotes: 1835000, status: 'called_dem', houseDemSeats: 5, houseGopSeats: 9 }
     }
   },
   {
     hourLabel: '23:00 EST',
     timeString: 'Poll Closures: CA, WA, OR, HI',
-    description: 'West Coast poll closures add large delegate blocks. California House battles determine chamber control.',
+    description: 'West Coast poll closures add large delegate blocks. House and Senate majorities crystallize.',
     nationalReportingPct: 85,
     stateProgress: {
-      CA: { reportingPct: 45, demVotes: 3200000, gopVotes: 2200000, status: 'called_dem', houseDemSeats: 26, houseGopSeats: 6 },
+      CA: { reportingPct: 45, demVotes: 3200000, gopVotes: 2200000, status: 'called_dem', houseDemSeats: 26, houseGopSeats: 8 },
       WA: { reportingPct: 52, demVotes: 980000, gopVotes: 680000, status: 'called_dem', houseDemSeats: 6, houseGopSeats: 2 },
       OR: { reportingPct: 50, demVotes: 540000, gopVotes: 450000, status: 'called_dem', houseDemSeats: 3, houseGopSeats: 1 },
-      MI: { reportingPct: 91, demVotes: 2140000, gopVotes: 2010000, status: 'called_dem', houseDemSeats: 6, houseGopSeats: 6 },
-      WI: { reportingPct: 93, demVotes: 1320000, gopVotes: 1245000, status: 'called_dem', houseDemSeats: 3, houseGopSeats: 5 },
-      NC: { reportingPct: 94, demVotes: 2360000, gopVotes: 2310000, status: 'called_dem', houseDemSeats: 4, houseGopSeats: 10 },
+      PA: { reportingPct: 95, demVotes: 2640000, gopVotes: 2720000, status: 'called_gop', houseDemSeats: 7, houseGopSeats: 10 },
+      MI: { reportingPct: 91, demVotes: 2140000, gopVotes: 2050000, status: 'called_dem', houseDemSeats: 6, houseGopSeats: 7 },
+      WI: { reportingPct: 93, demVotes: 1320000, gopVotes: 1285000, status: 'called_dem', houseDemSeats: 2, houseGopSeats: 6 },
+      NC: { reportingPct: 96, demVotes: 2460000, gopVotes: 2410000, status: 'called_dem', houseDemSeats: 4, houseGopSeats: 10 },
+      TX: { reportingPct: 95, demVotes: 4480000, gopVotes: 4820000, status: 'called_gop', houseDemSeats: 13, houseGopSeats: 25 },
       NV: { reportingPct: 75, demVotes: 395000, gopVotes: 402000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 1 },
-      AZ: { reportingPct: 82, demVotes: 1080000, gopVotes: 1050000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 4 }
+      AZ: { reportingPct: 82, demVotes: 1060000, gopVotes: 1080000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 6 }
     }
   },
   {
     hourLabel: '02:00 EST (Final Projection)',
     timeString: 'All Polls Closed - Late Absentee & Mail Drops In',
-    description: 'Final 2026 Midterm tallies. Senate and House majorities resolved, full swing analysis available.',
-    nationalReportingPct: 98,
+    description: 'Final 2026 Midterm tallies. GOP holds House (224-211) & Senate (52-48); full swing analysis available.',
+    nationalReportingPct: 100,
     stateProgress: {} // In final projection, uses full BASE_STATES data
   }
 ];

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { ElectionSurprise } from '../utils/electionMath';
-import { Sparkles, Flame, Users, TrendingUp, ArrowUpRight, ArrowDownRight, Award, ChevronRight } from 'lucide-react';
+import { Sparkles, Flame, Users, Clock } from 'lucide-react';
 
 interface TopSurprisesDeckProps {
   surprises: ElectionSurprise[];
@@ -18,6 +18,7 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
   nationalReportingPct
 }) => {
   const [filter, setFilter] = useState<SurpriseFilter>('all');
+  const isCounting = nationalReportingPct > 0;
 
   const filteredSurprises = surprises.filter(s => {
     if (filter === 'flips') return s.isFlip;
@@ -26,25 +27,37 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
   });
 
   return (
-    <section className="bg-[#070b14] border-b border-slate-800/90 px-4 sm:px-6 py-2.5 shrink-0 z-20">
+    <section className="bg-gradient-to-b from-[#0b101d] to-[#070b14] border-b border-amber-500/25 px-4 sm:px-6 py-2.5 shrink-0 z-20 shadow-lg">
       
-      {/* Header Line: Big Clear Title + Mode Filter + Live Status */}
+      {/* Header Line: Prominent Title + Mode Filter + Honest Status */}
       <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
         
-        {/* Title with Live Pulse */}
+        {/* Title with Status Badge */}
         <div className="flex items-center gap-2.5">
           <div className="flex items-center justify-center w-6 h-6 rounded-md bg-amber-500/20 border border-amber-500/50 text-amber-400">
-            <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+            {isCounting ? (
+              <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+            ) : (
+              <Clock className="w-3.5 h-3.5" />
+            )}
           </div>
-          <div className="flex items-baseline gap-2">
-            <h2 className="text-xs sm:text-sm font-black font-mono uppercase tracking-wider text-white flex items-center gap-1.5">
+          <div className="flex items-baseline gap-2.5">
+            <h2 className="text-xs sm:text-sm font-black font-mono uppercase tracking-wider text-white flex items-center gap-2">
               <span>Top Surprises vs. 2022</span>
-              <span className="text-[10px] px-1.5 py-0.2 rounded font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                LIVE RADAR
-              </span>
+              {isCounting ? (
+                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
+                  COUNTING ACTIVE ({nationalReportingPct}% IN)
+                </span>
+              ) : (
+                <span className="text-[10px] px-2 py-0.5 rounded font-mono font-bold bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                  PRE-CLOSE WATCHLIST · POLLS OPEN
+                </span>
+              )}
             </h2>
-            <span className="text-[11px] text-slate-400 font-mono hidden md:inline">
-              Biggest shifts & flips as votes report from key citizen centers
+            <span className="text-[11px] text-slate-300 font-mono hidden lg:inline">
+              {isCounting
+                ? 'Largest swings & flips weighted by citizen volume — click any state to inspect'
+                : 'Key populous battlegrounds to watch as polls close from 00:00 CET (18:00 EST)'}
             </span>
           </div>
         </div>
@@ -59,7 +72,7 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
                 : 'text-slate-400 hover:text-slate-200'
             }`}
           >
-            All Shifts ({surprises.length})
+            Top {surprises.length}
           </button>
           <button
             onClick={() => setFilter('flips')}
@@ -81,23 +94,25 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
             }`}
           >
             <Users className="w-3 h-3 text-purple-400" />
-            <span>High Population</span>
+            <span>High Population (8+ Seats)</span>
           </button>
         </div>
 
       </div>
 
-      {/* Surprises Cards Grid: Prominent, High-Contrast Bauhaus Visual Cards */}
+      {/* Surprises Cards Grid: Prominent, High-Contrast Visual Cards */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-2.5">
         {filteredSurprises.length === 0 ? (
-          <div className="col-span-full py-4 text-center text-xs text-slate-500 font-mono bg-slate-900/50 rounded-xl border border-slate-800">
-            No states currently matching this surprise filter.
+          <div className="col-span-full py-3 text-center text-xs text-slate-400 font-mono bg-slate-900/50 rounded-xl border border-slate-800">
+            {isCounting
+              ? 'No states currently matching this filter at this hour.'
+              : 'No flips yet — polls are still open. Switch to "Top 6" or "High Population" or advance timeline to see incoming returns.'}
           </div>
         ) : (
           filteredSurprises.map((item) => {
             const isSelected = selectedStateId === item.stateCode;
-            const isDemSwing = item.swingValue > 0;
-            const isGopSwing = item.swingValue < 0;
+            const isDemSwing = item.reportingPct > 0 && item.swingValue > 0;
+            const isGopSwing = item.reportingPct > 0 && item.swingValue < 0;
 
             return (
               <button
@@ -105,29 +120,34 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
                 onClick={() => onSelectState(item.stateCode)}
                 className={`group relative text-left p-2.5 rounded-xl border transition-all duration-200 flex flex-col justify-between overflow-hidden cursor-pointer ${
                   isSelected
-                    ? 'bg-[#181b2a] border-amber-400 shadow-[0_0_15px_rgba(245,158,11,0.25)] ring-1 ring-amber-400'
-                    : 'bg-[#0b101c] border-slate-800 hover:border-slate-700 hover:bg-[#0f1526]'
+                    ? 'bg-[#1a1f35] border-amber-400 shadow-[0_0_18px_rgba(245,158,11,0.3)] ring-1 ring-amber-400'
+                    : item.isFlip
+                    ? 'bg-[#0d1922] border-emerald-500/50 hover:border-emerald-400 hover:bg-[#11222e]'
+                    : 'bg-[#0e1424] border-slate-700/80 hover:border-amber-500/60 hover:bg-[#131b30]'
                 }`}
                 title={`Click to inspect ${item.stateName} details`}
               >
-                {/* Top Badge: Rank + State Code + Flip Flag */}
+                {/* Top Badge: Rank + State Name + Flip/Population Flag */}
                 <div className="flex items-center justify-between gap-1 w-full mb-1">
-                  <div className="flex items-center gap-1.5">
-                    <span className="w-5 h-5 rounded flex items-center justify-center font-mono font-black text-xs bg-slate-800 text-amber-300 border border-slate-700 group-hover:bg-amber-400 group-hover:text-black transition-colors">
+                  <div className="flex items-center gap-1.5 min-w-0">
+                    <span className="w-5 h-5 rounded flex items-center justify-center font-mono font-black text-xs bg-amber-500/20 text-amber-300 border border-amber-500/40 shrink-0 group-hover:bg-amber-400 group-hover:text-black transition-colors">
                       #{item.rank}
                     </span>
-                    <span className="font-mono font-black text-sm text-white tracking-wider">
+                    <span className="font-mono font-black text-sm text-white tracking-wider shrink-0">
                       {item.stateCode}
+                    </span>
+                    <span className="text-[11px] font-sans font-semibold text-slate-300 truncate">
+                      {item.stateName}
                     </span>
                   </div>
 
                   {item.isFlip ? (
-                    <span className="text-[9px] font-mono font-black uppercase px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 border border-emerald-500/50 flex items-center gap-0.5">
+                    <span className="text-[9px] font-mono font-black uppercase px-1.5 py-0.5 rounded bg-emerald-500/25 text-emerald-300 border border-emerald-500/60 flex items-center gap-0.5 shrink-0">
                       <Flame className="w-2.5 h-2.5 text-emerald-400" />
                       FLIP
                     </span>
                   ) : (
-                    <span className="text-[9px] font-mono font-bold text-slate-400">
+                    <span className="text-[9px] font-mono font-bold text-purple-300 bg-purple-950/60 px-1.5 py-0.5 rounded border border-purple-800/60 shrink-0">
                       {item.houseSeats} Seats
                     </span>
                   )}
@@ -137,44 +157,62 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
                 <div className="my-1">
                   <div className="flex items-baseline justify-between gap-1">
                     <span
-                      className={`text-base sm:text-lg font-black font-mono tracking-tight ${
+                      className={`text-lg sm:text-xl font-black font-mono tracking-tight leading-none ${
                         isDemSwing
                           ? 'text-blue-400 group-hover:text-blue-300'
                           : isGopSwing
                           ? 'text-red-400 group-hover:text-red-300'
-                          : 'text-slate-300'
+                          : 'text-amber-300'
                       }`}
                     >
                       {item.swingLabel}
                     </span>
-                    <span className="text-[10px] font-mono text-slate-400 truncate max-w-[80px]">
-                      {item.stateName}
+                    <span className="text-[10px] font-mono font-semibold text-slate-300 truncate">
+                      {item.significance}
                     </span>
                   </div>
 
                   {/* 2022 vs 2026 Comparison Track */}
-                  <div className="text-[10px] font-mono text-slate-400 flex items-center justify-between pt-0.5">
+                  <div className="text-[10px] font-mono text-slate-400 flex items-center justify-between pt-1">
                     <span className="truncate">
-                      '22: {item.margin2022 >= 0 ? `D+${item.margin2022}` : `R+${Math.abs(item.margin2022)}`}
+                      2022: <strong className={item.margin2022 >= 0 ? 'text-blue-300' : 'text-red-300'}>
+                        {item.margin2022 >= 0 ? `D+${item.margin2022}` : `R+${Math.abs(item.margin2022)}`}
+                      </strong>
                     </span>
-                    <span className="text-slate-600 font-bold">➔</span>
+                    <span className="text-slate-500 font-bold">➔</span>
                     <span className="font-bold text-slate-200">
-                      '26: {item.margin2026 >= 0 ? `D+${item.margin2026}` : `R+${Math.abs(item.margin2026)}`}
+                      {item.reportingPct > 0 ? (
+                        <>
+                          2026: <strong className={item.margin2026 >= 0 ? 'text-blue-400' : 'text-red-400'}>
+                            {item.margin2026 >= 0 ? `D+${item.margin2026}` : `R+${Math.abs(item.margin2026)}`}
+                          </strong>
+                        </>
+                      ) : (
+                        <span className="text-slate-400">2026: Awaiting</span>
+                      )}
                     </span>
                   </div>
                 </div>
 
                 {/* Bottom: Progress Bar + Citizen Votes Counted */}
-                <div className="mt-1 pt-1 border-t border-slate-800/80 w-full space-y-1">
-                  <div className="flex items-center justify-between text-[10px] font-mono text-slate-400">
-                    <span className="text-slate-300 font-semibold">{item.reportingPct}% in</span>
-                    <span>{item.votesCounted > 0 ? item.votesCountedLabel : 'Pre-close'}</span>
+                <div className="mt-1 pt-1 border-t border-slate-800/90 w-full space-y-1">
+                  <div className="flex items-center justify-between text-[10px] font-mono">
+                    <span className={item.reportingPct > 0 ? 'text-emerald-400 font-bold' : 'text-slate-400'}>
+                      {item.reportingPct}% counted
+                    </span>
+                    <span className="text-slate-300 font-semibold">
+                      {item.votesCounted > 0 ? `${item.votesCountedLabel} votes` : `${item.houseSeats} House districts`}
+                    </span>
                   </div>
                   
                   {/* Mini reporting progress line */}
-                  <div className="w-full h-1 bg-slate-800 rounded-full overflow-hidden">
+                  <div className="w-full h-1.5 bg-slate-800 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-gradient-to-r from-purple-500 to-amber-400 transition-all duration-300"
+                      className={`h-full transition-all duration-300 ${
+                        item.isFlip
+                          ? 'bg-gradient-to-r from-emerald-500 to-amber-400'
+                          : 'bg-gradient-to-r from-purple-500 to-amber-400'
+                      }`}
                       style={{ width: `${item.reportingPct}%` }}
                     />
                   </div>
@@ -182,7 +220,7 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
 
                 {/* Active Indicator Line on top of card */}
                 {isSelected && (
-                  <div className="absolute top-0 left-0 right-0 h-0.5 bg-amber-400" />
+                  <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400" />
                 )}
               </button>
             );

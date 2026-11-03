@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { Header } from './components/Header';
 import { ChamberBalanceBar, ChamberType, MapDisplayMode } from './components/ChamberBalanceBar';
+import { TopSurprisesDeck } from './components/TopSurprisesDeck';
 import { USMap } from './components/USMap';
 import { StateDetailDrawer } from './components/StateDetailDrawer';
 import { HourlyTimelineController } from './components/HourlyTimelineController';
 import { ApiInspectorModal } from './components/ApiInspectorModal';
-import { BreakingNewsTicker } from './components/BreakingNewsTicker';
 import { TimelapseVideoModal } from './components/TimelapseVideoModal';
 import { LiveAdapterModal } from './components/LiveAdapterModal';
 import { ElectionScheduleModal } from './components/ElectionScheduleModal';
@@ -20,7 +20,8 @@ export default function App() {
   const [chamber, setChamber] = useState<ChamberType>('senate');
   const [mapMode, setMapMode] = useState<MapDisplayMode>('purple_margin');
   const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
-  const [currentHourIndex, setCurrentHourIndex] = useState<number>(3); // 22:00 EST / 04:00 CET
+  // Default to index 0 (Pre-Close / Polls Open) so it never falsely claims LIVE counting before polls close
+  const [currentHourIndex, setCurrentHourIndex] = useState<number>(0);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isBacktestMode, setIsBacktestMode] = useState<boolean>(false);
 
@@ -30,8 +31,8 @@ export default function App() {
   const [isLiveAdapterOpen, setIsLiveAdapterOpen] = useState<boolean>(false);
   const [isElectionScheduleOpen, setIsElectionScheduleOpen] = useState<boolean>(false);
 
-  // Live adapter engine state
-  const [isLivePolling, setIsLivePolling] = useState<boolean>(true);
+  // Live adapter engine state (default false until counting starts or user enables live polling)
+  const [isLivePolling, setIsLivePolling] = useState<boolean>(false);
   const [pollingIntervalSeconds, setPollingIntervalSeconds] = useState<number>(30);
   const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
   const [recordedSnapshotsCount, setRecordedSnapshotsCount] = useState<number>(HOURLY_TIMELINE.length);
@@ -56,14 +57,12 @@ export default function App() {
     if (!isLivePolling) return;
     const interval = setInterval(() => {
       setLastSyncTime(new Date());
-      // Slight periodic simulation heartbeat
       setRecordedSnapshotsCount(prev => prev + 1);
     }, pollingIntervalSeconds * 1000);
     return () => clearInterval(interval);
   }, [isLivePolling, pollingIntervalSeconds]);
 
   const handleManualSync = useCallback(async () => {
-    // Simulate real feed roundtrip
     await new Promise(r => setTimeout(r, 600));
     setLastSyncTime(new Date());
     setRecordedSnapshotsCount(prev => prev + 1);
@@ -93,6 +92,7 @@ export default function App() {
         if (copy.house) {
           copy.house.demSeats = copy.house.historical2022.demSeats;
           copy.house.gopSeats = copy.house.historical2022.gopSeats;
+          copy.house.uncalledSeats = 0;
           copy.house.reportingPct = 100;
         }
         dataMap[baseState.id] = copy;
@@ -105,7 +105,7 @@ export default function App() {
         return;
       }
 
-      // Intermediate hourly progress
+      // Intermediate hourly progress (or index 0 pre-close)
       const copy: StateElectionResult = JSON.parse(JSON.stringify(baseState));
       const prog = snapshot.stateProgress[baseState.id];
 
@@ -138,6 +138,8 @@ export default function App() {
           copy.house.gopSeats = prog.houseGopSeats;
           copy.house.uncalledSeats = copy.house.totalSeats - prog.houseDemSeats - prog.houseGopSeats;
           copy.house.reportingPct = prog.reportingPct;
+          copy.house.popularDemVotes = prog.demVotes;
+          copy.house.popularGopVotes = prog.gopVotes;
         }
       } else {
         // Polls not closed yet in this hour
@@ -158,6 +160,8 @@ export default function App() {
           copy.house.gopSeats = 0;
           copy.house.uncalledSeats = copy.house.totalSeats;
           copy.house.reportingPct = 0;
+          copy.house.popularDemVotes = 0;
+          copy.house.popularGopVotes = 0;
         }
       }
 
@@ -172,17 +176,19 @@ export default function App() {
     return calculateNationalChamberTally(Object.values(currentStatesData), chamber);
   }, [currentStatesData, chamber]);
 
-  // Compute Signal 2: Top Surprises (Largest swings / Flips vs 2022)
+  // Compute Top Surprises (Largest swings / Flips vs 2022 + Populous Watchlist)
   const topSurprises = useMemo(() => {
-    return getTopElectionSurprises(Object.values(currentStatesData), chamber, 5);
+    return getTopElectionSurprises(Object.values(currentStatesData), chamber, 6);
   }, [currentStatesData, chamber]);
 
   const selectedState = selectedStateId ? currentStatesData[selectedStateId] || null : null;
   const currentSnapshot = HOURLY_TIMELINE[currentHourIndex];
+  const nationalReportingPct = isBacktestMode ? 100 : currentSnapshot.nationalReportingPct;
+  const isCountingActive = !isBacktestMode && nationalReportingPct > 0;
 
-  // Compute CET time representation
-  const cetHour = (19 + currentHourIndex + 6) % 24;
-  const currentCetLabel = `${String(cetHour).padStart(2, '0')}:00 CET`;
+  // Compute CET time representation accurately for each snapshot
+  const cetHourMap = ['21:00 CET (Tue)', '01:00 CET', '02:00 CET', '03:00 CET', '04:00 CET', '05:00 CET', '08:00 CET'];
+  const currentCetLabel = cetHourMap[currentHourIndex] || '00:00 CET';
 
   const handleExportCsv = () => {
     const rows = [
@@ -259,7 +265,7 @@ export default function App() {
     const encodedUri = encodeURI(csvContent);
     const link = document.createElement('a');
     link.setAttribute('href', encodedUri);
-    link.setAttribute('download', `election2026_${chamber}_${currentSnapshot.hourLabel.replace(/[\s:]/g, '_')}.csv`);
+    link.setAttribute('download', `election2026_${chamber}_${currentSnapshot.hourLabel.replace(/[\s:()]/g, '_')}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -268,32 +274,39 @@ export default function App() {
   return (
     <div className="h-screen w-screen overflow-hidden bg-[#07090e] text-slate-100 flex flex-col selection:bg-purple-500 selection:text-white">
       
-      {/* Top Header with European Clock and UX Dropdown */}
+      {/* Top Header with European Clock and Honest Status */}
       <Header
         onOpenApiModal={() => setIsApiModalOpen(true)}
         onOpenLiveAdapter={() => setIsLiveAdapterOpen(true)}
         onOpenTimelapseModal={() => setIsTimelapseModalOpen(true)}
         onOpenElectionScheduleModal={() => setIsElectionScheduleOpen(true)}
         isLivePolling={isLivePolling}
-        currentHourLabel={isBacktestMode ? '2022 Backtest Replay' : currentSnapshot.hourLabel}
+        isCountingActive={isCountingActive}
+        isBacktestMode={isBacktestMode}
+        currentHourLabel={isBacktestMode ? '2022 Certified Archive' : currentSnapshot.hourLabel}
         currentCetLabel={isBacktestMode ? '2022 Reference' : currentCetLabel}
         onExportCsv={handleExportCsv}
       />
 
-      {/* Chamber Balance & Mode Strip + Signal 1 (Progress) + Signal 2 (Top Surprises) */}
+      {/* Chamber Balance & Mode Strip */}
       <ChamberBalanceBar
         chamber={chamber}
         onChamberChange={(c) => setChamber(c)}
         mapMode={mapMode}
         onMapModeChange={(m) => setMapMode(m)}
         tally={chamberTally}
-        nationalReportingPct={isBacktestMode ? 100 : currentSnapshot.nationalReportingPct}
-        surprises={topSurprises}
-        selectedStateId={selectedStateId}
-        onSelectState={(id) => setSelectedStateId(selectedStateId === id ? null : id)}
+        nationalReportingPct={nationalReportingPct}
       />
 
-      {/* Main Full-Width Map Canvas Area — 100% Screen Width, Zero Cutoff */}
+      {/* Top Surprises Deck — Prominent, High-Contrast 6-Card Strip */}
+      <TopSurprisesDeck
+        surprises={topSurprises}
+        selectedStateId={selectedStateId}
+        onSelectState={(id: string) => setSelectedStateId(selectedStateId === id ? null : id)}
+        nationalReportingPct={nationalReportingPct}
+      />
+
+      {/* Main Full-Width Map Canvas Area */}
       <main className="relative flex-1 min-h-0 w-full flex flex-col overflow-hidden">
         
         {/* Backtest Notification Banner when active */}
@@ -303,13 +316,13 @@ export default function App() {
               <span className="font-bold uppercase tracking-wider font-mono bg-emerald-900 px-2 py-0.5 rounded text-[10px]">
                 2022 Historical Baseline Active
               </span>
-              <span className="text-[11px]">Displaying certified official results from the 2022 midterms across all 50 states as ground truth.</span>
+              <span className="text-[11px]">Displaying certified official results from the 2022 midterms across all 50 states as ground truth (GOP 222 - DEM 213 House).</span>
             </div>
             <button
               onClick={() => setIsBacktestMode(false)}
               className="text-xs font-semibold text-emerald-300 hover:text-white underline font-mono"
             >
-              Return to 2026 Live Desk
+              Return to 2026 Monitor
             </button>
           </div>
         )}
@@ -320,10 +333,11 @@ export default function App() {
           chamber={chamber}
           mapMode={mapMode}
           selectedStateId={selectedStateId}
-          onSelectState={(id) => setSelectedStateId(selectedStateId === id ? null : id)}
+          onSelectState={(id: string) => setSelectedStateId(selectedStateId === id ? null : id)}
+          surprises={topSurprises}
         />
 
-        {/* Floating Bauhaus State Inspector Card (Does NOT displace or compress map) */}
+        {/* Floating State Inspector Card */}
         {selectedState && (
           <StateDetailDrawer
             state={selectedState}

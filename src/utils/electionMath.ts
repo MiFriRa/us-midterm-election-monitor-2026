@@ -308,11 +308,10 @@ export function calculateNationalChamberTally(
   let flipsToGop = 0;
 
   if (chamber === 'senate') {
-    // Baseline Senate seats not up for election in 2026:
-    // Typically around 33 Dem / 32 GOP holdovers out of 100
-    // We add called races to holdover base:
-    let holdoverDem = 33;
-    let holdoverGop = 32;
+    // Baseline Senate seats not up for election in 2026 (Class 1 & Class 3):
+    // 34 Democratic/Independent caucusing + 33 Republican holdovers = 67 non-contested seats (plus 33 Class 2 seats = 100 total)
+    let holdoverDem = 34;
+    let holdoverGop = 33;
 
     results.forEach(st => {
       if (!st.hasSenateRace || !st.senate) return;
@@ -347,14 +346,14 @@ export function calculateNationalChamberTally(
       majorityThreshold: 51,
       flipsToDem,
       flipsToGop,
-      statusText: demSeats >= 51 ? 'Dems Hold Senate' : gopSeats >= 51 ? 'GOP Wins Senate' : 'Senate Battleground'
+      statusText: demSeats >= 51 ? 'Democrats Win Senate' : gopSeats >= 51 ? 'Republicans Hold Senate' : 'Senate Control Contested'
     };
   }
 
   if (chamber === 'governor') {
-    // 36 Governor seats in midterms + 14 holdover states
-    const holdoverDem = 10;
-    const holdoverGop = 4;
+    // 36 Governor seats in midterms + 14 holdover states (6 Dem, 8 GOP)
+    const holdoverDem = 6;
+    const holdoverGop = 8;
 
     results.forEach(st => {
       if (!st.hasGovernorRace || !st.governor) return;
@@ -388,13 +387,13 @@ export function calculateNationalChamberTally(
       majorityThreshold: 26,
       flipsToDem,
       flipsToGop,
-      statusText: demSeats >= 26 ? 'Dems Hold Gubernatorial Majority' : gopSeats >= 26 ? 'GOP Holds Gubernatorial Majority' : 'Contested Gubernatorial Control'
+      statusText: demSeats >= 26 ? 'Democrats Hold Gubernatorial Majority' : gopSeats >= 26 ? 'GOP Holds Gubernatorial Majority' : 'Contested Gubernatorial Control'
     };
   }
 
-  // House of Representatives (435 total seats)
+  // House of Representatives (435 voting seats; exclude DC non-voting delegate)
   results.forEach(st => {
-    if (!st.house) return;
+    if (!st.house || st.id === 'DC') return;
     demSeats += st.house.demSeats;
     gopSeats += st.house.gopSeats;
     uncalledSeats += st.house.uncalledSeats;
@@ -617,6 +616,7 @@ export interface ElectionSurprise {
 /**
  * Returns the top election surprises / largest swings compared to 2022 baseline.
  * Prioritizes flips, largest electoral swings, citizen/population weight, and active vote reporting.
+ * When no states have reported votes yet (pre-close), returns the top populous watch-states to monitor as polls close.
  */
 export function getTopElectionSurprises(
   states: StateElectionResult[],
@@ -624,6 +624,12 @@ export function getTopElectionSurprises(
   limit: number = 6
 ): ElectionSurprise[] {
   const surprises: Omit<ElectionSurprise, 'rank'>[] = [];
+  const anyReporting = states.some(st => {
+    if (chamber === 'senate') return (st.senate?.reportingPct || 0) > 0;
+    if (chamber === 'governor') return (st.governor?.reportingPct || 0) > 0;
+    if (chamber === 'house') return (st.house?.reportingPct || 0) > 0;
+    return false;
+  });
 
   states.forEach(st => {
     let repPct = 0;
@@ -641,9 +647,9 @@ export function getTopElectionSurprises(
     if (chamber === 'senate' && st.senate) {
       hasContest = true;
       repPct = st.senate.reportingPct;
-      const demPct = st.senate.demCandidate.pct;
-      const gopPct = st.senate.gopCandidate.pct;
-      margin2026 = Number((demPct - gopPct).toFixed(1));
+      const demPct = repPct > 0 ? st.senate.demCandidate.pct : 50;
+      const gopPct = repPct > 0 ? st.senate.gopCandidate.pct : 50;
+      margin2026 = repPct > 0 ? Number((demPct - gopPct).toFixed(1)) : 0;
       margin2022 = st.senate.historical2022.margin;
       votesCounted = st.senate.demCandidate.votes + st.senate.gopCandidate.votes;
 
@@ -665,9 +671,9 @@ export function getTopElectionSurprises(
     } else if (chamber === 'governor' && st.governor) {
       hasContest = true;
       repPct = st.governor.reportingPct;
-      const demPct = st.governor.demCandidate.pct;
-      const gopPct = st.governor.gopCandidate.pct;
-      margin2026 = Number((demPct - gopPct).toFixed(1));
+      const demPct = repPct > 0 ? st.governor.demCandidate.pct : 50;
+      const gopPct = repPct > 0 ? st.governor.gopCandidate.pct : 50;
+      margin2026 = repPct > 0 ? Number((demPct - gopPct).toFixed(1)) : 0;
       margin2022 = st.governor.historical2022.margin;
       votesCounted = st.governor.demCandidate.votes + st.governor.gopCandidate.votes;
 
@@ -687,12 +693,13 @@ export function getTopElectionSurprises(
         trailPct = demPct;
       }
     } else if (chamber === 'house' && st.house) {
+      if (st.id === 'DC') return;
       hasContest = true;
       repPct = st.house.reportingPct;
-      const totalPop = st.house.popularDemVotes + st.house.popularGopVotes;
+      const totalPop = repPct > 0 ? (st.house.popularDemVotes + st.house.popularGopVotes) : 0;
       const demPct = totalPop > 0 ? (st.house.popularDemVotes / totalPop) * 100 : 50;
       const gopPct = totalPop > 0 ? (st.house.popularGopVotes / totalPop) * 100 : 50;
-      margin2026 = Number((demPct - gopPct).toFixed(1));
+      margin2026 = totalPop > 0 ? Number((demPct - gopPct).toFixed(1)) : 0;
       margin2022 = st.house.historical2022.margin;
       votesCounted = totalPop;
 
@@ -714,34 +721,43 @@ export function getTopElectionSurprises(
     }
 
     if (!hasContest) return;
+    // Once counting is underway nationally, only rank states that actually have votes reporting
+    if (anyReporting && repPct === 0) return;
 
-    const swingValue = Number((margin2026 - margin2022).toFixed(1));
-    const isFlip = (margin2022 < 0 && margin2026 > 0) || (margin2022 > 0 && margin2026 < 0);
+    const swingValue = repPct > 0 ? Number((margin2026 - margin2022).toFixed(1)) : 0;
+    const isFlip = repPct > 0 && ((margin2022 < 0 && margin2026 > 0) || (margin2022 > 0 && margin2026 < 0));
     const flippedTo = isFlip ? (margin2026 > 0 ? 'DEM' : 'GOP') : undefined;
 
-    let significance = 'Outperforming 2022';
-    if (isFlip) {
-      significance = flippedTo === 'DEM' ? 'Flip to Dems' : 'Flip to GOP';
-    } else if (swingValue >= 4.0) {
-      significance = 'Strong Dem Surge';
-    } else if (swingValue <= -4.0) {
-      significance = 'Strong GOP Surge';
-    } else if (Math.abs(margin2026) <= 1.5) {
-      significance = 'Tossup Lock';
+    let significance = repPct === 0 ? 'Polls Open · Key Watch' : 'Outperforming 2022';
+    if (repPct > 0) {
+      if (isFlip) {
+        significance = flippedTo === 'DEM' ? 'Flip to Dems' : 'Flip to GOP';
+      } else if (swingValue >= 4.0) {
+        significance = 'Strong Dem Surge';
+      } else if (swingValue <= -4.0) {
+        significance = 'Strong GOP Surge';
+      } else if (Math.abs(margin2026) <= 2.0) {
+        significance = 'Razor-Thin Tossup';
+      }
     }
 
-    const swingLabel = swingValue >= 0 ? `+${swingValue} D` : `+${Math.abs(swingValue)} R`;
+    const swingLabel = repPct === 0
+      ? 'Polls Open'
+      : swingValue >= 0
+      ? `+${swingValue} D`
+      : `+${Math.abs(swingValue)} R`;
 
     // Impact scoring combines:
     // 1. Flip bonus (highest political shock)
     // 2. Absolute swing magnitude
-    // 3. Citizen / House seat representation
-    // 4. Active reporting bonus (states reporting votes in real time)
+    // 3. Citizen / House seat representation (heavily weighted so populous states surface prominently)
+    // 4. Closeness bonus for battlegrounds
+    const closenessBonus = Math.abs(margin2022) <= 8 ? (10 - Math.abs(margin2022)) * 5 : 0;
     const flipScore = isFlip ? 120 : 0;
-    const swingScore = Math.abs(swingValue) * 3;
-    const citizenWeightScore = Math.min(st.houseSeats, 30) * 1.8;
-    const activeReportingBonus = repPct > 0 ? 30 : 0;
-    const impactScore = flipScore + swingScore + citizenWeightScore + activeReportingBonus;
+    const swingScore = repPct > 0 ? Math.abs(swingValue) * 4.5 : 0;
+    const citizenWeightScore = Math.min(st.houseSeats, 40) * 2.5;
+    const activeReportingBonus = repPct > 0 ? 50 : 0;
+    const impactScore = flipScore + swingScore + citizenWeightScore + closenessBonus + activeReportingBonus;
 
     surprises.push({
       stateCode: st.stateCode,

@@ -69,14 +69,14 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
             type="text"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder={`Søg i amter i ${stateName}...`}
+            placeholder={`Search counties in ${stateName}...`}
             className="w-full bg-[#0a0d16] border border-slate-800 rounded-xl pl-9 pr-3 py-2 text-xs text-slate-200 placeholder-slate-400 focus:outline-none focus:border-purple-500 font-sans"
           />
         </div>
 
         {/* Minimalist Sort Options */}
         <div className="flex items-center gap-2 text-[11px] text-slate-400 overflow-x-auto pb-1">
-          <span className="text-slate-400 uppercase tracking-wider text-[10px]">Sortér:</span>
+          <span className="text-slate-400 uppercase tracking-wider text-[10px]">Sort:</span>
           <button
             onClick={() => toggleSort('totalVotes')}
             className={`px-2.5 py-1 rounded-lg transition-colors ${
@@ -85,7 +85,7 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
-            Stemmer {sortField === 'totalVotes' && (sortAsc ? '↑' : '↓')}
+            Votes {sortField === 'totalVotes' && (sortAsc ? '↑' : '↓')}
           </button>
           <button
             onClick={() => toggleSort('swing')}
@@ -95,7 +95,7 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
-            Sving {sortField === 'swing' && (sortAsc ? '↑' : '↓')}
+            Swing {sortField === 'swing' && (sortAsc ? '↑' : '↓')}
           </button>
           <button
             onClick={() => toggleSort('margin')}
@@ -105,7 +105,7 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
                 : 'text-slate-400 hover:text-white hover:bg-slate-900'
             }`}
           >
-            Margen {sortField === 'margin' && (sortAsc ? '↑' : '↓')}
+            Margin {sortField === 'margin' && (sortAsc ? '↑' : '↓')}
           </button>
         </div>
       </div>
@@ -128,7 +128,7 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-1.5 flex-1 min-w-0">
                   {county.isKeyCounty && (
-                    <span className="text-amber-400 text-xs font-bold shrink-0" title="Nøgleamt / Bellwether">
+                    <span className="text-amber-400 text-xs font-bold shrink-0" title="Key Bellwether County">
                       ★
                     </span>
                   )}
@@ -139,14 +139,14 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
 
                 <div className="flex items-center gap-3 shrink-0 text-xs">
                   <span className="text-slate-400 text-[11px]">
-                    {county.reportingPct}% optalt
+                    {county.reportingPct}% in
                   </span>
                   <span
                     className={`font-bold ${
                       isDemLeading ? 'text-blue-400' : isGopLeading ? 'text-red-400' : 'text-purple-400'
                     }`}
                   >
-                    {isDemLeading ? `D +${absMargin}` : isGopLeading ? `R +${absMargin}` : 'LIGE'}
+                    {isDemLeading ? `D +${absMargin}` : isGopLeading ? `R +${absMargin}` : 'TIED'}
                   </span>
                 </div>
               </div>
@@ -155,10 +155,10 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
               <div className="space-y-1">
                 <div className="flex items-center justify-between text-[11px] text-slate-300">
                   <span className="text-blue-400">
-                    {county.demPct}% <span className="text-slate-400">({county.demVotes.toLocaleString('da-DK')})</span>
+                    {county.demPct}% <span className="text-slate-400">({county.demVotes.toLocaleString('en-US')})</span>
                   </span>
                   <span className="text-red-400">
-                    {county.gopPct}% <span className="text-slate-400">({county.gopVotes.toLocaleString('da-DK')})</span>
+                    {county.gopPct}% <span className="text-slate-400">({county.gopVotes.toLocaleString('en-US')})</span>
                   </span>
                 </div>
                 <div className="h-1.5 w-full bg-slate-900 rounded-full overflow-hidden flex">
@@ -173,7 +173,7 @@ export const CountyBreakdownView: React.FC<CountyBreakdownViewProps> = ({
                   2022: {county.historical2022Margin > 0 ? `D +${county.historical2022Margin.toFixed(1)}` : `R +${Math.abs(county.historical2022Margin).toFixed(1)}`}
                 </span>
                 <span className={county.swingVs2022 > 0 ? 'text-blue-400' : county.swingVs2022 < 0 ? 'text-red-400' : 'text-slate-400'}>
-                  Sving: {county.swingVs2022 > 0 ? `+${county.swingVs2022.toFixed(1)} D` : county.swingVs2022 < 0 ? `+${Math.abs(county.swingVs2022).toFixed(1)} R` : '0.0'}
+                  Swing: {county.swingVs2022 > 0 ? `+${county.swingVs2022.toFixed(1)} D` : county.swingVs2022 < 0 ? `+${Math.abs(county.swingVs2022).toFixed(1)} R` : '0.0'}
                 </span>
               </div>
             </div>

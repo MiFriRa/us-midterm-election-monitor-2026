@@ -97,8 +97,8 @@ test('calculateNationalChamberTally tallies Senate seats and threshold', () => {
 
   const tally = calculateNationalChamberTally([sampleState], 'senate');
   assert.equal(tally.majorityThreshold, 51);
-  // Holdovers (33 Dem + 32 GOP) + 1 called Dem = 34 Dem
-  assert.equal(tally.demSeats, 34);
+  // Holdovers (34 Dem + 33 GOP) + 1 called Dem = 35 Dem
+  assert.equal(tally.demSeats, 35);
 });
 
 test('getPoliticalImpactAssessment correctly ranks tipping point states and calculates scores', () => {

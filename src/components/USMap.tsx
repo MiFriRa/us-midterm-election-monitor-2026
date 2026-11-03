@@ -170,24 +170,24 @@ export const USMap: React.FC<USMapProps> = ({
     const margin = Math.abs(demPct - gopPct);
     const isTossup = hasRace && margin <= 4.0;
 
-    if (hasRace) {
-      if (isTossup) {
-        // High-impact purple states get a subtle, elegant hairline border that draws the eye gently
-        stroke = '#c084fc'; // soft violet accent
-        strokeWidth = 1.6;
-        opacity = 1;
-      } else {
-    // Top Surprise highlights: High-visibility shock borders
-    if (surpriseItem && selectedStateId !== stateId) {
-      stroke = surpriseItem.isFlip ? '#10b981' : '#f59e0b'; // Emerald for flip, amber for major shift
-      strokeWidth = 2.4;
+    if (hasRace && isTossup) {
+      // High-impact purple states get a subtle, elegant hairline border that draws the eye gently
+      stroke = '#c084fc'; // soft violet accent
+      strokeWidth = 1.6;
       opacity = 1;
     }
 
-    // Selected state has crisp Bauhaus focus frame
+    // Top Surprise highlights: High-visibility shock borders
+    if (surpriseItem && selectedStateId !== stateId) {
+      stroke = surpriseItem.isFlip ? '#10b981' : '#f59e0b'; // Emerald for flip, amber for major shift
+      strokeWidth = 2.8;
+      opacity = 1;
+    }
+
+    // Selected state has crisp focus frame
     if (selectedStateId === stateId) {
       stroke = '#38bdf8'; // crisp sky-blue border
-      strokeWidth = 3.0;
+      strokeWidth = 3.2;
       opacity = 1;
     }
 
@@ -255,6 +255,7 @@ export const USMap: React.FC<USMapProps> = ({
     const swing = calculateSwing(demPct, gopPct, baseDem, baseGop);
     const margin = Number((demPct - gopPct).toFixed(1));
     const surprise = surpriseMap.get(stateId) || null;
+    const impact = getPoliticalImpactAssessment(data, chamber);
 
     setTooltip({
       state: data,
@@ -442,7 +443,7 @@ export const USMap: React.FC<USMapProps> = ({
             onMouseMove={handleMouseMove}
           >
             {EQUAL_AREA_TILES.map((tile) => {
-              const { fill, stroke, strokeWidth, opacity, hasRace, swingValue, isTossup } = getStateRenderProps(tile.id);
+              const { fill, stroke, strokeWidth, opacity, hasRace, swingValue, isTossup, surpriseItem } = getStateRenderProps(tile.id);
               
               // 12 columns x 8 rows grid with generous spacing
               const tileSize = 64;
@@ -476,13 +477,38 @@ export const USMap: React.FC<USMapProps> = ({
                     aria-label={`${tile.name} (${tile.id})`}
                   />
 
-                  {/* Clean, Bold Bauhaus State Code */}
+                  {/* Top Surprise Rank Badge directly on Cartogram Tile */}
+                  {surpriseItem && (
+                    <g className="pointer-events-none">
+                      <rect
+                        x={x + 4}
+                        y={y + 4}
+                        width={22}
+                        height={14}
+                        rx="3"
+                        fill={surpriseItem.isFlip ? '#059669' : '#d97706'}
+                      />
+                      <text
+                        x={x + 15}
+                        y={y + 14}
+                        textAnchor="middle"
+                        fill="#ffffff"
+                        fontSize="9"
+                        fontWeight="900"
+                        fontFamily="'JetBrains Mono', monospace"
+                      >
+                        #{surpriseItem.rank}
+                      </text>
+                    </g>
+                  )}
+
+                  {/* Clean, Bold State Code */}
                   <text
                     x={x + tileSize / 2}
-                    y={y + (showSwingBadges && hasRace ? 28 : 39)}
+                    y={y + ((showSwingBadges || surpriseItem) && hasRace ? 33 : 39)}
                     textAnchor="middle"
                     fill={hasRace ? (isTossup || isSelected ? '#ffffff' : '#f1f5f9') : '#64748b'}
-                    fontSize={showSwingBadges && hasRace ? "13" : "16"}
+                    fontSize={(showSwingBadges || surpriseItem) && hasRace ? "14" : "16"}
                     fontWeight="800"
                     fontFamily="'JetBrains Mono', monospace"
                     letterSpacing="0.04em"
@@ -491,19 +517,25 @@ export const USMap: React.FC<USMapProps> = ({
                     {tile.id}
                   </text>
 
-                  {/* Optional Delta (Only when user explicitly asks for numbers on the map) */}
-                  {showSwingBadges && hasRace && (
+                  {/* Swing Delta (Shown for Top Surprises automatically or when Labels On) */}
+                  {(showSwingBadges || surpriseItem) && hasRace && (
                     <text
                       x={x + tileSize / 2}
-                      y={y + 49}
+                      y={y + 52}
                       textAnchor="middle"
-                      fill={swingValue > 0 ? '#93c5fd' : swingValue < 0 ? '#fca5a5' : '#94a3b8'}
-                      fontSize="9"
-                      fontWeight="700"
+                      fill={surpriseItem ? '#fde68a' : swingValue > 0 ? '#93c5fd' : swingValue < 0 ? '#fca5a5' : '#94a3b8'}
+                      fontSize="9.5"
+                      fontWeight="800"
                       fontFamily="'JetBrains Mono', monospace"
                       className="pointer-events-none drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
                     >
-                      {swingValue > 0 ? `+${swingValue.toFixed(1)} D` : swingValue < 0 ? `+${Math.abs(swingValue).toFixed(1)} R` : '0.0'}
+                      {surpriseItem && surpriseItem.reportingPct === 0
+                        ? `${surpriseItem.houseSeats} Seats`
+                        : swingValue > 0
+                        ? `+${swingValue.toFixed(1)} D`
+                        : swingValue < 0
+                        ? `+${Math.abs(swingValue).toFixed(1)} R`
+                        : '0.0'}
                     </text>
                   )}
                 </g>
@@ -608,6 +640,14 @@ export const USMap: React.FC<USMapProps> = ({
         )}
 
         <div className="flex items-center gap-3 shrink-0">
+          <span className="flex items-center gap-1 text-emerald-300">
+            <span className="w-2.5 h-2.5 rounded-sm bg-slate-900 border-2 border-emerald-500" />
+            Top Flip
+          </span>
+          <span className="flex items-center gap-1 text-amber-300">
+            <span className="w-2.5 h-2.5 rounded-sm bg-slate-900 border-2 border-amber-500" />
+            Top Surprise
+          </span>
           <span className="flex items-center gap-1">
             <span className="w-2 h-2 rounded-sm bg-purple-600 ring-1 ring-purple-400/50" />
             Tossup

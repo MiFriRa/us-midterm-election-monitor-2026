@@ -72,8 +72,8 @@ export const StateDetailDrawer: React.FC<StateDetailDrawerProps> = ({
   } else {
     // House
     if (state.house) {
-      demName = `Dem delegation (${state.house.demSeats} mandater)`;
-      gopName = `GOP delegation (${state.house.gopSeats} mandater)`;
+      demName = `Dem Delegation (${state.house.demSeats} seats)`;
+      gopName = `GOP Delegation (${state.house.gopSeats} seats)`;
       demVotes = state.house.popularDemVotes;
       gopVotes = state.house.popularGopVotes;
       const total = demVotes + gopVotes;

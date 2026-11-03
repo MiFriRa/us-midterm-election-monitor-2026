@@ -39,7 +39,7 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
   return (
     <section className="bg-[#080b12] border-b border-slate-800/80 px-4 sm:px-6 py-2 shrink-0 z-20 space-y-2">
       
-      {/* Row 1: Chamber Switcher | Signal 1: Counting Progress | Map Layer */}
+      {/* Row 1: Chamber Switcher | Counting Progress | Map Layer */}
       <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
         
         {/* Left: Chamber Segmented Control */}
@@ -76,12 +76,12 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
           </button>
         </div>
 
-        {/* Center: SIGNAL 1 — COUNTING PROGRESS (Clear, Authoritative Bauhaus Gauge) */}
+        {/* Center: COUNTING PROGRESS */}
         <div className="flex items-center gap-3 bg-slate-900/80 px-3.5 py-1 rounded-lg border border-slate-800 text-xs font-mono">
           <div className="flex items-center gap-1.5">
             <Clock className="w-3.5 h-3.5 text-purple-400" />
             <span className="text-slate-400 uppercase tracking-wider text-[11px] font-bold">
-              Counting Progress:
+              {nationalReportingPct > 0 ? 'Counting Progress:' : 'Polls Status:'}
             </span>
           </div>
 
@@ -99,7 +99,9 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
 
           <span className="text-slate-600">·</span>
           <span className="text-slate-300 text-[11px] hidden sm:inline">
-            {calledSeats}/{total} called ({tally.uncalledSeats} pending)
+            {nationalReportingPct > 0
+              ? `${calledSeats}/${total} called (${tally.uncalledSeats} pending)`
+              : `Awaiting first poll closures (00:00 CET / 18:00 EST)`}
           </span>
         </div>
 
@@ -142,7 +144,7 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
 
       </div>
 
-      {/* Row 2: Majority Balance Gauge (Die Waage) */}
+      {/* Row 2: Majority Balance Gauge */}
       <div className="flex items-center gap-3">
         
         {/* Dem Tally */}
@@ -154,16 +156,16 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
           )}
         </div>
 
-        {/* Razor-Sharp Majority Bar */}
+        {/* Majority Bar */}
         <div className="relative flex-1 h-3.5 bg-slate-900 rounded-sm overflow-hidden flex border border-slate-800">
           {/* Democratic segment */}
           <div
             className="h-full bg-blue-500 transition-all duration-500"
             style={{ width: `${demWidth}%` }}
           />
-          {/* Contested / Purple middle */}
+          {/* Contested / Uncalled middle */}
           <div
-            className="h-full bg-gradient-to-r from-blue-700 via-purple-600 to-red-700 transition-all duration-500"
+            className="h-full bg-gradient-to-r from-blue-900/60 via-purple-800/60 to-red-900/60 transition-all duration-500"
             style={{ width: `${Math.max(0, 100 - demWidth - gopWidth)}%` }}
           />
           {/* Republican segment */}
@@ -189,10 +191,14 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
           <span className="text-lg sm:text-xl font-black text-red-400">{tally.gopSeats}</span>
         </div>
 
-        {/* Majority Target Label */}
-        <div className="hidden md:flex items-center gap-1.5 text-[11px] font-mono text-slate-300 bg-slate-900 px-2 py-0.5 rounded border border-slate-800 shrink-0">
+        {/* Majority Target & Status Label */}
+        <div className="hidden md:flex items-center gap-2 text-[11px] font-mono text-slate-300 bg-slate-900 px-2.5 py-0.5 rounded border border-slate-800 shrink-0">
           <span className="font-bold text-white">{tally.majorityThreshold}</span>
           <span className="text-slate-400">TO WIN</span>
+          <span className="text-slate-600">·</span>
+          <span className={tally.gopSeats >= tally.majorityThreshold ? 'text-red-400 font-bold' : tally.demSeats >= tally.majorityThreshold ? 'text-blue-400 font-bold' : 'text-purple-300 font-semibold'}>
+            {tally.statusText}
+          </span>
         </div>
 
       </div>

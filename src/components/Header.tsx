@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Radio, RefreshCw, Layers, Download, Video, Settings, ChevronDown, Database, Info, ExternalLink, Check } from 'lucide-react';
+import { Radio, RefreshCw, Layers, Download, Video, Settings, ChevronDown, Info, Clock } from 'lucide-react';
 
 interface HeaderProps {
   onOpenApiModal: () => void;
@@ -7,6 +7,8 @@ interface HeaderProps {
   onOpenTimelapseModal: () => void;
   onOpenElectionScheduleModal: () => void;
   isLivePolling: boolean;
+  isCountingActive: boolean;
+  isBacktestMode: boolean;
   currentHourLabel: string;
   currentCetLabel: string;
   onExportCsv: () => void;
@@ -18,6 +20,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenTimelapseModal,
   onOpenElectionScheduleModal,
   isLivePolling,
+  isCountingActive,
+  isBacktestMode,
   currentHourLabel,
   currentCetLabel,
   onExportCsv
@@ -49,28 +53,39 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="text-sm sm:text-base font-extrabold tracking-tight text-white whitespace-nowrap font-mono">
               US Midterm Election Monitor <span className="text-purple-400">2026</span>
             </span>
-            <span className="text-[10px] text-slate-400 font-mono hidden lg:inline">
-              Bauhaus Information Cockpit
-            </span>
           </div>
         </div>
 
-        {/* Live Desk Clock (CET & EST) */}
+        {/* Honest Status & Clock (CET & EST) */}
         <div className="flex items-center gap-2 text-xs font-mono text-slate-300 bg-slate-900/90 px-3 py-1 rounded-md border border-slate-800">
-          <span className="flex h-2 w-2 relative">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-          </span>
-          <span className="font-bold text-slate-200">LIVE</span>
+          {isBacktestMode ? (
+            <>
+              <span className="inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
+              <span className="font-bold text-blue-300">2022 CERTIFIED BASELINE</span>
+            </>
+          ) : isCountingActive ? (
+            <>
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+              </span>
+              <span className="font-bold text-emerald-300">LIVE COUNTING</span>
+            </>
+          ) : (
+            <>
+              <Clock className="w-3.5 h-3.5 text-amber-400" />
+              <span className="font-bold text-amber-300">POLLS OPEN · AWAITING COUNT</span>
+            </>
+          )}
           <span className="text-slate-600">·</span>
           <span className="text-purple-300 font-semibold">{currentCetLabel}</span>
-          <span className="text-slate-400 text-[11px]">({currentHourLabel})</span>
+          <span className="text-slate-400 text-[11px] hidden sm:inline">({currentHourLabel})</span>
         </div>
 
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
           
-          {/* Timelapse Video Studio Button (Primary User Action) */}
+          {/* Timelapse Video Studio Button */}
           <button
             onClick={onOpenTimelapseModal}
             className="px-3.5 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap"
@@ -81,14 +96,14 @@ export const Header: React.FC<HeaderProps> = ({
             <span className="sm:hidden">Video</span>
           </button>
 
-          {/* Tools & Advanced Settings Dropdown Menu (Hides technical clutter) */}
+          {/* Tools & Data Sources Dropdown Menu */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsToolsOpen(prev => !prev)}
               className="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap"
             >
               <Settings className="w-3.5 h-3.5 text-slate-400" />
-              <span>Tools</span>
+              <span>Data & Tools</span>
               <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
             </button>
 
@@ -123,15 +138,15 @@ export const Header: React.FC<HeaderProps> = ({
                   <RefreshCw className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
                   <div>
                     <div className="font-bold text-slate-100 flex items-center gap-1.5">
-                      <span>Live Adapter & Ingestion</span>
-                      {isLivePolling && (
+                      <span>Data Sources & Live Ingestion</span>
+                      {isLivePolling && isCountingActive && (
                         <span className="px-1 py-0.2 bg-emerald-950 text-emerald-400 text-[9px] font-mono rounded border border-emerald-800">
                           Active
                         </span>
                       )}
                     </div>
                     <div className="text-[11px] text-slate-400">
-                      Configure automated polling feeds, latency test and cache buffers.
+                      Connect real JSON endpoint or inspect 2022 FEC/MIT Lab baseline & 2026 forecast.
                     </div>
                   </div>
                 </button>
