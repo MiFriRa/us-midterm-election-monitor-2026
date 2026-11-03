@@ -15,6 +15,13 @@ import {
   calculateNationalChamberTally,
   getTopElectionSurprises
 } from './utils/electionMath';
+import {
+  LiveFeedProvider,
+  LiveSyncResponse,
+  fetchLiveViaGeminiSearch,
+  fetchFromCustomJsonEndpoint,
+  applyLivePatchesToStates
+} from './utils/liveElectionFeed';
 
 export default function App() {
   const [chamber, setChamber] = useState<ChamberType>('senate');
@@ -33,9 +40,34 @@ export default function App() {
 
   // Live adapter engine state (default false until counting starts or user enables live polling)
   const [isLivePolling, setIsLivePolling] = useState<boolean>(false);
-  const [pollingIntervalSeconds, setPollingIntervalSeconds] = useState<number>(30);
-  const [lastSyncTime, setLastSyncTime] = useState<Date>(new Date());
+  const [pollingIntervalSeconds, setPollingIntervalSeconds] = useState<number>(60);
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [recordedSnapshotsCount, setRecordedSnapshotsCount] = useState<number>(HOURLY_TIMELINE.length);
+  const [selectedFeed, setSelectedFeed] = useState<LiveFeedProvider>('gemini_live_search');
+  const [customUrl, setCustomUrl] = useState<string>('https://api.elections.org/v2/midterms/2026/live.json');
+  const [geminiApiKey, setGeminiApiKey] = useState<string>(() => {
+    try {
+      return localStorage.getItem('GEMINI_API_KEY') || '';
+    } catch {
+      return '';
+    }
+  });
+  const [liveSyncData, setLiveSyncData] = useState<LiveSyncResponse | null>(null);
+  const [isSyncingLive, setIsSyncingLive] = useState<boolean>(false);
+  const [lastSyncStatus, setLastSyncStatus] = useState<{ ok: boolean; message: string; latencyMs?: number } | null>(null);
+
+  const handleGeminiApiKeyChange = (key: string) => {
+    setGeminiApiKey(key);
+    try {
+      if (key) {
+        localStorage.setItem('GEMINI_API_KEY', key);
+      } else {
+        localStorage.removeItem('GEMINI_API_KEY');
+      }
+    } catch {
+      // Ignore storage error
+    }
+  };
 
   // Auto-advance timeline when isPlaying is active
   useEffect(() => {
@@ -52,24 +84,66 @@ export default function App() {
     return () => clearInterval(interval);
   }, [isPlaying]);
 
+  const handleManualSync = useCallback(async () => {
+    if (selectedFeed === 'simulation') {
+      setLastSyncTime(new Date());
+      setLastSyncStatus({
+        ok: true,
+        message: 'Simulation mode active. Use the bottom timeline bar to step through election night snapshots.',
+        latencyMs: 12
+      });
+      return;
+    }
+
+    setIsSyncingLive(true);
+    const startMs = performance.now();
+    try {
+      let response: LiveSyncResponse;
+      if (selectedFeed === 'gemini_live_search') {
+        response = await fetchLiveViaGeminiSearch(geminiApiKey);
+      } else {
+        response = await fetchFromCustomJsonEndpoint(customUrl);
+      }
+
+      const latencyMs = Math.round(performance.now() - startMs);
+      setLiveSyncData(response);
+      setIsBacktestMode(false);
+      setLastSyncTime(new Date());
+      setRecordedSnapshotsCount(prev => prev + 1);
+      setLastSyncStatus({
+        ok: true,
+        message: `Live sync complete (${response.statesUpdated} states processed · National reporting: ${response.nationalReportingPct}%). Source: ${response.sourceSummary}`,
+        latencyMs
+      });
+    } catch (err: any) {
+      const latencyMs = Math.round(performance.now() - startMs);
+      setLastSyncStatus({
+        ok: false,
+        message: err?.message || 'Failed to fetch live election feed. Check API key or endpoint URL.',
+        latencyMs
+      });
+      setIsLiveAdapterOpen(true);
+    } finally {
+      setIsSyncingLive(false);
+    }
+  }, [selectedFeed, geminiApiKey, customUrl]);
+
   // Live adapter polling interval timer
   useEffect(() => {
     if (!isLivePolling) return;
     const interval = setInterval(() => {
-      setLastSyncTime(new Date());
-      setRecordedSnapshotsCount(prev => prev + 1);
+      handleManualSync();
     }, pollingIntervalSeconds * 1000);
     return () => clearInterval(interval);
-  }, [isLivePolling, pollingIntervalSeconds]);
+  }, [isLivePolling, pollingIntervalSeconds, handleManualSync]);
 
-  const handleManualSync = useCallback(async () => {
-    await new Promise(r => setTimeout(r, 600));
-    setLastSyncTime(new Date());
-    setRecordedSnapshotsCount(prev => prev + 1);
-  }, []);
-
-  // Derived state data factoring in hourly simulation progress or backtest mode
+  // Derived state data factoring in live sync data, hourly simulation progress, or backtest mode
   const currentStatesData = useMemo<Record<string, StateElectionResult>>(() => {
+    // If real live data has been fetched and we are not in backtest or simulation mode
+    if (!isBacktestMode && liveSyncData && selectedFeed !== 'simulation') {
+      return applyLivePatchesToStates(BASE_STATES, liveSyncData.patches);
+    }
+
     const dataMap: Record<string, StateElectionResult> = {};
     const snapshot = HOURLY_TIMELINE[currentHourIndex];
 
@@ -169,7 +243,7 @@ export default function App() {
     });
 
     return dataMap;
-  }, [currentHourIndex, isBacktestMode]);
+  }, [currentHourIndex, isBacktestMode, liveSyncData, selectedFeed]);
 
   // Compute National tally for selected chamber
   const chamberTally = useMemo(() => {
@@ -183,12 +257,24 @@ export default function App() {
 
   const selectedState = selectedStateId ? currentStatesData[selectedStateId] || null : null;
   const currentSnapshot = HOURLY_TIMELINE[currentHourIndex];
-  const nationalReportingPct = isBacktestMode ? 100 : currentSnapshot.nationalReportingPct;
+  const isLiveFeedActive = !isBacktestMode && liveSyncData !== null && selectedFeed !== 'simulation';
+  const nationalReportingPct = isBacktestMode
+    ? 100
+    : isLiveFeedActive
+    ? liveSyncData.nationalReportingPct
+    : currentSnapshot.nationalReportingPct;
   const isCountingActive = !isBacktestMode && nationalReportingPct > 0;
 
   // Compute CET time representation accurately for each snapshot
   const cetHourMap = ['21:00 CET (Tue)', '01:00 CET', '02:00 CET', '03:00 CET', '04:00 CET', '05:00 CET', '08:00 CET'];
-  const currentCetLabel = cetHourMap[currentHourIndex] || '00:00 CET';
+  const currentCetLabel = isLiveFeedActive
+    ? `LIVE SYNC (${new Date(liveSyncData.timestamp).toLocaleTimeString('da-DK', { hour: '2-digit', minute: '2-digit' })} CET)`
+    : cetHourMap[currentHourIndex] || '00:00 CET';
+  const currentHourLabel = isBacktestMode
+    ? '2022 Certified Archive'
+    : isLiveFeedActive
+    ? liveSyncData.sourceSummary
+    : currentSnapshot.hourLabel;
 
   const handleExportCsv = () => {
     const rows = [
@@ -280,11 +366,13 @@ export default function App() {
         onOpenLiveAdapter={() => setIsLiveAdapterOpen(true)}
         onOpenTimelapseModal={() => setIsTimelapseModalOpen(true)}
         onOpenElectionScheduleModal={() => setIsElectionScheduleOpen(true)}
+        onSyncNow={handleManualSync}
+        isSyncingLive={isSyncingLive}
         isLivePolling={isLivePolling}
         isCountingActive={isCountingActive}
         isBacktestMode={isBacktestMode}
-        currentHourLabel={isBacktestMode ? '2022 Certified Archive' : currentSnapshot.hourLabel}
-        currentCetLabel={isBacktestMode ? '2022 Reference' : currentCetLabel}
+        currentHourLabel={currentHourLabel}
+        currentCetLabel={currentCetLabel}
         onExportCsv={handleExportCsv}
       />
 
@@ -353,9 +441,13 @@ export default function App() {
         onHourChange={(idx) => {
           setCurrentHourIndex(idx);
           setIsBacktestMode(false);
+          setLiveSyncData(null);
         }}
         isPlaying={isPlaying}
-        onTogglePlay={() => setIsPlaying(prev => !prev)}
+        onTogglePlay={() => {
+          setLiveSyncData(null);
+          setIsPlaying(prev => !prev);
+        }}
         isBacktestMode={isBacktestMode}
         onToggleBacktestMode={() => setIsBacktestMode(prev => !prev)}
       />
@@ -366,7 +458,10 @@ export default function App() {
         onClose={() => setIsTimelapseModalOpen(false)}
         snapshots={HOURLY_TIMELINE}
         currentHourIndex={currentHourIndex}
-        onSetHourIndex={(idx) => setCurrentHourIndex(idx)}
+        onSetHourIndex={(idx) => {
+          setLiveSyncData(null);
+          setCurrentHourIndex(idx);
+        }}
       />
 
       {/* Live Data Adapter Modal */}
@@ -380,6 +475,13 @@ export default function App() {
         lastSyncTime={lastSyncTime}
         onManualSync={handleManualSync}
         recordedSnapshotsCount={recordedSnapshotsCount}
+        selectedFeed={selectedFeed}
+        onSelectFeed={(feed) => setSelectedFeed(feed)}
+        customUrl={customUrl}
+        onCustomUrlChange={(url) => setCustomUrl(url)}
+        geminiApiKey={geminiApiKey}
+        onGeminiApiKeyChange={handleGeminiApiKeyChange}
+        lastSyncStatus={lastSyncStatus}
       />
 
       {/* Election Schedule & CET Times Modal */}

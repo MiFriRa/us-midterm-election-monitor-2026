@@ -6,6 +6,8 @@ interface HeaderProps {
   onOpenLiveAdapter: () => void;
   onOpenTimelapseModal: () => void;
   onOpenElectionScheduleModal: () => void;
+  onSyncNow: () => void;
+  isSyncingLive: boolean;
   isLivePolling: boolean;
   isCountingActive: boolean;
   isBacktestMode: boolean;
@@ -19,6 +21,8 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenLiveAdapter,
   onOpenTimelapseModal,
   onOpenElectionScheduleModal,
+  onSyncNow,
+  isSyncingLive,
   isLivePolling,
   isCountingActive,
   isBacktestMode,
@@ -96,10 +100,22 @@ export const Header: React.FC<HeaderProps> = ({
         {/* Action Controls */}
         <div className="flex items-center gap-2 shrink-0">
           
+          {/* One-Click Live Data Fetch Button */}
+          <button
+            onClick={onSyncNow}
+            disabled={isSyncingLive}
+            className="px-3 py-1.5 text-xs font-bold text-emerald-100 bg-emerald-700 hover:bg-emerald-600 border border-emerald-500/60 rounded-lg transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap disabled:opacity-50 cursor-pointer"
+            title="Fetch latest live 2026 election results now (or open Live Ingestion settings)"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingLive ? 'animate-spin' : ''}`} />
+            <span className="hidden sm:inline">{isSyncingLive ? 'Fetching Live...' : 'Fetch Live Data'}</span>
+            <span className="sm:hidden">Live</span>
+          </button>
+
           {/* Timelapse Video Studio Button */}
           <button
             onClick={onOpenTimelapseModal}
-            className="px-3.5 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap"
+            className="px-3.5 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
             title="Watch timelapse replay and export WebM video"
           >
             <Video className="w-4 h-4" />

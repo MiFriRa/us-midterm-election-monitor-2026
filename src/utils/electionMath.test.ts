@@ -193,4 +193,65 @@ test('getTopElectionSurprises prioritizes flips and largest swings vs 2022', () 
   assert.equal(surprises[0].significance, 'Flip to Dems');
 });
 
+import { parseExternalElectionJson, applyLivePatchesToStates } from './liveElectionFeed.js';
+
+test('parseExternalElectionJson and applyLivePatchesToStates normalize and apply live returns accurately', () => {
+  const sampleExternalPayload = {
+    nationalReportingPct: 38,
+    states: [
+      {
+        stateCode: 'GA',
+        reportingPct: 64,
+        demVotes: 1540000,
+        gopVotes: 1490000,
+        status: 'uncalled',
+        houseDemSeats: 5,
+        houseGopSeats: 9
+      }
+    ]
+  };
+
+  const parsed = parseExternalElectionJson(sampleExternalPayload);
+  assert.equal(parsed.nationalReportingPct, 38);
+  assert.ok(parsed.patches['GA']);
+  assert.equal(parsed.patches['GA'].reportingPct, 64);
+  assert.equal(parsed.patches['GA'].senate?.demVotes, 1540000);
+  assert.equal(parsed.patches['GA'].house?.gopSeats, 9);
+
+  const baseStates: StateElectionResult[] = [
+    {
+      id: 'GA',
+      stateCode: 'GA',
+      stateName: 'Georgia',
+      hasSenateRace: true,
+      hasGovernorRace: true,
+      houseSeats: 14,
+      senate: {
+        demCandidate: { name: 'Jon Ossoff', party: 'DEM', votes: 0, pct: 50 },
+        gopCandidate: { name: 'GOP', party: 'GOP', votes: 0, pct: 50 },
+        otherVotes: 0,
+        reportingPct: 0,
+        status: 'uncalled',
+        historical2022: { demPct: 51.4, gopPct: 48.6, margin: 2.8, winner: 'dem', reportingPct: 100 }
+      },
+      house: {
+        totalSeats: 14,
+        demSeats: 0,
+        gopSeats: 0,
+        uncalledSeats: 14,
+        popularDemVotes: 0,
+        popularGopVotes: 0,
+        reportingPct: 0,
+        historical2022: { demSeats: 5, gopSeats: 9, demPopularPct: 47.5, gopPopularPct: 52.5, margin: -5.0 }
+      }
+    }
+  ];
+
+  const patched = applyLivePatchesToStates(baseStates, parsed.patches);
+  assert.equal(patched['GA'].senate?.reportingPct, 64);
+  assert.equal(patched['GA'].senate?.demCandidate.votes, 1540000);
+  assert.equal(patched['GA'].house?.gopSeats, 9);
+  assert.equal(patched['GA'].house?.uncalledSeats, 0);
+});
+
 
