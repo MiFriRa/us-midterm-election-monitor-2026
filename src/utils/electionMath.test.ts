@@ -191,6 +191,15 @@ test('getTopElectionSurprises prioritizes flips and largest swings vs 2022', () 
   assert.equal(surprises[0].isFlip, true);
   assert.equal(surprises[0].swingValue, 9.0);
   assert.equal(surprises[0].significance, 'Flip to Dems');
+
+  // When 0% is counted, getTopElectionSurprises must return an empty array []
+  const uncountedStates: StateElectionResult[] = [
+    {
+      ...states[0],
+      senate: { ...states[0].senate!, reportingPct: 0, demCandidate: { ...states[0].senate!.demCandidate, votes: 0 }, gopCandidate: { ...states[0].senate!.gopCandidate, votes: 0 } }
+    }
+  ];
+  assert.equal(getTopElectionSurprises(uncountedStates, 'senate').length, 0);
 });
 
 import { parseExternalElectionJson, applyLivePatchesToStates } from './liveElectionFeed.js';

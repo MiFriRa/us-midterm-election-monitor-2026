@@ -720,44 +720,34 @@ export function getTopElectionSurprises(
       }
     }
 
-    if (!hasContest) return;
-    // Once counting is underway nationally, only rank states that actually have votes reporting
-    if (anyReporting && repPct === 0) return;
+    // Never return a state as a "surprise" if 0% of votes have been counted!
+    if (!hasContest || repPct <= 0) return;
 
-    const swingValue = repPct > 0 ? Number((margin2026 - margin2022).toFixed(1)) : 0;
-    const isFlip = repPct > 0 && ((margin2022 < 0 && margin2026 > 0) || (margin2022 > 0 && margin2026 < 0));
+    const swingValue = Number((margin2026 - margin2022).toFixed(1));
+    const isFlip = (margin2022 < 0 && margin2026 > 0) || (margin2022 > 0 && margin2026 < 0);
     const flippedTo = isFlip ? (margin2026 > 0 ? 'DEM' : 'GOP') : undefined;
 
-    let significance = repPct === 0 ? 'Polls Open · Key Watch' : 'Outperforming 2022';
-    if (repPct > 0) {
-      if (isFlip) {
-        significance = flippedTo === 'DEM' ? 'Flip to Dems' : 'Flip to GOP';
-      } else if (swingValue >= 4.0) {
-        significance = 'Strong Dem Surge';
-      } else if (swingValue <= -4.0) {
-        significance = 'Strong GOP Surge';
-      } else if (Math.abs(margin2026) <= 2.0) {
-        significance = 'Razor-Thin Tossup';
-      }
+    let significance = 'Shift vs. 2022';
+    if (isFlip) {
+      significance = flippedTo === 'DEM' ? 'Flip to Dems' : 'Flip to GOP';
+    } else if (swingValue >= 3.5) {
+      significance = 'Dem Surge';
+    } else if (swingValue <= -3.5) {
+      significance = 'GOP Surge';
+    } else if (Math.abs(margin2026) <= 2.0) {
+      significance = 'Tossup';
     }
 
-    const swingLabel = repPct === 0
-      ? 'Polls Open'
-      : swingValue >= 0
-      ? `+${swingValue} D`
-      : `+${Math.abs(swingValue)} R`;
+    const swingLabel = swingValue >= 0 ? `+${swingValue} D` : `+${Math.abs(swingValue)} R`;
 
     // Impact scoring combines:
     // 1. Flip bonus (highest political shock)
     // 2. Absolute swing magnitude
     // 3. Citizen / House seat representation (heavily weighted so populous states surface prominently)
-    // 4. Closeness bonus for battlegrounds
-    const closenessBonus = Math.abs(margin2022) <= 8 ? (10 - Math.abs(margin2022)) * 5 : 0;
     const flipScore = isFlip ? 120 : 0;
-    const swingScore = repPct > 0 ? Math.abs(swingValue) * 4.5 : 0;
+    const swingScore = Math.abs(swingValue) * 6;
     const citizenWeightScore = Math.min(st.houseSeats, 40) * 2.5;
-    const activeReportingBonus = repPct > 0 ? 50 : 0;
-    const impactScore = flipScore + swingScore + citizenWeightScore + closenessBonus + activeReportingBonus;
+    const impactScore = flipScore + swingScore + citizenWeightScore;
 
     surprises.push({
       stateCode: st.stateCode,

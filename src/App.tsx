@@ -245,12 +245,20 @@ export default function App() {
     return dataMap;
   }, [currentHourIndex, isBacktestMode, liveSyncData, selectedFeed]);
 
-  // Compute National tally for selected chamber
-  const chamberTally = useMemo(() => {
-    return calculateNationalChamberTally(Object.values(currentStatesData), chamber);
-  }, [currentStatesData, chamber]);
+  // Compute National tally for all three chambers simultaneously
+  const senateTally = useMemo(() => {
+    return calculateNationalChamberTally(Object.values(currentStatesData), 'senate');
+  }, [currentStatesData]);
 
-  // Compute Top Surprises (Largest swings / Flips vs 2022 + Populous Watchlist)
+  const houseTally = useMemo(() => {
+    return calculateNationalChamberTally(Object.values(currentStatesData), 'house');
+  }, [currentStatesData]);
+
+  const governorTally = useMemo(() => {
+    return calculateNationalChamberTally(Object.values(currentStatesData), 'governor');
+  }, [currentStatesData]);
+
+  // Compute Top Surprises (ONLY when counting has started — empty when 0% counted)
   const topSurprises = useMemo(() => {
     return getTopElectionSurprises(Object.values(currentStatesData), chamber, 6);
   }, [currentStatesData, chamber]);
@@ -376,63 +384,65 @@ export default function App() {
         onExportCsv={handleExportCsv}
       />
 
-      {/* Chamber Balance & Mode Strip */}
+      {/* 1) Status på optælling + 3) Fordeling af pladser i Senate, House & Governors */}
       <ChamberBalanceBar
         chamber={chamber}
         onChamberChange={(c) => setChamber(c)}
         mapMode={mapMode}
         onMapModeChange={(m) => setMapMode(m)}
-        tally={chamberTally}
+        senateTally={senateTally}
+        houseTally={houseTally}
+        governorTally={governorTally}
         nationalReportingPct={nationalReportingPct}
       />
 
-      {/* Top Surprises Deck — Prominent, High-Contrast 6-Card Strip */}
-      <TopSurprisesDeck
-        surprises={topSurprises}
-        selectedStateId={selectedStateId}
-        onSelectState={(id: string) => setSelectedStateId(selectedStateId === id ? null : id)}
-        nationalReportingPct={nationalReportingPct}
-      />
-
-      {/* Main Full-Width Map Canvas Area */}
-      <main className="relative flex-1 min-h-0 w-full flex flex-col overflow-hidden">
+      {/* Main Split Workspace: Big USA Map (Left) + 2) Biggest Surprises vs. 2022 (Right Sidebar) */}
+      <main className="relative flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden">
         
-        {/* Backtest Notification Banner when active */}
-        {isBacktestMode && (
-          <div className="absolute top-2 left-4 right-4 z-20 bg-emerald-950/90 border border-emerald-800/80 rounded-xl p-2 px-3 flex items-center justify-between text-xs text-emerald-200 backdrop-blur-md">
-            <div className="flex items-center gap-2">
-              <span className="font-bold uppercase tracking-wider font-mono bg-emerald-900 px-2 py-0.5 rounded text-[10px]">
-                2022 Historical Baseline Active
+        {/* Left: Full-Height USA Map Canvas */}
+        <div className="relative flex-1 min-h-0 h-full flex flex-col overflow-hidden">
+          {isBacktestMode && (
+            <div className="absolute top-14 left-4 right-4 z-20 bg-emerald-950/90 border border-emerald-800/80 rounded-xl p-2 px-3 flex items-center justify-between text-xs text-emerald-200 backdrop-blur-md">
+              <span className="font-bold font-mono">
+                2022 Certified Baseline Active (GOP 222 - DEM 213 House)
               </span>
-              <span className="text-[11px]">Displaying certified official results from the 2022 midterms across all 50 states as ground truth (GOP 222 - DEM 213 House).</span>
+              <button
+                onClick={() => setIsBacktestMode(false)}
+                className="text-xs font-semibold text-emerald-300 hover:text-white underline font-mono cursor-pointer"
+              >
+                Return to 2026 Monitor
+              </button>
             </div>
-            <button
-              onClick={() => setIsBacktestMode(false)}
-              className="text-xs font-semibold text-emerald-300 hover:text-white underline font-mono"
-            >
-              Return to 2026 Monitor
-            </button>
-          </div>
-        )}
+          )}
 
-        {/* Full-Width Map Canvas with auto-scaling to viewport */}
-        <USMap
-          statesData={currentStatesData}
-          chamber={chamber}
-          mapMode={mapMode}
+          <USMap
+            statesData={currentStatesData}
+            chamber={chamber}
+            mapMode={mapMode}
+            onMapModeChange={(m) => setMapMode(m)}
+            selectedStateId={selectedStateId}
+            onSelectState={(id: string) => setSelectedStateId(selectedStateId === id ? null : id)}
+            surprises={topSurprises}
+          />
+
+          {/* Floating State Inspector Card */}
+          {selectedState && (
+            <StateDetailDrawer
+              state={selectedState}
+              chamber={chamber}
+              onClose={() => setSelectedStateId(null)}
+            />
+          )}
+        </div>
+
+        {/* Right: 2) Biggest Surprises Relative to 2022 */}
+        <TopSurprisesDeck
+          surprises={topSurprises}
           selectedStateId={selectedStateId}
           onSelectState={(id: string) => setSelectedStateId(selectedStateId === id ? null : id)}
-          surprises={topSurprises}
+          nationalReportingPct={nationalReportingPct}
         />
 
-        {/* Floating State Inspector Card */}
-        {selectedState && (
-          <StateDetailDrawer
-            state={selectedState}
-            chamber={chamber}
-            onClose={() => setSelectedStateId(null)}
-          />
-        )}
       </main>
 
       {/* Hourly Timeline Controller */}
