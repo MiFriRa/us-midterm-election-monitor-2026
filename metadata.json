@@ -1,0 +1,8 @@
+{
+  "name": "US Midterm Election Monitor 2026",
+  "description": "Live monitoring and historical backtesting workstation for the 2026 US Midterms with color-blended purple/red/blue cartography, chamber majorities, and swing analysis.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
