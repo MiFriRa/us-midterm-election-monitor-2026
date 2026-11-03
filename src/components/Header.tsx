@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Radio, RefreshCw, Layers, Download, Video, Settings, ChevronDown, Info, Clock, ExternalLink } from 'lucide-react';
+import { RefreshCw, Layers, Download, Video, Settings, ChevronDown, Info, ExternalLink } from 'lucide-react';
 
 interface HeaderProps {
   onOpenApiModal: () => void;
@@ -23,17 +23,11 @@ export const Header: React.FC<HeaderProps> = ({
   onOpenElectionScheduleModal,
   onSyncNow,
   isSyncingLive,
-  isLivePolling,
-  isCountingActive,
-  isBacktestMode,
-  currentHourLabel,
-  currentCetLabel,
   onExportCsv
 }) => {
   const [isToolsOpen, setIsToolsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // Close dropdown on outside click
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -45,175 +39,127 @@ export const Header: React.FC<HeaderProps> = ({
   }, []);
 
   return (
-    <header className="border-b border-slate-800/80 bg-[#070a10]/95 backdrop-blur-md shrink-0 z-40">
-      <div className="w-full px-4 sm:px-6 h-12 flex items-center justify-between gap-4">
+    <header className="border-b border-slate-800/80 bg-[#090d14] shrink-0 z-40">
+      <div className="w-full px-5 h-11 flex items-center justify-between gap-4">
         
-        {/* Brand & Identity */}
-        <div className="flex items-center gap-2.5 shrink-0">
-          <div className="w-7 h-7 rounded-lg bg-gradient-to-tr from-blue-600 via-purple-600 to-red-600 flex items-center justify-center shadow-md shadow-purple-950/50">
-            <Radio className="w-3.5 h-3.5 text-white" />
-          </div>
-          <div className="flex items-baseline gap-2.5">
-            <span className="text-sm sm:text-base font-extrabold tracking-tight text-white whitespace-nowrap font-mono">
-              US Midterm Election Monitor <span className="text-purple-400">2026</span>
-            </span>
-            <span className="text-slate-700 hidden md:inline">|</span>
-            <a
-              href="https://frimer-rasmussen.dk"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="hidden md:inline-flex items-center gap-1 text-xs font-mono font-semibold text-slate-300 hover:text-purple-300 bg-slate-900/80 hover:bg-slate-800/90 px-2.5 py-0.5 rounded-md border border-slate-800 hover:border-purple-500/50 transition-all"
-              title="Visit Frimer-Rasmussen Consulting (frimer-rasmussen.dk)"
-            >
-              <span>by Frimer-Rasmussen Consulting</span>
-              <ExternalLink className="w-3 h-3 text-purple-400" />
-            </a>
-          </div>
+        {/* Brand & Identity — Quiet, High-Contrast Editorial Typography */}
+        <div className="flex items-center gap-3 shrink-0">
+          <span className="text-sm sm:text-base font-bold tracking-tight text-white whitespace-nowrap font-mono">
+            US Midterm Election Monitor 2026
+          </span>
+          <span className="text-slate-700 hidden sm:inline">·</span>
+          <a
+            href="https://frimer-rasmussen.dk"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="hidden sm:inline-flex items-center gap-1.5 text-xs font-mono text-slate-400 hover:text-white transition-colors"
+            title="Visit Frimer-Rasmussen Consulting (frimer-rasmussen.dk)"
+          >
+            <span>Frimer-Rasmussen Consulting</span>
+            <ExternalLink className="w-3 h-3 text-slate-500" />
+          </a>
         </div>
 
-        {/* Honest Status & Clock (CET & EST) */}
-        <div className="flex items-center gap-2 text-xs font-mono text-slate-300 bg-slate-900/90 px-3 py-1 rounded-md border border-slate-800">
-          {isBacktestMode ? (
-            <>
-              <span className="inline-flex rounded-full h-2 w-2 bg-blue-400"></span>
-              <span className="font-bold text-blue-300">2022 CERTIFIED BASELINE</span>
-            </>
-          ) : isCountingActive ? (
-            <>
-              <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-              </span>
-              <span className="font-bold text-emerald-300">LIVE COUNTING</span>
-            </>
-          ) : (
-            <>
-              <Clock className="w-3.5 h-3.5 text-amber-400" />
-              <span className="font-bold text-amber-300">POLLS OPEN · AWAITING COUNT</span>
-            </>
-          )}
-          <span className="text-slate-600">·</span>
-          <span className="text-purple-300 font-semibold">{currentCetLabel}</span>
-          <span className="text-slate-400 text-[11px] hidden sm:inline">({currentHourLabel})</span>
-        </div>
-
-        {/* Action Controls */}
+        {/* Utility Controls — Muted Monochrome Slate so they never compete with political colors */}
         <div className="flex items-center gap-2 shrink-0">
           
-          {/* One-Click Live Data Fetch Button */}
           <button
             onClick={onSyncNow}
             disabled={isSyncingLive}
-            className="px-3 py-1.5 text-xs font-bold text-emerald-100 bg-emerald-700 hover:bg-emerald-600 border border-emerald-500/60 rounded-lg transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap disabled:opacity-50 cursor-pointer"
-            title="Fetch latest live 2026 election results now (or open Live Ingestion settings)"
+            className="px-3 py-1 text-xs font-mono font-medium text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap disabled:opacity-50 cursor-pointer"
+            title="Sync latest election returns"
           >
-            <RefreshCw className={`w-3.5 h-3.5 ${isSyncingLive ? 'animate-spin' : ''}`} />
-            <span className="hidden sm:inline">{isSyncingLive ? 'Fetching Live...' : 'Fetch Live Data'}</span>
-            <span className="sm:hidden">Live</span>
+            <RefreshCw className={`w-3.5 h-3.5 text-slate-400 ${isSyncingLive ? 'animate-spin' : ''}`} />
+            <span>{isSyncingLive ? 'Syncing...' : 'Sync Data'}</span>
           </button>
 
-          {/* Timelapse Video Studio Button */}
           <button
             onClick={onOpenTimelapseModal}
-            className="px-3.5 py-1.5 text-xs font-bold text-white bg-purple-600 hover:bg-purple-500 rounded-lg transition-colors shadow-sm flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
+            className="px-3 py-1 text-xs font-mono font-medium text-slate-200 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
             title="Watch timelapse replay and export WebM video"
           >
-            <Video className="w-4 h-4" />
-            <span className="hidden sm:inline">Timelapse Video</span>
-            <span className="sm:hidden">Video</span>
+            <Video className="w-3.5 h-3.5 text-slate-400" />
+            <span className="hidden sm:inline">Timelapse</span>
           </button>
 
-          {/* Tools & Data Sources Dropdown Menu */}
+          {/* Tools Dropdown */}
           <div className="relative" ref={dropdownRef}>
             <button
               onClick={() => setIsToolsOpen(prev => !prev)}
-              className="px-3 py-1.5 text-xs font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-lg transition-colors flex items-center gap-1.5 whitespace-nowrap"
+              className="px-3 py-1 text-xs font-mono font-medium text-slate-300 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-md transition-colors flex items-center gap-1.5 whitespace-nowrap cursor-pointer"
             >
               <Settings className="w-3.5 h-3.5 text-slate-400" />
-              <span>Data & Tools</span>
+              <span>Tools</span>
               <ChevronDown className={`w-3 h-3 text-slate-400 transition-transform ${isToolsOpen ? 'rotate-180' : ''}`} />
             </button>
 
             {isToolsOpen && (
-              <div className="absolute right-0 mt-2 w-72 bg-slate-900 border border-slate-800 rounded-xl shadow-2xl p-2 z-50 text-xs space-y-1 backdrop-blur-md">
-                
-                {/* Election Timetable & CET Hours */}
+              <div className="absolute right-0 mt-1.5 w-64 bg-slate-900 border border-slate-700 rounded-xl shadow-2xl p-1.5 z-50 text-xs space-y-0.5">
                 <button
                   onClick={() => {
                     setIsToolsOpen(false);
                     onOpenElectionScheduleModal();
                   }}
-                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200"
+                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200 cursor-pointer"
                 >
-                  <Info className="w-4 h-4 text-purple-400 shrink-0 mt-0.5" />
+                  <Info className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-bold text-slate-100">Election Schedule & CET Times</div>
+                    <div className="font-semibold text-white">Poll Closing Schedule (CET)</div>
                     <div className="text-[11px] text-slate-400">
-                      State poll opening & closing hours in European time (CET) and counting phases.
+                      State-by-state closing hours in European time.
                     </div>
                   </div>
                 </button>
 
-                {/* Live Data Adapter */}
                 <button
                   onClick={() => {
                     setIsToolsOpen(false);
                     onOpenLiveAdapter();
                   }}
-                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200"
+                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200 cursor-pointer"
                 >
-                  <RefreshCw className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+                  <RefreshCw className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-bold text-slate-100 flex items-center gap-1.5">
-                      <span>Data Sources & Live Ingestion</span>
-                      {isLivePolling && isCountingActive && (
-                        <span className="px-1 py-0.2 bg-emerald-950 text-emerald-400 text-[9px] font-mono rounded border border-emerald-800">
-                          Active
-                        </span>
-                      )}
-                    </div>
+                    <div className="font-semibold text-white">Data Sources & Connection Test</div>
                     <div className="text-[11px] text-slate-400">
-                      Connect real JSON endpoint or inspect 2022 FEC/MIT Lab baseline & 2026 forecast.
+                      Test live JSON ingestion or configure feed.
                     </div>
                   </div>
                 </button>
 
-                {/* Public API & Backtesting Studio */}
                 <button
                   onClick={() => {
                     setIsToolsOpen(false);
                     onOpenApiModal();
                   }}
-                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200"
+                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200 cursor-pointer"
                 >
-                  <Layers className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
+                  <Layers className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-bold text-slate-100">API & Backtesting Studio</div>
+                    <div className="font-semibold text-white">2022 Baseline Inspector</div>
                     <div className="text-[11px] text-slate-400">
-                      Inspect raw JSON payloads, ping test endpoints and 50-state ground truth sanity.
+                      Inspect certified 2022 midterm returns.
                     </div>
                   </div>
                 </button>
 
-                <div className="my-1 border-t border-slate-800/80" />
+                <div className="my-1 border-t border-slate-800" />
 
-                {/* Export CSV */}
                 <button
                   onClick={() => {
                     setIsToolsOpen(false);
                     onExportCsv();
                   }}
-                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200"
+                  className="w-full text-left p-2 rounded-lg hover:bg-slate-800 transition-colors flex items-start gap-2.5 text-slate-200 cursor-pointer"
                 >
-                  <Download className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+                  <Download className="w-4 h-4 text-slate-400 shrink-0 mt-0.5" />
                   <div>
-                    <div className="font-bold text-slate-100">Export Returns (CSV)</div>
+                    <div className="font-semibold text-white">Export CSV</div>
                     <div className="text-[11px] text-slate-400">
-                      Download 50-state vote tallies, percentages and swing delta for spreadsheet analysis.
+                      Download 50-state table for analysis.
                     </div>
                   </div>
                 </button>
-
               </div>
             )}
           </div>

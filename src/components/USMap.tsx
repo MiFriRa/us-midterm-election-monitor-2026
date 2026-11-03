@@ -165,20 +165,20 @@ export const USMap: React.FC<USMapProps> = ({
     const isTossup = hasRace && reportingPct > 0 && margin <= 4.0;
 
     if (hasRace && isTossup) {
-      stroke = '#c084fc';
+      stroke = '#94a3b8';
       strokeWidth = 1.6;
       opacity = 1;
     }
 
-    // Top Surprise highlights (only when counting is active and surprises exist)
+    // Top Surprise highlights — crisp white frame instead of competing neon yellow/green
     if (surpriseItem && selectedStateId !== stateId) {
-      stroke = surpriseItem.isFlip ? '#10b981' : '#f59e0b';
-      strokeWidth = 2.8;
+      stroke = '#e2e8f0';
+      strokeWidth = 2.4;
       opacity = 1;
     }
 
     if (selectedStateId === stateId) {
-      stroke = '#38bdf8';
+      stroke = '#ffffff';
       strokeWidth = 3.2;
       opacity = 1;
     }
@@ -282,8 +282,8 @@ export const USMap: React.FC<USMapProps> = ({
   return (
     <div className="relative w-full h-full flex-1 min-h-0 flex flex-col bg-[#070a10] overflow-hidden">
       
-      {/* Simple, Clean Map Toolbar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-4 py-2 border-b border-slate-800/80 text-xs shrink-0 z-10 bg-[#080c14]">
+      {/* Simple, Clean Map Toolbar — Monochrome Slate UI */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-2 border-b border-slate-800/80 text-xs shrink-0 z-10 bg-[#090d14]">
         
         <div className="flex flex-wrap items-center gap-2">
           <div className="flex items-center p-0.5 bg-slate-900 rounded-lg border border-slate-800">
@@ -291,7 +291,7 @@ export const USMap: React.FC<USMapProps> = ({
               onClick={() => setViewType('cartogram')}
               className={`px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewType === 'cartogram'
-                  ? 'bg-purple-600 text-white shadow-sm font-bold'
+                  ? 'bg-slate-800 text-white shadow-sm font-bold border border-slate-600/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -302,7 +302,7 @@ export const USMap: React.FC<USMapProps> = ({
               onClick={() => setViewType('geographic')}
               className={`px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewType === 'geographic'
-                  ? 'bg-purple-600 text-white shadow-sm font-bold'
+                  ? 'bg-slate-800 text-white shadow-sm font-bold border border-slate-600/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
@@ -317,17 +317,17 @@ export const USMap: React.FC<USMapProps> = ({
                 onClick={() => onMapModeChange('purple_margin')}
                 className={`px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
                   mapMode === 'purple_margin' || mapMode === 'political_impact'
-                    ? 'bg-slate-800 text-white font-bold'
+                    ? 'bg-slate-800 text-white font-bold border border-slate-600/80'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
-                2026 Live Margin
+                2026 Margin
               </button>
               <button
                 onClick={() => onMapModeChange('swing_shift')}
                 className={`px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
                   mapMode === 'swing_shift'
-                    ? 'bg-slate-800 text-white font-bold'
+                    ? 'bg-slate-800 text-white font-bold border border-slate-600/80'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
@@ -337,30 +337,25 @@ export const USMap: React.FC<USMapProps> = ({
                 onClick={() => onMapModeChange('historical_2022')}
                 className={`px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
                   mapMode === 'historical_2022'
-                    ? 'bg-slate-800 text-white font-bold'
+                    ? 'bg-slate-800 text-white font-bold border border-slate-600/80'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
-                2022 Result
+                2022 Baseline
               </button>
             </div>
           )}
         </div>
 
-        {/* Simple Legend */}
-        <div className="flex items-center gap-4 text-xs font-mono">
+        {/* Clean Political Color Scale Only (Red - Purple - Blue) */}
+        <div className="flex items-center gap-3 text-xs font-mono">
           <div className="flex items-center gap-2">
             <span className="text-red-400 font-bold">GOP</span>
-            <div className="h-2.5 w-24 sm:w-32 rounded-full bg-gradient-to-r from-red-600 via-purple-600 to-blue-600 border border-slate-700" />
+            <div className="h-2 w-24 sm:w-32 rounded-full bg-gradient-to-r from-red-600 via-purple-600 to-blue-600 border border-slate-700" />
             <span className="text-blue-400 font-bold">DEM</span>
           </div>
-          <span className="hidden md:flex items-center gap-1.5 text-emerald-300">
-            <span className="w-3 h-3 rounded-sm bg-slate-900 border-2 border-emerald-500" />
-            Flip
-          </span>
-          <span className="hidden md:flex items-center gap-1.5 text-amber-300">
-            <span className="w-3 h-3 rounded-sm bg-slate-900 border-2 border-amber-500" />
-            Top Surprise
+          <span className="hidden md:inline text-slate-400 text-[11px]">
+            (Purple = Tossup)
           </span>
         </div>
 
@@ -465,7 +460,9 @@ export const USMap: React.FC<USMapProps> = ({
                         width={26}
                         height={16}
                         rx="4"
-                        fill={surpriseItem.isFlip ? '#059669' : '#d97706'}
+                        fill="#0f172a"
+                        stroke="#cbd5e1"
+                        strokeWidth="1"
                       />
                       <text
                         x={x + 17}
@@ -499,7 +496,7 @@ export const USMap: React.FC<USMapProps> = ({
                       x={x + tileSize / 2}
                       y={y + 54}
                       textAnchor="middle"
-                      fill="#fde68a"
+                      fill="#ffffff"
                       fontSize="11"
                       fontWeight="800"
                       fontFamily="'JetBrains Mono', monospace"

@@ -419,6 +419,7 @@ export default function App() {
         houseTally={houseTally}
         governorTally={governorTally}
         nationalReportingPct={nationalReportingPct}
+        currentCetLabel={currentCetLabel}
       />
 
       {/* Main Split Workspace: Big USA Map (Left) + 2) Biggest Surprises vs. 2022 (Right Sidebar) */}
@@ -427,13 +428,13 @@ export default function App() {
         {/* Left: Full-Height USA Map Canvas */}
         <div className="relative flex-1 min-h-0 h-full flex flex-col overflow-hidden">
           {isBacktestMode && (
-            <div className="absolute top-14 left-4 right-4 z-20 bg-emerald-950/90 border border-emerald-800/80 rounded-xl p-2 px-3 flex items-center justify-between text-xs text-emerald-200 backdrop-blur-md">
+            <div className="absolute top-14 left-4 right-4 z-20 bg-slate-900/95 border border-slate-700 rounded-xl p-2 px-3 flex items-center justify-between text-xs text-slate-200 backdrop-blur-md">
               <span className="font-bold font-mono">
                 2022 Certified Baseline Active (GOP 222 - DEM 213 House)
               </span>
               <button
                 onClick={() => setIsBacktestMode(false)}
-                className="text-xs font-semibold text-emerald-300 hover:text-white underline font-mono cursor-pointer"
+                className="text-xs font-semibold text-white hover:underline font-mono cursor-pointer"
               >
                 Return to 2026 Monitor
               </button>
