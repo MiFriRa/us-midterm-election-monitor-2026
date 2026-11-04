@@ -266,7 +266,7 @@ test('parseExternalElectionJson and applyLivePatchesToStates normalize and apply
 import fs from 'node:fs';
 import path from 'node:path';
 import { BASE_STATES, HOURLY_TIMELINE } from '../data/electionData2026.js';
-import { getTimelineIndexForRealTime } from './liveElectionFeed.js';
+import { getTimelineIndexForRealTime, buildInterpolatedCetLiveSync } from './liveElectionFeed.js';
 
 test('end-to-end live-test-feed.json parses, updates 50 states, and computes Top Surprises accurately', () => {
   const feedPath = path.resolve(process.cwd(), 'public/live-test-feed.json');
@@ -309,3 +309,18 @@ test('Wednesday morning 07:15 CET wave shows active counting (76%) with undecide
 });
 
 
+
+test('buildInterpolatedCetLiveSync smoothly advances count between 07:00, 08:00, and 09:00 CET', () => {
+  const at0700 = buildInterpolatedCetLiveSync(BASE_STATES, new Date('2026-11-04T07:00:00+01:00'));
+  const at0800 = buildInterpolatedCetLiveSync(BASE_STATES, new Date('2026-11-04T08:00:00+01:00'));
+  const at0830 = buildInterpolatedCetLiveSync(BASE_STATES, new Date('2026-11-04T08:30:00+01:00'));
+  const at0900 = buildInterpolatedCetLiveSync(BASE_STATES, new Date('2026-11-04T09:00:00+01:00'));
+
+  assert.ok(at0700 && at0800 && at0830 && at0900);
+  assert.equal(at0700.nationalReportingPct, 76);
+  assert.equal(at0800.nationalReportingPct, 81);
+  assert.equal(at0830.nationalReportingPct, 83);
+  assert.equal(at0900.nationalReportingPct, 85);
+  assert.ok((at0830.patches['PA'].governor?.demVotes || 0) > (at0700.patches['PA'].governor?.demVotes || 0));
+  assert.ok((at0830.patches['GA'].senate?.demVotes || 0) > (at0700.patches['GA'].senate?.demVotes || 0));
+});

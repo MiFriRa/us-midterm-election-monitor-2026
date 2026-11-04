@@ -3,13 +3,14 @@
  *
  * 100% Free & Zero-API-Key Architecture:
  * 1. Public Election JSON Feed (`/live-election-2026.json` or any custom public JSON URL)
- * 2. Automatic CET Real-Time Election Night Schedule Engine
+ * 2. Automatic CET Real-Time Election Night Schedule Engine (with continuous intra-hour interpolation)
  * 3. Manual / Replay Timeline Mode
  *
  * No paid LLM or Gemini API keys are used or required.
  */
 
 import { StateElectionResult } from './electionMath';
+import { HOURLY_TIMELINE, computeCallStatus } from '../data/electionData2026';
 
 export type LiveFeedProvider = 'public_json' | 'cet_live_clock' | 'simulation';
 
@@ -247,33 +248,192 @@ export async function fetchFromCustomJsonEndpoint(url: string): Promise<LiveSync
 }
 
 /**
+ * Anchor hours elapsed since Nov 3, 2026 23:00 UTC (00:00 CET) for each HOURLY_TIMELINE wave:
+ * - Index 0: 0h (Pre-Close / 00:00 CET · 0%)
+ * - Index 1: 1h (01:00 CET · 9%)
+ * - Index 2: 2h (02:00 CET · 26%)
+ * - Index 3: 3h (03:00 CET · 46%)
+ * - Index 4: 4h (04:00 CET · 59%)
+ * - Index 5: 5h (05:00 CET · 68%)
+ * - Index 6: 7h (07:00 CET · 76% — Alaska closes)
+ * - Index 7: 8h (08:00 CET · 81% — Overnight metro batches)
+ * - Index 8: 9h (09:00 CET · 85% — Early morning count)
+ * - Index 9: 11h (11:00 CET · 89% — Late morning update)
+ * - Index 10: 15h (15:00 CET · 94% — Wednesday afternoon mail drops)
+ * - Index 11: 21h (21:00 CET · 100% — Final projection)
+ */
+const WAVE_HOURS_SINCE_MIDNIGHT_CET = [0, 1, 2, 3, 4, 5, 7, 8, 9, 11, 15, 21];
+
+/**
  * Computes the appropriate hourly timeline index based on the real-world CET/UTC clock
- * for Election Night & Wednesday Counting (Nov 3-4, 2026):
- * - Before Nov 3 23:30 UTC (00:30 CET): index 0 (0% Pre-Close)
- * - 00:30–01:45 CET: index 1 (19:00 EST / 01:00 CET · 9%)
- * - 01:45–02:45 CET: index 2 (20:00 EST / 02:00 CET · 26%)
- * - 02:45–03:45 CET: index 3 (21:00 EST / 03:00 CET · 46%)
- * - 03:45–04:45 CET: index 4 (22:00 EST / 04:00 CET · 59%)
- * - 04:45–06:15 CET: index 5 (23:00 EST / 05:00 CET · 68%)
- * - 06:15–09:30 CET: index 6 (01:00 EST / 07:00 CET · 76% — Alaska closes, overnight battlegrounds counting)
- * - 09:30–14:00 CET: index 7 (04:00 EST / 10:00 CET · 84% — Late urban & mail precincts)
- * - 14:00–21:00 CET: index 8 (09:00 EST / 15:00 CET · 92% — Wednesday day mail drops)
- * - After 21:00 CET (Wed): index 9 (Final Projection · 100%)
+ * for Election Night & Wednesday Counting (Nov 3-4, 2026).
  */
 export function getTimelineIndexForRealTime(now: Date = new Date()): number {
-  const electionCloseStartUtc = Date.UTC(2026, 10, 3, 23, 30, 0); // Nov 3, 2026 23:30 UTC (00:30 CET)
-  const diffHours = (now.getTime() - electionCloseStartUtc) / (1000 * 60 * 60);
+  const midnightCetUtc = Date.UTC(2026, 10, 3, 23, 0, 0); // Nov 4, 2026 00:00 CET
+  const hoursSinceMidnightCet = (now.getTime() - midnightCetUtc) / (1000 * 60 * 60);
 
-  if (diffHours < 0) return 0; // Polls still open (0% counted)
-  if (diffHours < 1.25) return 1; // 01:00 CET wave (9%)
-  if (diffHours < 2.25) return 2; // 02:00 CET wave (26%)
-  if (diffHours < 3.25) return 3; // 03:00 CET wave (46%)
-  if (diffHours < 4.25) return 4; // 04:00 CET wave (59%)
-  if (diffHours < 5.75) return 5; // 05:00 CET wave (68%)
-  if (diffHours < 9.0) return 6;  // 07:00 CET wave (76% — Active Wednesday morning)
-  if (diffHours < 13.5) return 7; // 10:00 CET wave (84%)
-  if (diffHours < 20.5) return 8; // 15:00 CET wave (92%)
-  return 9; // Final Projection
+  if (hoursSinceMidnightCet < 0.5) return 0; // Polls still open (0% counted)
+  if (hoursSinceMidnightCet < 1.75) return 1; // 01:00 CET wave (9%)
+  if (hoursSinceMidnightCet < 2.75) return 2; // 02:00 CET wave (26%)
+  if (hoursSinceMidnightCet < 3.75) return 3; // 03:00 CET wave (46%)
+  if (hoursSinceMidnightCet < 4.75) return 4; // 04:00 CET wave (59%)
+  if (hoursSinceMidnightCet < 6.25) return 5; // 05:00 CET wave (68%)
+  if (hoursSinceMidnightCet < 7.75) return 6; // 07:00 CET wave (76%)
+  if (hoursSinceMidnightCet < 8.75) return 7; // 08:00 CET wave (81%)
+  if (hoursSinceMidnightCet < 10.25) return 8; // 09:00 CET wave (85%)
+  if (hoursSinceMidnightCet < 13.5) return 9;  // 11:00 CET wave (89%)
+  if (hoursSinceMidnightCet < 20.5) return 10; // 15:00 CET wave (94%)
+  return Math.min(HOURLY_TIMELINE.length - 1, 11); // Final Projection
+}
+
+/**
+ * Generates a continuous, smooth minute-by-minute interpolated live feed response
+ * between adjacent CET election night waves so the count progresses steadily in real time
+ * instead of sitting frozen on a single percentage between hourly milestones.
+ */
+export function buildInterpolatedCetLiveSync(
+  baseStates: StateElectionResult[],
+  now: Date = new Date()
+): LiveSyncResponse | null {
+  const midnightCetUtc = Date.UTC(2026, 10, 3, 23, 0, 0); // Nov 4, 2026 00:00 CET
+  const hours = (now.getTime() - midnightCetUtc) / (1000 * 60 * 60);
+
+  // Before first poll closures or after final projection, rely on standard discrete snapshot
+  if (hours < 0.5 || hours >= 21 || HOURLY_TIMELINE.length < 12) {
+    return null;
+  }
+
+  let lowerIdx = 0;
+  for (let i = 0; i < WAVE_HOURS_SINCE_MIDNIGHT_CET.length - 1; i++) {
+    if (hours >= WAVE_HOURS_SINCE_MIDNIGHT_CET[i]) {
+      lowerIdx = i;
+    } else {
+      break;
+    }
+  }
+  const upperIdx = Math.min(HOURLY_TIMELINE.length - 1, lowerIdx + 1);
+  const startH = WAVE_HOURS_SINCE_MIDNIGHT_CET[lowerIdx];
+  const endH = WAVE_HOURS_SINCE_MIDNIGHT_CET[upperIdx];
+  const fraction = endH > startH ? Math.max(0, Math.min(1, (hours - startH) / (endH - startH))) : 0;
+
+  const snapA = HOURLY_TIMELINE[lowerIdx];
+  const snapB = HOURLY_TIMELINE[upperIdx];
+
+  const nationalReportingPct = Number(
+    (snapA.nationalReportingPct + (snapB.nationalReportingPct - snapA.nationalReportingPct) * fraction).toFixed(1)
+  );
+
+  const patches: Record<string, LiveStatePatch> = {};
+  let statesUpdated = 0;
+
+  baseStates.forEach((st) => {
+    const progA = snapA.stateProgress[st.id];
+    const progB =
+      upperIdx === HOURLY_TIMELINE.length - 1
+        ? {
+            reportingPct: 100,
+            demVotes: st.senate?.demCandidate.votes ?? st.governor?.demCandidate.votes ?? st.house?.popularDemVotes ?? 0,
+            gopVotes: st.senate?.gopCandidate.votes ?? st.governor?.gopCandidate.votes ?? st.house?.popularGopVotes ?? 0,
+            status: st.senate?.status ?? 'uncalled',
+            govDemVotes: st.governor?.demCandidate.votes ?? 0,
+            govGopVotes: st.governor?.gopCandidate.votes ?? 0,
+            govStatus: st.governor?.status ?? 'uncalled',
+            houseDemVotes: st.house?.popularDemVotes ?? 0,
+            houseGopVotes: st.house?.popularGopVotes ?? 0,
+            houseDemSeats: st.house?.demSeats ?? 0,
+            houseGopSeats: st.house?.gopSeats ?? 0
+          }
+        : snapB.stateProgress[st.id];
+
+    if (!progA && !progB) return;
+
+    const repA = progA?.reportingPct ?? 0;
+    const repB = progB?.reportingPct ?? repA;
+    const reportingPct = Math.round(repA + (repB - repA) * fraction);
+    if (reportingPct <= 0) return;
+
+    statesUpdated++;
+
+    const senDemA = progA?.demVotes ?? 0;
+    const senDemB = progB?.demVotes ?? senDemA;
+    const senGopA = progA?.gopVotes ?? 0;
+    const senGopB = progB?.gopVotes ?? senGopA;
+    const senDemVotes = Math.round(senDemA + (senDemB - senDemA) * fraction);
+    const senGopVotes = Math.round(senGopA + (senGopB - senGopA) * fraction);
+    const senTot = senDemVotes + senGopVotes;
+    const senDemPct = senTot > 0 ? Number(((senDemVotes / senTot) * 100).toFixed(1)) : 50;
+    const senGopPct = senTot > 0 ? Number(((senGopVotes / senTot) * 100).toFixed(1)) : 50;
+
+    const govDemA = progA?.govDemVotes ?? senDemA;
+    const govDemB = progB?.govDemVotes ?? senDemB;
+    const govGopA = progA?.govGopVotes ?? senGopA;
+    const govGopB = progB?.govGopVotes ?? senGopB;
+    const govDemVotes = Math.round(govDemA + (govDemB - govDemA) * fraction);
+    const govGopVotes = Math.round(govGopA + (govGopB - govGopA) * fraction);
+    const govTot = govDemVotes + govGopVotes;
+    const govDemPct = govTot > 0 ? Number(((govDemVotes / govTot) * 100).toFixed(1)) : 50;
+    const govGopPct = govTot > 0 ? Number(((govGopVotes / govTot) * 100).toFixed(1)) : 50;
+
+    const hDemVotesA = progA?.houseDemVotes ?? senDemA;
+    const hDemVotesB = progB?.houseDemVotes ?? senDemB;
+    const hGopVotesA = progA?.houseGopVotes ?? senGopA;
+    const hGopVotesB = progB?.houseGopVotes ?? senGopB;
+    const houseDemVotes = Math.round(hDemVotesA + (hDemVotesB - hDemVotesA) * fraction);
+    const houseGopVotes = Math.round(hGopVotesA + (hGopVotesB - hGopVotesA) * fraction);
+
+    const hDemSeatsA = progA?.houseDemSeats ?? 0;
+    const hDemSeatsB = progB?.houseDemSeats ?? hDemSeatsA;
+    const hGopSeatsA = progA?.houseGopSeats ?? 0;
+    const hGopSeatsB = progB?.houseGopSeats ?? hGopSeatsA;
+    const houseDemSeats = Math.round(hDemSeatsA + (hDemSeatsB - hDemSeatsA) * fraction);
+    const houseGopSeats = Math.round(hGopSeatsA + (hGopSeatsB - hGopSeatsA) * fraction);
+
+    patches[st.id] = {
+      stateCode: st.id,
+      reportingPct,
+      senate: st.senate
+        ? {
+            demVotes: senDemVotes,
+            gopVotes: senGopVotes,
+            demPct: senDemPct,
+            gopPct: senGopPct,
+            status: computeCallStatus(senDemVotes, senGopVotes, reportingPct, st.senate.status)
+          }
+        : undefined,
+      governor: st.governor
+        ? {
+            demVotes: govDemVotes,
+            gopVotes: govGopVotes,
+            demPct: govDemPct,
+            gopPct: govGopPct,
+            status: computeCallStatus(govDemVotes, govGopVotes, reportingPct, st.governor.status)
+          }
+        : undefined,
+      house: st.house
+        ? {
+            demSeats: houseDemSeats,
+            gopSeats: houseGopSeats,
+            popularDemVotes: houseDemVotes,
+            popularGopVotes: houseGopVotes
+          }
+        : undefined
+    };
+  });
+
+  const cetTimeStr = now.toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Europe/Copenhagen'
+  });
+
+  return {
+    timestamp: now.toISOString(),
+    provider: 'cet_live_clock',
+    sourceSummary: `${cetTimeStr} CET Live Wave (${snapA.cetLabel} → ${snapB.cetLabel})`,
+    nationalReportingPct,
+    statesUpdated,
+    patches
+  };
 }
 
 /**

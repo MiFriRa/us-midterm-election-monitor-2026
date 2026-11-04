@@ -1601,14 +1601,14 @@ const STATE_CLOSE_WAVE: Record<string, { wave: number; speed: 'fast' | 'moderate
 };
 
 const SPEED_CURVES: Record<'fast' | 'moderate' | 'battleground_slow' | 'west_mail_slow', number[]> = {
-  // Indexed by waves elapsed since poll closure (0 = just closed, 1 = +1 wave, ..., 7 = late Wednesday)
-  fast:              [34, 74, 91, 96, 98, 99, 99, 100],
-  moderate:          [22, 54, 76, 86, 92, 95, 98, 100],
-  battleground_slow: [16, 40, 62, 76, 84, 91, 96, 100],
-  west_mail_slow:    [18, 36, 48, 58, 68, 79, 90, 100]
+  // Indexed by waves elapsed since poll closure (0 = just closed, 1 = +1 wave, ..., 9 = late Wednesday)
+  fast:              [34, 74, 91, 96, 98, 99, 99, 100, 100, 100],
+  moderate:          [22, 54, 76, 86, 91, 94, 96, 98, 99, 100],
+  battleground_slow: [16, 40, 62, 76, 82, 87, 91, 95, 98, 100],
+  west_mail_slow:    [18, 36, 48, 56, 63, 71, 79, 88, 95, 100]
 };
 
-function computeCallStatus(
+export function computeCallStatus(
   demVotes: number,
   gopVotes: number,
   reportingPct: number,
@@ -1634,8 +1634,9 @@ function buildWaveStateProgress(waveIndex: number): HourlySnapshot['stateProgres
     const meta = STATE_CLOSE_WAVE[st.id] || { wave: 2, speed: 'moderate' };
     if (waveIndex < meta.wave) return; // Polls still open in this state
 
-    const stepsSinceClose = Math.min(7, waveIndex - meta.wave);
-    const reportingPct = SPEED_CURVES[meta.speed][stepsSinceClose];
+    const curve = SPEED_CURVES[meta.speed];
+    const stepsSinceClose = Math.min(curve.length - 1, waveIndex - meta.wave);
+    const reportingPct = curve[stepsSinceClose];
     const scale = reportingPct / 100;
 
     // Slight realistic early-tabulation skew that fades to 0 as reporting approaches 100%
@@ -1754,25 +1755,41 @@ export const HOURLY_TIMELINE: HourlySnapshot[] = [
     hourLabel: '01:00 EST (Wed)',
     cetLabel: '07:00 CET',
     timeString: 'Alaska Polls Close — Overnight Counting Across Battlegrounds & West Coast',
-    description: 'All polls now closed across the U.S. East Coast at ~90%+, Midwest battlegrounds (MI, WI, PA) at ~76-84%, and West Coast/Alaska mail ballots actively counting.',
+    description: 'All polls now closed across the U.S. East Coast at ~90%+, Midwest battlegrounds (MI, WI, PA) at ~76-82%, and West Coast/Alaska mail ballots actively counting.',
     nationalReportingPct: 76,
     stateProgress: buildWaveStateProgress(6)
   },
   {
-    hourLabel: '04:00 EST (Wed)',
-    cetLabel: '10:00 CET',
-    timeString: 'Morning Update — Late Urban & Mail Precincts Reporting',
-    description: 'Overnight urban batches report in Georgia, North Carolina, Michigan, and Wisconsin; dozens of West Coast House districts remain uncalled.',
-    nationalReportingPct: 84,
+    hourLabel: '02:00 EST (Wed)',
+    cetLabel: '08:00 CET',
+    timeString: 'Overnight Metro & Suburban Batches — GA, NC, MI, WI, PA, AZ',
+    description: 'Overnight metropolitan absentee and suburban precincts report across the Rust Belt and Sunbelt; West Coast mail-in tabulation advances.',
+    nationalReportingPct: 81,
     stateProgress: buildWaveStateProgress(7)
+  },
+  {
+    hourLabel: '03:00 EST (Wed)',
+    cetLabel: '09:00 CET',
+    timeString: 'Early Morning Count — Key Midwest & Sunbelt Precincts Tightening',
+    description: 'Late-night urban batches in Detroit, Milwaukee, Philadelphia, and Atlanta narrow battleground margins as national reporting crosses 85%.',
+    nationalReportingPct: 85,
+    stateProgress: buildWaveStateProgress(8)
+  },
+  {
+    hourLabel: '05:00 EST (Wed)',
+    cetLabel: '11:00 CET',
+    timeString: 'Wednesday Morning Update — Late Urban & Mail Precincts Reporting',
+    description: 'Morning mail-in and provisional batches report across Arizona, Nevada, and California; dozens of competitive House districts remain undecided.',
+    nationalReportingPct: 89,
+    stateProgress: buildWaveStateProgress(9)
   },
   {
     hourLabel: '09:00 EST (Wed)',
     cetLabel: '15:00 CET',
     timeString: 'Wednesday Day Count — Absentee & West Coast Mail Drops',
     description: 'Key Senate battlegrounds reach calls while California, Arizona, Nevada, Oregon, Washington, and Alaska continue tabulating mail ballots.',
-    nationalReportingPct: 92,
-    stateProgress: buildWaveStateProgress(8)
+    nationalReportingPct: 94,
+    stateProgress: buildWaveStateProgress(10)
   },
   {
     hourLabel: 'Final Projection',
