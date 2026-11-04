@@ -308,4 +308,63 @@ test('Wednesday morning 07:15 CET wave shows active counting (76%) with undecide
   assert.ok(snap.stateProgress['FL'].reportingPct >= 95);
 });
 
+test('Alaska House at-large race with Ranked Choice Voting computes realistic coalition margins and RCV tossup status', () => {
+  const alaskaState = BASE_STATES.find(s => s.id === 'AK');
+  assert.ok(alaskaState);
+  assert.ok(alaskaState.house);
+  assert.equal(alaskaState.house.totalSeats, 1);
+  assert.equal(alaskaState.house.rankedChoiceActive, true);
+
+  // Total candidate votes
+  const cands = alaskaState.house.candidates!;
+  assert.equal(cands.length, 4);
+  const begich = cands.find(c => c.name.includes('Begich'));
+  const hill = cands.find(c => c.name.includes('Hill'));
+  const hafner = cands.find(c => c.name.includes('Hafner'));
+  const mcdermott = cands.find(c => c.name.includes('McDermott'));
+
+  assert.ok(begich && begich.votes === 104276 && begich.pct === 49.80);
+  assert.ok(hill && hill.votes === 83996 && hill.pct === 40.11);
+  assert.ok(hafner && hafner.votes === 15135 && hafner.pct === 7.23);
+  assert.ok(mcdermott && mcdermott.votes === 5658 && mcdermott.pct === 2.70);
+
+  // Political impact assessment
+  const impact = getPoliticalImpactAssessment(alaskaState, 'house');
+  assert.equal(impact.badgeLabel, '⚡ RCV Tossup');
+  assert.ok(impact.whyItMatters.includes('Ranked-Choice Voting'));
+
+  // Top Surprises should reflect realistic RCV swing (~ +12.4 R vs 2022 baseline), NOT +84.5 R!
+  const surprises = getTopElectionSurprises([alaskaState], 'house', 1);
+  assert.equal(surprises.length, 1);
+  const akSurprise = surprises[0];
+  assert.equal(akSurprise.significance, 'RCV Tossup');
+  assert.ok(akSurprise.swingValue > -20 && akSurprise.swingValue < -10, `Expected swing around -12.4, got ${akSurprise.swingValue}`);
+  assert.equal(akSurprise.currentLeaderName, 'Nick Begich III');
+  assert.equal(akSurprise.currentTrailingName, 'Bill Hill');
+  assert.equal(akSurprise.currentTrailingParty, 'IND');
+});
+
+test('Alaska Senate race with Ranked Choice Voting includes all 4 candidates and RCV note', () => {
+  const alaskaState = BASE_STATES.find(s => s.id === 'AK');
+  assert.ok(alaskaState);
+  assert.ok(alaskaState.senate);
+  assert.equal(alaskaState.senate.rankedChoiceActive, true);
+
+  const cands = alaskaState.senate.candidates!;
+  assert.equal(cands.length, 4);
+  const sullivan = cands.find(c => c.name === 'Dan Sullivan');
+  const peltola = cands.find(c => c.name === 'Mary Peltola');
+  const heikes = cands.find(c => c.name.includes('Heikes'));
+  const sullivanJr = cands.find(c => c.name.includes('Jr. Sullivan') || c.name.includes('Daniel J.'));
+
+  assert.ok(sullivan && sullivan.votes === 101576 && sullivan.pct === 48.32);
+  assert.ok(peltola && peltola.votes === 100504 && peltola.pct === 47.81);
+  assert.ok(heikes && heikes.votes === 4631 && heikes.pct === 2.20);
+  assert.ok(sullivanJr && sullivanJr.votes === 3507 && sullivanJr.pct === 1.67);
+
+  const impact = getPoliticalImpactAssessment(alaskaState, 'senate');
+  assert.ok(impact.whyItMatters.includes('Ranked-Choice Voting'));
+});
+
+
 

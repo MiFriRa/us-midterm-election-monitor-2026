@@ -72,14 +72,29 @@ export const StateDetailDrawer: React.FC<StateDetailDrawerProps> = ({
   } else {
     // House
     if (state.house) {
-      demName = `Dem Delegation (${state.house.demSeats} seats)`;
-      gopName = `GOP Delegation (${state.house.gopSeats} seats)`;
+      const cands = state.house.candidates;
+      if (state.houseSeats === 1 && cands && cands.length >= 2) {
+        const sorted = [...cands].sort((a, b) => b.votes - a.votes);
+        const top1 = sorted[0];
+        const top2 = sorted[1];
+        if (top1.party === 'GOP') {
+          gopName = `${top1.name}`;
+          demName = `${top2.name} (${top2.party})`;
+        } else {
+          demName = `${top1.name} (${top1.party})`;
+          gopName = `${top2.name}`;
+        }
+      } else {
+        demName = `Dem Delegation (${state.house.demSeats} seats)`;
+        gopName = `GOP Delegation (${state.house.gopSeats} seats)`;
+      }
       demVotes = state.house.popularDemVotes;
       gopVotes = state.house.popularGopVotes;
       const total = demVotes + gopVotes;
       demPct = total > 0 ? Number(((demVotes / total) * 100).toFixed(1)) : 50;
       gopPct = total > 0 ? Number(((gopVotes / total) * 100).toFixed(1)) : 50;
       reportingPct = state.house.reportingPct;
+      status = state.house.status || (state.house.uncalledSeats > 0 ? 'too_close_to_call' : 'uncalled');
       hist2022Dem = state.house.historical2022.demPopularPct;
       hist2022Gop = state.house.historical2022.gopPopularPct;
     }
@@ -92,6 +107,17 @@ export const StateDetailDrawer: React.FC<StateDetailDrawerProps> = ({
   const counties = getCountiesForState(state.stateCode, demPct, gopPct, reportingPct);
   const hasKeyDistricts = chamber === 'house' && !!state.house?.keyBattlegroundDistricts && state.house.keyBattlegroundDistricts.length > 0;
   const impact = getPoliticalImpactAssessment(state, chamber);
+
+  const currentRace =
+    chamber === 'senate'
+      ? state.senate
+      : chamber === 'governor'
+      ? state.governor
+      : state.house;
+
+  const currentCandidates = currentRace?.candidates;
+  const isRcvActive = currentRace?.rankedChoiceActive;
+  const rcvNote = currentRace?.rankedChoiceNote;
 
   return (
     <aside
@@ -264,51 +290,137 @@ export const StateDetailDrawer: React.FC<StateDetailDrawerProps> = ({
 
             {/* Candidate Breakdown Bars */}
             <div className="space-y-3">
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
-                2026 Vote Breakdown
-              </h3>
-
-              {/* Democratic Candidate */}
-              <div className="space-y-1">
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <span className="text-sm font-bold text-blue-400">{demName}</span>
-                    <span className="text-[11px] text-slate-400 ml-2 font-mono">DEM</span>
-                  </div>
-                  <div className="text-right font-mono">
-                    <span className="text-base font-extrabold text-blue-400 mr-2">{demPct}%</span>
-                    <span className="text-[11px] text-slate-400">{formatVoteCount(demVotes)}</span>
-                  </div>
-                </div>
-                <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
-                  <div className="bg-blue-500 h-full" style={{ width: `${demPct}%` }} />
-                </div>
+              <div className="flex items-center justify-between">
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-400 font-mono">
+                  2026 Vote Breakdown
+                </h3>
+                {isRcvActive && (
+                  <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded bg-amber-500/20 text-amber-300 border border-amber-500/40">
+                    RCV Instant Runoff
+                  </span>
+                )}
               </div>
 
-              {/* Republican Candidate */}
-              <div className="space-y-1 pt-1">
-                <div className="flex items-baseline justify-between">
-                  <div>
-                    <span className="text-sm font-bold text-red-400">{gopName}</span>
-                    <span className="text-[11px] text-slate-400 ml-2 font-mono">GOP</span>
-                  </div>
-                  <div className="text-right font-mono">
-                    <span className="text-base font-extrabold text-red-400 mr-2">{gopPct}%</span>
-                    <span className="text-[11px] text-slate-400">{formatVoteCount(gopVotes)}</span>
-                  </div>
-                </div>
-                <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
-                  <div className="bg-red-500 h-full" style={{ width: `${gopPct}%` }} />
-                </div>
-              </div>
+              {currentCandidates && currentCandidates.length > 0 ? (
+                <div className="space-y-2.5">
+                  {currentCandidates.map((cand) => {
+                    const isGop = cand.party === 'GOP';
+                    const isDem = cand.party === 'DEM';
+                    const isInd = cand.party === 'IND';
+                    const isLib = cand.party === 'LIB';
+                    const colorClass = isGop
+                      ? 'text-red-400'
+                      : isDem
+                      ? 'text-blue-400'
+                      : isInd
+                      ? 'text-purple-400'
+                      : isLib
+                      ? 'text-yellow-400'
+                      : 'text-slate-300';
+                    const barBgClass = isGop
+                      ? 'bg-red-500'
+                      : isDem
+                      ? 'bg-blue-500'
+                      : isInd
+                      ? 'bg-purple-500'
+                      : isLib
+                      ? 'bg-yellow-500'
+                      : 'bg-slate-500';
 
-              {/* Margen */}
-              <div className="pt-3 flex items-center justify-between text-xs font-mono text-slate-300">
-                <span>Current Margin:</span>
-                <span className="font-bold text-white">
-                  {currentMargin > 0 ? `D +${currentMargin} pp` : currentMargin < 0 ? `R +${Math.abs(currentMargin)} pp` : '0.0 pp (Tied)'}
-                </span>
-              </div>
+                    return (
+                      <div key={cand.name} className="space-y-1">
+                        <div className="flex items-baseline justify-between">
+                          <div className="flex items-center gap-2 min-w-0">
+                            <span className={`text-sm font-bold truncate ${colorClass}`}>
+                              {cand.name}
+                            </span>
+                            <span className="text-[10px] text-slate-400 px-1.5 py-0.5 rounded bg-slate-800 border border-slate-700 font-mono shrink-0">
+                              {cand.party}
+                            </span>
+                          </div>
+                          <div className="text-right font-mono shrink-0 ml-2">
+                            <span className={`text-base font-extrabold mr-2 ${colorClass}`}>
+                              {cand.pct.toFixed(2)}%
+                            </span>
+                            <span className="text-[11px] text-slate-400">
+                              {formatVoteCount(cand.votes)}
+                            </span>
+                          </div>
+                        </div>
+                        <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                          <div className={`h-full ${barBgClass}`} style={{ width: `${Math.min(100, cand.pct)}%` }} />
+                        </div>
+                      </div>
+                    );
+                  })}
+
+                  {rcvNote && (
+                    <div className="mt-3 p-3 bg-amber-950/30 border border-amber-500/30 rounded-xl space-y-1.5">
+                      <div className="flex items-center gap-1.5 text-xs font-bold text-amber-400 font-mono">
+                        <AlertCircle className="w-3.5 h-3.5 shrink-0" />
+                        <span>Ranked-Choice Voting (RCV) Threshold &lt; 50%</span>
+                      </div>
+                      <p className="text-[11px] text-amber-200/90 leading-relaxed">
+                        {rcvNote}
+                      </p>
+                    </div>
+                  )}
+
+                  {/* Margen */}
+                  <div className="pt-2 flex items-center justify-between text-xs font-mono text-slate-300 border-t border-slate-800/80">
+                    <span>Direct Leader Margin:</span>
+                    <span className="font-bold text-white">
+                      {currentCandidates.length >= 2
+                        ? `${currentCandidates[0].party} +${Math.abs(currentCandidates[0].pct - currentCandidates[1].pct).toFixed(2)} pp (${currentCandidates[0].name.split(' ').pop()} vs. ${currentCandidates[1].name.split(' ').pop()})`
+                        : `${currentMargin > 0 ? `D +${currentMargin} pp` : `R +${Math.abs(currentMargin)} pp`}`}
+                    </span>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  {/* Democratic Candidate */}
+                  <div className="space-y-1">
+                    <div className="flex items-baseline justify-between">
+                      <div>
+                        <span className="text-sm font-bold text-blue-400">{demName}</span>
+                        <span className="text-[11px] text-slate-400 ml-2 font-mono">DEM</span>
+                      </div>
+                      <div className="text-right font-mono">
+                        <span className="text-base font-extrabold text-blue-400 mr-2">{demPct}%</span>
+                        <span className="text-[11px] text-slate-400">{formatVoteCount(demVotes)}</span>
+                      </div>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                      <div className="bg-blue-500 h-full" style={{ width: `${demPct}%` }} />
+                    </div>
+                  </div>
+
+                  {/* Republican Candidate */}
+                  <div className="space-y-1 pt-1">
+                    <div className="flex items-baseline justify-between">
+                      <div>
+                        <span className="text-sm font-bold text-red-400">{gopName}</span>
+                        <span className="text-[11px] text-slate-400 ml-2 font-mono">GOP</span>
+                      </div>
+                      <div className="text-right font-mono">
+                        <span className="text-base font-extrabold text-red-400 mr-2">{gopPct}%</span>
+                        <span className="text-[11px] text-slate-400">{formatVoteCount(gopVotes)}</span>
+                      </div>
+                    </div>
+                    <div className="w-full h-1.5 bg-slate-900 rounded-full overflow-hidden">
+                      <div className="bg-red-500 h-full" style={{ width: `${gopPct}%` }} />
+                    </div>
+                  </div>
+
+                  {/* Margen */}
+                  <div className="pt-3 flex items-center justify-between text-xs font-mono text-slate-300">
+                    <span>Current Margin:</span>
+                    <span className="font-bold text-white">
+                      {currentMargin > 0 ? `D +${currentMargin} pp` : currentMargin < 0 ? `R +${Math.abs(currentMargin)} pp` : '0.0 pp (Tied)'}
+                    </span>
+                  </div>
+                </>
+              )}
             </div>
 
             {/* Comparison with 2022 (Historical Reference) */}

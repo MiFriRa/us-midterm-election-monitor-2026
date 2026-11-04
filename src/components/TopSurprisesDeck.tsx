@@ -146,7 +146,11 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
                     <span className={isDemSwing ? 'text-blue-400 font-bold' : 'text-red-400 font-bold'}>
                       Swing {item.swingLabel}
                     </span>
-                    {item.isFlip && (
+                    {item.significance === 'RCV Tossup' ? (
+                      <span className="text-[10px] font-bold uppercase px-1.5 py-0.2 rounded border bg-amber-950/80 text-amber-300 border-amber-700">
+                        RCV RUNOFF
+                      </span>
+                    ) : item.isFlip ? (
                       <span
                         className={`text-[10px] font-bold uppercase px-1.5 py-0.2 rounded border ${
                           item.flippedTo === 'DEM'
@@ -156,7 +160,7 @@ export const TopSurprisesDeck: React.FC<TopSurprisesDeckProps> = ({
                       >
                         FLIP
                       </span>
-                    )}
+                    ) : null}
                   </div>
 
                   <span className="text-red-400 font-semibold">GOP</span>

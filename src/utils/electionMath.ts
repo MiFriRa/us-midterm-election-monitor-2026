@@ -35,6 +35,9 @@ export interface StateElectionResult {
     otherVotes: number;
     reportingPct: number;
     status: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    candidates?: CandidateResult[];
+    rankedChoiceActive?: boolean;
+    rankedChoiceNote?: string;
     historical2022: HistoricalBaseline;
     historical2018?: HistoricalBaseline;
   };
@@ -45,6 +48,9 @@ export interface StateElectionResult {
     otherVotes: number;
     reportingPct: number;
     status: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    candidates?: CandidateResult[];
+    rankedChoiceActive?: boolean;
+    rankedChoiceNote?: string;
     historical2022: HistoricalBaseline;
     historical2018?: HistoricalBaseline;
   };
@@ -56,7 +62,13 @@ export interface StateElectionResult {
     uncalledSeats: number;
     popularDemVotes: number;
     popularGopVotes: number;
+    popularOtherVotes?: number;
+    popularIndVotes?: number;
     reportingPct: number;
+    status?: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    candidates?: CandidateResult[];
+    rankedChoiceActive?: boolean;
+    rankedChoiceNote?: string;
     historical2022: {
       demSeats: number;
       gopSeats: number;
@@ -474,7 +486,7 @@ export function getPoliticalImpactAssessment(
       const g = state.house.popularGopVotes;
       const tot = d + g;
       margin = tot > 0 ? Math.abs((d / tot) * 100 - (g / tot) * 100) : 20;
-      totalVotes = tot;
+      totalVotes = tot + (state.house.popularOtherVotes || 0);
     }
   }
 
@@ -501,6 +513,9 @@ export function getPoliticalImpactAssessment(
   if (rankIdx !== -1) {
     score = Math.max(score, 100 - rankIdx * 4);
   }
+  if (chamber === 'house' && state.house?.rankedChoiceActive) {
+    score = 86;
+  }
 
   let level: PoliticalImpactLevel = 'low';
   let badgeLabel = 'Safe State';
@@ -510,10 +525,10 @@ export function getPoliticalImpactAssessment(
     level = 'critical';
     badgeLabel = '⚡ Tipping Point';
     title = 'Critical Decisive Tipping Point';
-  } else if (score >= 70 || rankIdx !== -1 && rankIdx < 8) {
+  } else if (score >= 70 || (rankIdx !== -1 && rankIdx < 8) || (chamber === 'house' && state.house?.rankedChoiceActive)) {
     level = 'high';
-    badgeLabel = 'High Impact';
-    title = 'Key Battleground (Potential Flip)';
+    badgeLabel = state.house?.rankedChoiceActive ? '⚡ RCV Tossup' : 'High Impact';
+    title = state.house?.rankedChoiceActive ? 'Ranked-Choice Instant Runoff' : 'Key Battleground (Potential Flip)';
   } else if (score >= 45) {
     level = 'medium';
     badgeLabel = 'Moderate Impact';
@@ -527,6 +542,18 @@ export function getPoliticalImpactAssessment(
   let decisiveCountiesText = '';
 
   switch (code) {
+    case 'AK':
+      if (chamber === 'house' && state.house?.rankedChoiceActive) {
+        whyItMatters = 'Alaska uses Ranked-Choice Voting (RCV). With Nick Begich III at 49.80% (< 50% outright victory threshold), instant runoff reallocation of eliminated candidates (Hafner 7.23% and McDermott 2.70%) will decide whether independent challenger Bill Hill can overcome the preliminary lead.';
+        decisiveCountiesText = 'Anchorage metro, Mat-Su Borough, Fairbanks, and remote bush absentee precincts.';
+      } else if (chamber === 'senate') {
+        whyItMatters = 'Alaska uses Ranked-Choice Voting (RCV). Dan Sullivan (48.32%) and Mary Peltola (47.81%) are in a razor-thin race under the 50% threshold, meaning second choices from Heikes (2.20%) and Sullivan Jr. (1.67%) will decide the Senate seat.';
+        decisiveCountiesText = 'Anchorage, Fairbanks North Star, Mat-Su Borough, and bush absentee ballots.';
+      } else {
+        whyItMatters = 'Alaska is a pivotal battleground where mail ballots and ranked-choice tabulation determine the outcome.';
+        decisiveCountiesText = 'Anchorage and interior boroughs against bush Alaska.';
+      }
+      break;
     case 'PA':
       whyItMatters = 'Pennsylvania serves as a mathematical fulcrum for congressional control. If the margin swings here, chamber majority shifts with over 90% probability.';
       decisiveCountiesText = 'Decided in suburban Bucks, working-class Northampton, and turnout in Philadelphia.';
@@ -612,7 +639,7 @@ export interface ElectionSurprise {
   currentLeaderParty: 'DEM' | 'GOP' | 'IND';
   currentLeaderPct: number;
   currentTrailingName: string;
-  currentTrailingParty: 'DEM' | 'GOP';
+  currentTrailingParty: 'DEM' | 'GOP' | 'IND';
   currentTrailingPct: number;
   impactScore: number;
 }
@@ -645,7 +672,7 @@ export function getTopElectionSurprises(
     let leadParty: 'DEM' | 'GOP' | 'IND' = 'DEM';
     let leadPct = 50;
     let trailName = '';
-    let trailParty: 'DEM' | 'GOP' = 'GOP';
+    let trailParty: 'DEM' | 'GOP' | 'IND' = 'GOP';
     let trailPct = 50;
 
     if (chamber === 'senate' && st.senate) {
@@ -705,9 +732,20 @@ export function getTopElectionSurprises(
       const gopPct = totalPop > 0 ? (st.house.popularGopVotes / totalPop) * 100 : 50;
       margin2026 = totalPop > 0 ? Number((demPct - gopPct).toFixed(1)) : 0;
       margin2022 = st.house.historical2022.margin;
-      votesCounted = totalPop;
+      votesCounted = totalPop + (st.house.popularOtherVotes || 0);
 
-      if (st.house.demSeats >= st.house.gopSeats) {
+      // If at-large single district with candidate list (e.g. Alaska AK-AL)
+      if (st.houseSeats === 1 && st.house.candidates && st.house.candidates.length >= 2) {
+        const sortedCands = [...st.house.candidates].sort((a, b) => b.votes - a.votes);
+        const top1 = sortedCands[0];
+        const top2 = sortedCands[1];
+        leadName = top1.name;
+        leadParty = top1.party === 'IND' ? 'IND' : top1.party === 'GOP' ? 'GOP' : 'DEM';
+        leadPct = top1.pct;
+        trailName = top2.name;
+        trailParty = top2.party === 'IND' ? 'IND' : top2.party === 'GOP' ? 'GOP' : 'DEM';
+        trailPct = top2.pct;
+      } else if (st.house.demSeats >= st.house.gopSeats) {
         leadName = `${st.house.demSeats} Dem Districts`;
         leadParty = 'DEM';
         leadPct = Number(demPct.toFixed(1));
@@ -732,7 +770,9 @@ export function getTopElectionSurprises(
     const flippedTo = isFlip ? (margin2026 > 0 ? 'DEM' : 'GOP') : undefined;
 
     let significance = 'Shift vs. 2022';
-    if (isFlip) {
+    if (chamber === 'house' && st.house?.rankedChoiceActive) {
+      significance = 'RCV Tossup';
+    } else if (isFlip) {
       significance = flippedTo === 'DEM' ? 'Flip to Dems' : 'Flip to GOP';
     } else if (swingValue >= 3.5) {
       significance = 'Dem Surge';

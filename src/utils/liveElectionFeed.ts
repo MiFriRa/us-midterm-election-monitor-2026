@@ -9,7 +9,7 @@
  * 100% Free, Open CORS, Zero API Keys required, Real-Time Live Data.
  */
 
-import { StateElectionResult } from './electionMath';
+import { CandidateResult, StateElectionResult } from './electionMath';
 
 export type LiveFeedProvider = 'civic_live_api' | 'public_json' | 'cet_live_clock' | 'simulation';
 
@@ -26,6 +26,9 @@ export interface LiveStatePatch {
     gopPct: number;
     reportingPct?: number;
     status: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    candidates?: CandidateResult[];
+    rankedChoiceActive?: boolean;
+    rankedChoiceNote?: string;
   };
   governor?: {
     demName?: string;
@@ -37,6 +40,9 @@ export interface LiveStatePatch {
     gopPct: number;
     reportingPct?: number;
     status: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    candidates?: CandidateResult[];
+    rankedChoiceActive?: boolean;
+    rankedChoiceNote?: string;
   };
   house?: {
     totalSeats?: number;
@@ -45,7 +51,13 @@ export interface LiveStatePatch {
     uncalledSeats?: number;
     popularDemVotes: number;
     popularGopVotes: number;
+    popularOtherVotes?: number;
+    popularIndVotes?: number;
     reportingPct?: number;
+    status?: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    candidates?: CandidateResult[];
+    rankedChoiceActive?: boolean;
+    rankedChoiceNote?: string;
   };
 }
 
@@ -138,6 +150,25 @@ export async function fetchFromCivicApiLive(): Promise<LiveSyncResponse> {
       else if (gopCand.winner) status = 'called_gop';
       else if (repPct > 20 && Math.abs(demCand.pct - gopCand.pct) <= 2.5) status = 'too_close_to_call';
 
+      const rawCands = Array.isArray(reg.candidates) ? reg.candidates : [];
+      const parsedCandidates: CandidateResult[] = rawCands.map((c: any) => {
+        let party: 'DEM' | 'GOP' | 'IND' | 'LIB' | 'GRN' = 'IND';
+        if (c.party === 'Democratic') party = 'DEM';
+        else if (c.party === 'Republican') party = 'GOP';
+        else if (c.party === 'Libertarian') party = 'LIB';
+        else if (c.party === 'Green') party = 'GRN';
+        else party = 'IND';
+
+        return {
+          name: c.name || 'Candidate',
+          party,
+          votes: Number(c.votes || 0),
+          pct: Number(Number(c.percent || 0).toFixed(2))
+        };
+      }).sort((a: CandidateResult, b: CandidateResult) => b.votes - a.votes);
+
+      const isRcvAlaska = code === 'AK' && parsedCandidates.length > 2 && parsedCandidates.every(c => c.pct < 50);
+
       patch.senate = {
         demName: demCand.name,
         gopName: gopCand.name,
@@ -147,7 +178,12 @@ export async function fetchFromCivicApiLive(): Promise<LiveSyncResponse> {
         demPct: demCand.pct,
         gopPct: gopCand.pct,
         reportingPct: Math.round(repPct),
-        status
+        status,
+        candidates: parsedCandidates.length > 0 ? parsedCandidates : undefined,
+        rankedChoiceActive: isRcvAlaska,
+        rankedChoiceNote: isRcvAlaska
+          ? "Neither candidate has reached the 50% majority threshold. If Sullivan (48.32%) and Peltola (47.81%) remain under 50% in final count, second-choice preferences from Heikes (2.20%) and Sullivan Jr. (1.67%) will be reallocated under Alaska Ranked-Choice Voting rules."
+          : undefined
       };
       patch.reportingPct = Math.max(patch.reportingPct, Math.round(repPct));
     }
@@ -167,6 +203,23 @@ export async function fetchFromCivicApiLive(): Promise<LiveSyncResponse> {
       else if (gopCand.winner) status = 'called_gop';
       else if (repPct > 20 && Math.abs(demCand.pct - gopCand.pct) <= 2.5) status = 'too_close_to_call';
 
+      const rawGovCands = Array.isArray(reg.candidates) ? reg.candidates : [];
+      const parsedGovCandidates: CandidateResult[] = rawGovCands.map((c: any) => {
+        let party: 'DEM' | 'GOP' | 'IND' | 'LIB' | 'GRN' = 'IND';
+        if (c.party === 'Democratic') party = 'DEM';
+        else if (c.party === 'Republican') party = 'GOP';
+        else if (c.party === 'Libertarian') party = 'LIB';
+        else if (c.party === 'Green') party = 'GRN';
+        else party = 'IND';
+
+        return {
+          name: c.name || 'Candidate',
+          party,
+          votes: Number(c.votes || 0),
+          pct: Number(Number(c.percent || 0).toFixed(2))
+        };
+      }).sort((a: CandidateResult, b: CandidateResult) => b.votes - a.votes);
+
       patch.governor = {
         demName: demCand.name,
         gopName: gopCand.name,
@@ -176,7 +229,8 @@ export async function fetchFromCivicApiLive(): Promise<LiveSyncResponse> {
         demPct: demCand.pct,
         gopPct: gopCand.pct,
         reportingPct: Math.round(repPct),
-        status
+        status,
+        candidates: parsedGovCandidates.length > 0 ? parsedGovCandidates : undefined
       };
       patch.reportingPct = Math.max(patch.reportingPct, Math.round(repPct));
     }
@@ -220,15 +274,38 @@ export async function fetchFromCivicApiLive(): Promise<LiveSyncResponse> {
       for (const c of cands) {
         if (c.party === 'Democratic') agg.popularDemVotes += Number(c.votes || 0);
         else if (c.party === 'Republican') agg.popularGopVotes += Number(c.votes || 0);
+        else if (c.party === 'Independent' || c.party === 'Nonpartisan') {
+          // If Independent or Nonpartisan is the democratic-coalition challenger (e.g. Alaska AK-AL)
+          agg.popularDemVotes += Number(c.votes || 0);
+        }
         if (c.winner) winnerParty = c.party;
       }
 
-      if (winnerParty === 'Democratic' || winnerParty === 'Independent') {
+      if (winnerParty === 'Democratic' || winnerParty === 'Independent' || winnerParty === 'Nonpartisan') {
         agg.demSeats++;
       } else if (winnerParty === 'Republican') {
         agg.gopSeats++;
       } else {
         agg.uncalledSeats++;
+      }
+
+      if (code === 'AK') {
+        const parsedHouseCands: CandidateResult[] = cands.map((c: any) => {
+          let party: 'DEM' | 'GOP' | 'IND' | 'LIB' | 'GRN' = 'IND';
+          if (c.party === 'Democratic') party = 'DEM';
+          else if (c.party === 'Republican') party = 'GOP';
+          else if (c.party === 'Libertarian') party = 'LIB';
+          else if (c.party === 'Green') party = 'GRN';
+          else party = 'IND';
+
+          return {
+            name: c.name || 'Candidate',
+            party,
+            votes: Number(c.votes || 0),
+            pct: Number(Number(c.percent || 0).toFixed(2))
+          };
+        }).sort((a: CandidateResult, b: CandidateResult) => b.votes - a.votes);
+        (agg as any).candidates = parsedHouseCands;
       }
     }
 
@@ -242,7 +319,13 @@ export async function fetchFromCivicApiLive(): Promise<LiveSyncResponse> {
         uncalledSeats: agg.uncalledSeats,
         popularDemVotes: agg.popularDemVotes,
         popularGopVotes: agg.popularGopVotes,
-        reportingPct: stateHouseReportingPct
+        reportingPct: stateHouseReportingPct,
+        candidates: (agg as any).candidates,
+        rankedChoiceActive: code === 'AK',
+        rankedChoiceNote: code === 'AK'
+          ? "Nick Begich III leads with 49.90% (< 50% outright victory threshold). Because no candidate reached 50%, Hafner (7.23%) and McDermott (2.70%) are eliminated, and second-choice preferences will be reallocated between Begich and independent challenger Bill Hill."
+          : undefined,
+        status: code === 'AK' ? 'too_close_to_call' : undefined
       };
       if (patch.reportingPct === 0) {
         patch.reportingPct = stateHouseReportingPct;
@@ -331,7 +414,10 @@ export function parseExternalElectionJson(raw: any): {
           demPct: dPct,
           gopPct: gPct,
           reportingPct: Math.min(100, Math.max(0, repPct)),
-          status: normalizeCallStatus(src.status || src.called)
+          status: normalizeCallStatus(src.status || src.called),
+          candidates: src.candidates,
+          rankedChoiceActive: src.rankedChoiceActive,
+          rankedChoiceNote: src.rankedChoiceNote
         };
       }
 
@@ -351,7 +437,10 @@ export function parseExternalElectionJson(raw: any): {
           demPct: dPct,
           gopPct: gPct,
           reportingPct: Math.min(100, Math.max(0, repPct)),
-          status: normalizeCallStatus(src.status || src.called)
+          status: normalizeCallStatus(src.status || src.called),
+          candidates: src.candidates,
+          rankedChoiceActive: src.rankedChoiceActive,
+          rankedChoiceNote: src.rankedChoiceNote
         };
       }
 
@@ -362,7 +451,11 @@ export function parseExternalElectionJson(raw: any): {
           gopSeats: Number(hse.gopSeats ?? hse.houseGopSeats ?? hse.gop_seats ?? 0),
           popularDemVotes: Number(hse.popularDemVotes ?? hse.demVotes ?? 0),
           popularGopVotes: Number(hse.popularGopVotes ?? hse.gopVotes ?? 0),
-          reportingPct: Math.min(100, Math.max(0, repPct))
+          reportingPct: Math.min(100, Math.max(0, repPct)),
+          candidates: hse.candidates,
+          rankedChoiceActive: hse.rankedChoiceActive,
+          rankedChoiceNote: hse.rankedChoiceNote,
+          status: hse.status
         };
       }
 
@@ -545,6 +638,9 @@ export function applyLivePatchesToStates(
         copy.senate.demCandidate.pct = patch.senate.demPct;
         copy.senate.gopCandidate.pct = patch.senate.gopPct;
         copy.senate.status = patch.senate.status;
+        if (patch.senate.candidates) copy.senate.candidates = patch.senate.candidates;
+        if (patch.senate.rankedChoiceActive !== undefined) copy.senate.rankedChoiceActive = patch.senate.rankedChoiceActive;
+        if (patch.senate.rankedChoiceNote !== undefined) copy.senate.rankedChoiceNote = patch.senate.rankedChoiceNote;
       } else if (copy.senate) {
         copy.senate.reportingPct = 0;
         copy.senate.status = 'uncalled';
@@ -563,6 +659,9 @@ export function applyLivePatchesToStates(
         copy.governor.demCandidate.pct = patch.governor.demPct;
         copy.governor.gopCandidate.pct = patch.governor.gopPct;
         copy.governor.status = patch.governor.status;
+        if (patch.governor.candidates) copy.governor.candidates = patch.governor.candidates;
+        if (patch.governor.rankedChoiceActive !== undefined) copy.governor.rankedChoiceActive = patch.governor.rankedChoiceActive;
+        if (patch.governor.rankedChoiceNote !== undefined) copy.governor.rankedChoiceNote = patch.governor.rankedChoiceNote;
       } else if (copy.governor) {
         copy.governor.reportingPct = 0;
         copy.governor.status = 'uncalled';
@@ -582,6 +681,12 @@ export function applyLivePatchesToStates(
               : Math.max(0, copy.house.totalSeats - patch.house.demSeats - patch.house.gopSeats);
           copy.house.popularDemVotes = patch.house.popularDemVotes;
           copy.house.popularGopVotes = patch.house.popularGopVotes;
+          if (patch.house.popularOtherVotes !== undefined) copy.house.popularOtherVotes = patch.house.popularOtherVotes;
+          if (patch.house.popularIndVotes !== undefined) copy.house.popularIndVotes = patch.house.popularIndVotes;
+          if (patch.house.candidates) copy.house.candidates = patch.house.candidates;
+          if (patch.house.rankedChoiceActive !== undefined) copy.house.rankedChoiceActive = patch.house.rankedChoiceActive;
+          if (patch.house.rankedChoiceNote !== undefined) copy.house.rankedChoiceNote = patch.house.rankedChoiceNote;
+          if (patch.house.status) copy.house.status = patch.house.status;
         } else {
           copy.house.reportingPct = patch.reportingPct;
         }

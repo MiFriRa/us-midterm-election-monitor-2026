@@ -111,18 +111,46 @@ export const BASE_STATES: StateElectionResult[] = [
       "demCandidate": {
         "name": "Mary Peltola",
         "party": "DEM",
-        "votes": 97782,
-        "pct": 47.6
+        "votes": 100504,
+        "pct": 47.81
       },
       "gopCandidate": {
         "name": "Dan Sullivan",
         "party": "GOP",
-        "votes": 99955,
-        "pct": 48.6
+        "votes": 101576,
+        "pct": 48.32
       },
-      "otherVotes": 3200,
-      "reportingPct": 71,
+      "otherVotes": 8138,
+      "reportingPct": 73,
       "status": "too_close_to_call",
+      "rankedChoiceActive": true,
+      "rankedChoiceNote": "Neither candidate has reached the 50% majority threshold. If Sullivan (48.32%) and Peltola (47.81%) remain under 50% in final count, second-choice preferences from Heikes (2.20%) and Sullivan Jr. (1.67%) will be reallocated under Alaska Ranked-Choice Voting rules.",
+      "candidates": [
+        {
+          "name": "Dan Sullivan",
+          "party": "GOP",
+          "votes": 101576,
+          "pct": 48.32
+        },
+        {
+          "name": "Mary Peltola",
+          "party": "DEM",
+          "votes": 100504,
+          "pct": 47.81
+        },
+        {
+          "name": "Gerald L. Heikes",
+          "party": "GOP",
+          "votes": 4631,
+          "pct": 2.20
+        },
+        {
+          "name": "Daniel J. Jr. Sullivan",
+          "party": "IND",
+          "votes": 3507,
+          "pct": 1.67
+        }
+      ],
       "historical2022": {
         "demPct": 46.1,
         "gopPct": 53.9,
@@ -160,9 +188,40 @@ export const BASE_STATES: StateElectionResult[] = [
       "demSeats": 0,
       "gopSeats": 0,
       "uncalledSeats": 1,
-      "popularDemVotes": 14739,
-      "popularGopVotes": 102548,
-      "reportingPct": 70,
+      "popularDemVotes": 99131,
+      "popularGopVotes": 104276,
+      "popularOtherVotes": 5658,
+      "popularIndVotes": 83996,
+      "reportingPct": 92,
+      "status": "too_close_to_call",
+      "rankedChoiceActive": true,
+      "rankedChoiceNote": "Nick Begich III leads with 49.80% (< 50% outright victory threshold). Because no candidate reached 50%, Hafner (7.23%) and McDermott (2.70%) are eliminated, and second-choice preferences will be reallocated between Begich and independent challenger Bill Hill.",
+      "candidates": [
+        {
+          "name": "Nick Begich III",
+          "party": "GOP",
+          "votes": 104276,
+          "pct": 49.80
+        },
+        {
+          "name": "Bill Hill",
+          "party": "IND",
+          "votes": 83996,
+          "pct": 40.11
+        },
+        {
+          "name": "Eric Hafner",
+          "party": "DEM",
+          "votes": 15135,
+          "pct": 7.23
+        },
+        {
+          "name": "Jim McDermott",
+          "party": "LIB",
+          "votes": 5658,
+          "pct": 2.70
+        }
+      ],
       "historical2022": {
         "demSeats": 1,
         "gopSeats": 0,
