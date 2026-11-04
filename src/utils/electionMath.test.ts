@@ -8,6 +8,7 @@ import {
   calculateNationalChamberTally,
   getPoliticalImpactAssessment,
   getTopElectionSurprises,
+  getEffectiveRaceMarginAndSwing,
   calculateSenateSeatDistribution,
   calculateHouseSeatDistribution,
   normalizeSeatHeights,
@@ -532,6 +533,38 @@ test('calculateHouseSeatDistribution accounts for all 435 voting seats and sorts
     );
   }
 });
+
+test('getEffectiveRaceMarginAndSwing generalizes Top-2 competitor margin in multi-candidate races (e.g. Montana)', () => {
+  const mtState = BASE_STATES.find(s => s.id === 'MT');
+  assert.ok(mtState && mtState.senate);
+
+  const effective = getEffectiveRaceMarginAndSwing(mtState.senate);
+  assert.equal(effective.isMultiCandidate, true);
+  assert.equal(effective.leadCandidate.name, 'Kurt Alme');
+  assert.equal(effective.leadCandidate.party, 'GOP');
+  assert.equal(effective.runnerUpCandidate.name, 'Seth Bodnar');
+  assert.equal(effective.runnerUpCandidate.party, 'IND');
+
+  // Direct margin between Alme (48.15%) and Bodnar (38.13%) is ~10.02 pp GOP lead (-10.02)
+  assert.ok(
+    effective.effectiveMargin2026 <= -9.5 && effective.effectiveMargin2026 >= -10.5,
+    `Expected margin around -10.02, got ${effective.effectiveMargin2026}`
+  );
+
+  // Compared to 2022 baseline (-11.0 pp GOP), swing is practically flat (~ +1.0 pp to Bodnar/anti-GOP), NOT +25.5 pp!
+  assert.ok(
+    effective.swingVs2022 >= -0.5 && effective.swingVs2022 <= 2.0,
+    `Expected swing around +1.0, got ${effective.swingVs2022}`
+  );
+
+  // In Senate seat distribution, Montana should have rawSurpriseScore = 0 and baseline height = 0.20
+  const dist = calculateSenateSeatDistribution(BASE_STATES);
+  const mtSeat = dist.gopSeats.find(s => s.stateCode === 'MT');
+  assert.ok(mtSeat, 'Montana seat should be present in GOP seats');
+  assert.equal(mtSeat.rawSurpriseScore, 0, 'Montana should have 0 surprise bonus because GOP margin narrowed slightly');
+  assert.equal(mtSeat.normalizedHeight, 0.20, 'Montana seat height should be baseline 0.20');
+});
+
 
 
 

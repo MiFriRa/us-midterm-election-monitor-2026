@@ -645,6 +645,75 @@ export interface ElectionSurprise {
 }
 
 /**
+ * Computes effective two-coalition / top-2 margin and swing.
+ * Generalizes across all states and chambers: if a candidate list with 3rd-party
+ * or Independent contenders is present (e.g. Montana, Alaska, Nebraska, Maine),
+ * it measures the true Direct Competitor Margin (Top 1 vs. Top 2) rather than
+ * artificially inflating margins when an Independent splits the vote.
+ */
+export function getEffectiveRaceMarginAndSwing(contest: {
+  demCandidate: CandidateResult;
+  gopCandidate: CandidateResult;
+  candidates?: CandidateResult[];
+  historical2022: HistoricalBaseline;
+  reportingPct: number;
+}): {
+  effectiveMargin2026: number; // Signed: positive = Dem / anti-GOP lead, negative = GOP lead
+  margin2022: number;
+  swingVs2022: number; // Signed swing vs 2022 (positive = swung Dem/anti-GOP, negative = swung GOP)
+  leadCandidate: CandidateResult;
+  runnerUpCandidate: CandidateResult;
+  isMultiCandidate: boolean;
+} {
+  const { demCandidate, gopCandidate, candidates, historical2022, reportingPct } = contest;
+  const margin2022 = historical2022.margin;
+
+  // If a multi-candidate list exists with at least 2 candidates
+  if (candidates && candidates.length >= 2 && reportingPct > 0) {
+    const sorted = [...candidates].sort((a, b) => {
+      if (b.votes !== a.votes) return b.votes - a.votes;
+      return b.pct - a.pct;
+    });
+
+    const top1 = sorted[0];
+    const top2 = sorted[1];
+    const directMargin = Number(Math.abs(top1.pct - top2.pct).toFixed(2));
+
+    // Polarity: If the leader is GOP, margin is negative; if DEM or anti-GOP IND, positive
+    const isGopLeader = top1.party === 'GOP';
+    const effectiveMargin2026 = Number((isGopLeader ? -directMargin : directMargin).toFixed(1));
+    const swingVs2022 = Number((effectiveMargin2026 - margin2022).toFixed(1));
+
+    return {
+      effectiveMargin2026,
+      margin2022,
+      swingVs2022,
+      leadCandidate: top1,
+      runnerUpCandidate: top2,
+      isMultiCandidate: true
+    };
+  }
+
+  // Standard two-party contest
+  const demPct = reportingPct > 0 ? demCandidate.pct : 50;
+  const gopPct = reportingPct > 0 ? gopCandidate.pct : 50;
+  const effectiveMargin2026 = reportingPct > 0 ? Number((demPct - gopPct).toFixed(1)) : 0;
+  const swingVs2022 = Number((effectiveMargin2026 - margin2022).toFixed(1));
+
+  const leadCandidate = demPct >= gopPct ? demCandidate : gopCandidate;
+  const runnerUpCandidate = demPct >= gopPct ? gopCandidate : demCandidate;
+
+  return {
+    effectiveMargin2026,
+    margin2022,
+    swingVs2022,
+    leadCandidate,
+    runnerUpCandidate,
+    isMultiCandidate: false
+  };
+}
+
+/**
  * Returns the top election surprises / largest swings compared to 2022 baseline.
  * Prioritizes flips, largest electoral swings, citizen/population weight, and active vote reporting.
  * When no states have reported votes yet (pre-close), returns the top populous watch-states to monitor as polls close.
@@ -678,51 +747,31 @@ export function getTopElectionSurprises(
     if (chamber === 'senate' && st.senate) {
       hasContest = true;
       repPct = st.senate.reportingPct;
-      const demPct = repPct > 0 ? st.senate.demCandidate.pct : 50;
-      const gopPct = repPct > 0 ? st.senate.gopCandidate.pct : 50;
-      margin2026 = repPct > 0 ? Number((demPct - gopPct).toFixed(1)) : 0;
-      margin2022 = st.senate.historical2022.margin;
-      votesCounted = st.senate.demCandidate.votes + st.senate.gopCandidate.votes;
+      const effective = getEffectiveRaceMarginAndSwing(st.senate);
+      margin2026 = effective.effectiveMargin2026;
+      margin2022 = effective.margin2022;
+      votesCounted = st.senate.demCandidate.votes + st.senate.gopCandidate.votes + (st.senate.otherVotes || 0);
 
-      if (demPct >= gopPct) {
-        leadName = st.senate.demCandidate.name;
-        leadParty = 'DEM';
-        leadPct = demPct;
-        trailName = st.senate.gopCandidate.name;
-        trailParty = 'GOP';
-        trailPct = gopPct;
-      } else {
-        leadName = st.senate.gopCandidate.name;
-        leadParty = 'GOP';
-        leadPct = gopPct;
-        trailName = st.senate.demCandidate.name;
-        trailParty = 'DEM';
-        trailPct = demPct;
-      }
+      leadName = effective.leadCandidate.name;
+      leadParty = effective.leadCandidate.party === 'IND' ? 'IND' : effective.leadCandidate.party === 'GOP' ? 'GOP' : 'DEM';
+      leadPct = effective.leadCandidate.pct;
+      trailName = effective.runnerUpCandidate.name;
+      trailParty = effective.runnerUpCandidate.party === 'IND' ? 'IND' : effective.runnerUpCandidate.party === 'GOP' ? 'GOP' : 'DEM';
+      trailPct = effective.runnerUpCandidate.pct;
     } else if (chamber === 'governor' && st.governor) {
       hasContest = true;
       repPct = st.governor.reportingPct;
-      const demPct = repPct > 0 ? st.governor.demCandidate.pct : 50;
-      const gopPct = repPct > 0 ? st.governor.gopCandidate.pct : 50;
-      margin2026 = repPct > 0 ? Number((demPct - gopPct).toFixed(1)) : 0;
-      margin2022 = st.governor.historical2022.margin;
-      votesCounted = st.governor.demCandidate.votes + st.governor.gopCandidate.votes;
+      const effective = getEffectiveRaceMarginAndSwing(st.governor);
+      margin2026 = effective.effectiveMargin2026;
+      margin2022 = effective.margin2022;
+      votesCounted = st.governor.demCandidate.votes + st.governor.gopCandidate.votes + (st.governor.otherVotes || 0);
 
-      if (demPct >= gopPct) {
-        leadName = st.governor.demCandidate.name;
-        leadParty = 'DEM';
-        leadPct = demPct;
-        trailName = st.governor.gopCandidate.name;
-        trailParty = 'GOP';
-        trailPct = gopPct;
-      } else {
-        leadName = st.governor.gopCandidate.name;
-        leadParty = 'GOP';
-        leadPct = gopPct;
-        trailName = st.governor.demCandidate.name;
-        trailParty = 'DEM';
-        trailPct = demPct;
-      }
+      leadName = effective.leadCandidate.name;
+      leadParty = effective.leadCandidate.party === 'IND' ? 'IND' : effective.leadCandidate.party === 'GOP' ? 'GOP' : 'DEM';
+      leadPct = effective.leadCandidate.pct;
+      trailName = effective.runnerUpCandidate.name;
+      trailParty = effective.runnerUpCandidate.party === 'IND' ? 'IND' : effective.runnerUpCandidate.party === 'GOP' ? 'GOP' : 'DEM';
+      trailPct = effective.runnerUpCandidate.pct;
     } else if (chamber === 'house' && st.house) {
       if (st.id === 'DC') return;
       hasContest = true;
@@ -745,6 +794,8 @@ export function getTopElectionSurprises(
         trailName = top2.name;
         trailParty = top2.party === 'IND' ? 'IND' : top2.party === 'GOP' ? 'GOP' : 'DEM';
         trailPct = top2.pct;
+        const directMargin = Number(Math.abs(top1.pct - top2.pct).toFixed(1));
+        margin2026 = top1.party === 'GOP' ? -directMargin : directMargin;
       } else if (st.house.demSeats >= st.house.gopSeats) {
         leadName = `${st.house.demSeats} Dem Districts`;
         leadParty = 'DEM';
@@ -950,9 +1001,8 @@ export function calculateSenateSeatDistribution(
 
     if (isDemCalled) {
       const isFlip = baseWinner === 'gop';
-      const margin2026 = Number((s.demCandidate.pct - s.gopCandidate.pct).toFixed(1));
-      const margin2022 = Number(s.historical2022.margin.toFixed(1));
-      const swing = Number((margin2026 - margin2022).toFixed(1));
+      const effective = getEffectiveRaceMarginAndSwing(s);
+      const swing = effective.swingVs2022;
       const swingBonus = Math.max(0, swing);
       const flipBonus = isFlip ? 15.0 : 0.0;
       const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
@@ -960,7 +1010,7 @@ export function calculateSenateSeatDistribution(
       rawDemSeats.push({
         id: `sen-${st.stateCode}`,
         stateCode: st.stateCode,
-        label: `${st.stateName}: ${s.demCandidate.name} (DEM)`,
+        label: `${st.stateName}: ${effective.leadCandidate.name} (${effective.leadCandidate.party})`,
         chamber: 'senate',
         party: 'dem',
         isHoldover: false,
@@ -969,14 +1019,14 @@ export function calculateSenateSeatDistribution(
         rawSurpriseScore,
         normalizedHeight: minHeightRatio,
         reportingPct: s.reportingPct,
-        margin2026,
-        margin2022
+        margin2026: effective.effectiveMargin2026,
+        margin2022: effective.margin2022
       });
     } else if (isGopCalled) {
       const isFlip = baseWinner === 'dem';
-      const margin2026 = Number((s.gopCandidate.pct - s.demCandidate.pct).toFixed(1));
-      const margin2022 = Number((-s.historical2022.margin).toFixed(1));
-      const swing = Number((margin2026 - margin2022).toFixed(1));
+      const effective = getEffectiveRaceMarginAndSwing(s);
+      // For GOP, positive swing means GOP expanded lead vs 2022
+      const swing = Number((-effective.swingVs2022).toFixed(1));
       const swingBonus = Math.max(0, swing);
       const flipBonus = isFlip ? 15.0 : 0.0;
       const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
@@ -984,7 +1034,7 @@ export function calculateSenateSeatDistribution(
       rawGopSeats.push({
         id: `sen-${st.stateCode}`,
         stateCode: st.stateCode,
-        label: `${st.stateName}: ${s.gopCandidate.name} (GOP)`,
+        label: `${st.stateName}: ${effective.leadCandidate.name} (${effective.leadCandidate.party})`,
         chamber: 'senate',
         party: 'gop',
         isHoldover: false,
@@ -993,8 +1043,8 @@ export function calculateSenateSeatDistribution(
         rawSurpriseScore,
         normalizedHeight: minHeightRatio,
         reportingPct: s.reportingPct,
-        margin2026,
-        margin2022
+        margin2026: -effective.effectiveMargin2026,
+        margin2022: -effective.margin2022
       });
     } else {
       uncalledCount++;
@@ -1046,9 +1096,19 @@ export function calculateHouseSeatDistribution(
     uncalledCount += h.uncalledSeats;
 
     const totalPop = (h.popularDemVotes || 0) + (h.popularGopVotes || 0);
-    const currMargin = totalPop > 0
+    let currMargin = totalPop > 0
       ? Number((((h.popularDemVotes - h.popularGopVotes) / totalPop) * 100).toFixed(1))
       : h.historical2022.margin;
+
+    // Use Top-2 Direct Competitor margin if at-large multi-candidate contest (e.g. Alaska)
+    if (st.houseSeats === 1 && h.candidates && h.candidates.length >= 2) {
+      const sorted = [...h.candidates].sort((a, b) => b.votes - a.votes);
+      const top1 = sorted[0];
+      const top2 = sorted[1];
+      const directMargin = Number(Math.abs(top1.pct - top2.pct).toFixed(1));
+      currMargin = top1.party === 'GOP' ? -directMargin : directMargin;
+    }
+
     const demStateSwing = Number((currMargin - h.historical2022.margin).toFixed(1));
     const gopStateSwing = Number((-demStateSwing).toFixed(1));
 

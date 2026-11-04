@@ -1676,17 +1676,43 @@ export const BASE_STATES: StateElectionResult[] = [
       "demCandidate": {
         "name": "Alani Bankhead",
         "party": "DEM",
-        "votes": 47972,
-        "pct": 11.8
+        "votes": 49813,
+        "pct": 11.91
       },
       "gopCandidate": {
         "name": "Kurt Alme",
         "party": "GOP",
-        "votes": 195805,
-        "pct": 48.3
+        "votes": 201399,
+        "pct": 48.15
       },
-      "otherVotes": 6200,
-      "reportingPct": 72,
+      "candidates": [
+        {
+          "name": "Kurt Alme",
+          "party": "GOP",
+          "votes": 201399,
+          "pct": 48.15
+        },
+        {
+          "name": "Seth Bodnar",
+          "party": "IND",
+          "votes": 159468,
+          "pct": 38.13
+        },
+        {
+          "name": "Alani Bankhead",
+          "party": "DEM",
+          "votes": 49813,
+          "pct": 11.91
+        },
+        {
+          "name": "Kyle Austin",
+          "party": "LIB",
+          "votes": 7579,
+          "pct": 1.81
+        }
+      ],
+      "otherVotes": 167047,
+      "reportingPct": 100,
       "status": "called_gop",
       "historical2022": {
         "demPct": 44.5,
