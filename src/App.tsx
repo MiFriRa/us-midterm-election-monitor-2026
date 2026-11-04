@@ -20,7 +20,6 @@ import {
   LiveSyncResponse,
   fetchFromCustomJsonEndpoint,
   getTimelineIndexForRealTime,
-  buildInterpolatedCetLiveSync,
   applyLivePatchesToStates
 } from './utils/liveElectionFeed';
 
@@ -42,11 +41,11 @@ export default function App() {
   // Live adapter engine state (100% free, zero API keys required)
   const [isLivePolling, setIsLivePolling] = useState<boolean>(true);
   const [pollingIntervalSeconds, setPollingIntervalSeconds] = useState<number>(60);
-  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(() => new Date());
+  const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [recordedSnapshotsCount, setRecordedSnapshotsCount] = useState<number>(HOURLY_TIMELINE.length);
   const [selectedFeed, setSelectedFeed] = useState<LiveFeedProvider>('cet_live_clock');
   const [customUrl, setCustomUrl] = useState<string>('/live-test-feed.json');
-  const [liveSyncData, setLiveSyncData] = useState<LiveSyncResponse | null>(() => buildInterpolatedCetLiveSync(BASE_STATES, new Date()));
+  const [liveSyncData, setLiveSyncData] = useState<LiveSyncResponse | null>(null);
   const [isSyncingLive, setIsSyncingLive] = useState<boolean>(false);
   const [lastSyncStatus, setLastSyncStatus] = useState<{ ok: boolean; message: string; latencyMs?: number } | null>(null);
 
@@ -77,21 +76,17 @@ export default function App() {
     }
 
     if (selectedFeed === 'cet_live_clock') {
-      const now = new Date();
-      const targetIdx = getTimelineIndexForRealTime(now);
-      const interpolated = buildInterpolatedCetLiveSync(BASE_STATES, now);
+      const targetIdx = getTimelineIndexForRealTime(new Date());
       const snap = HOURLY_TIMELINE[targetIdx];
-      setLiveSyncData(interpolated);
+      setLiveSyncData(null);
       setIsBacktestMode(false);
       setCurrentHourIndex(targetIdx);
-      setLastSyncTime(now);
+      setLastSyncTime(new Date());
       setLastSyncStatus({
         ok: true,
         message:
-          targetIdx === 0 && !interpolated
-            ? `Synced with real-time CET clock (${now.toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET): Polls are still open across the U.S. (0% counted). First poll closures begin at 00:00 CET.`
-            : interpolated
-            ? `Synced with real-time CET clock: ${interpolated.sourceSummary} (${interpolated.nationalReportingPct}% national reporting).`
+          targetIdx === 0
+            ? `Synced with real-time CET clock (${new Date().toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET): Polls are still open across the U.S. (0% counted). First poll closures begin at 00:00 CET.`
             : `Synced with real-time CET clock: Active wave ${snap.hourLabel} (${snap.nationalReportingPct}% national reporting).`,
         latencyMs: 8
       });
@@ -307,9 +302,7 @@ export default function App() {
 
   // Compute CET time representation accurately for each snapshot
   const currentCetLabel = isLiveFeedActive
-    ? liveSyncData.provider === 'cet_live_clock'
-      ? `${new Date(liveSyncData.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Copenhagen' })} CET`
-      : `LIVE SYNC (${new Date(liveSyncData.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit', timeZone: 'Europe/Copenhagen' })} CET)`
+    ? `LIVE SYNC (${new Date(liveSyncData.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET)`
     : currentSnapshot.cetLabel || currentSnapshot.hourLabel;
   const currentHourLabel = isBacktestMode
     ? '2022 Certified Archive'
