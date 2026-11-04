@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, RefreshCw, CheckCircle, Database, Terminal, ShieldCheck, PlayCircle } from 'lucide-react';
+import { X, RefreshCw, CheckCircle, Database, PlayCircle } from 'lucide-react';
 import { StateElectionResult, calculateSwing } from '../utils/electionMath';
 
 interface ApiInspectorModalProps {
@@ -15,7 +15,7 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
 }) => {
   const [selectedState, setSelectedState] = useState<string>('PA');
   const [selectedDistrict, setSelectedDistrict] = useState<string>('PA-07');
-  const [apiUrl, setApiUrl] = useState<string>('https://api.elections2026.org/v1/returns');
+  const [apiUrl, setApiUrl] = useState<string>('https://civicapi.org/api/v2/race/87528');
   const [isTesting, setIsTesting] = useState<boolean>(false);
   const [testResult, setTestResult] = useState<{
     status: 'success' | 'error';
@@ -34,42 +34,42 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
   if (!isOpen) return null;
 
   const currentState = statesData[selectedState];
-  const houseData = currentState?.house;
-  const senateData = currentState?.senate;
 
-  const handleTestEndpoint = () => {
+  const handleTestEndpoint = async () => {
     setIsTesting(true);
-    setTimeout(() => {
-      setIsTesting(false);
-
-      // Generate realistic mock response matching public election feeds
-      const mockPayload = {
-        meta: {
-          timestamp: new Date().toISOString(),
-          cycle: '2026 Midterms',
-          state: selectedState,
-          feed_source: 'Official Board of Elections & Aggregated Tally',
-          reporting_interval: '1h'
-        },
-        senate: senateData ? {
-          race_id: `SEN-2026-${selectedState}`,
-          reporting_pct: senateData.reportingPct,
-          candidates: [
-            { name: senateData.demCandidate.name, party: 'DEM', votes: senateData.demCandidate.votes, pct: senateData.demCandidate.pct },
-            { name: senateData.gopCandidate.name, party: 'GOP', votes: senateData.gopCandidate.votes, pct: senateData.gopCandidate.pct }
-          ],
-          historical_2022_margin: senateData.historical2022.margin
-        } : null,
-        house_districts: houseData?.keyBattlegroundDistricts || []
-      };
+    const startMs = performance.now();
+    try {
+      const response = await fetch(apiUrl, { headers: { Accept: 'application/json' }, cache: 'no-store' });
+      const latencyMs = Math.round(performance.now() - startMs);
+      const data = await response.json();
+      const stateKey = selectedState.toLowerCase();
+      const stateLive = data?.region_results?.[stateKey] || null;
 
       setTestResult({
-        status: 'success',
-        latencyMs: Math.floor(45 + Math.random() * 60),
-        timestamp: new Date().toLocaleTimeString(),
-        payload: mockPayload
+        status: response.ok ? 'success' : 'error',
+        latencyMs,
+        timestamp: new Date().toLocaleTimeString('en-GB'),
+        payload: stateLive
+          ? {
+              election_name: data.election_name,
+              national_percent_reporting: data.percent_reporting,
+              last_updated: data.last_updated,
+              state: selectedState,
+              state_result: stateLive
+            }
+          : data
       });
-    }, 400);
+    } catch (err: any) {
+      const latencyMs = Math.round(performance.now() - startMs);
+      setTestResult({
+        status: 'error',
+        latencyMs,
+        timestamp: new Date().toLocaleTimeString('en-GB'),
+        payload: { error: err?.message || 'Failed to fetch endpoint' }
+      });
+    } finally {
+      setIsTesting(false);
+    }
   };
 
   const handleRunBatchBacktest = () => {
@@ -112,17 +112,17 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
             </div>
             <div>
               <h2 className="text-base font-bold text-white tracking-tight">
-                API Endpoint & Historical Backtesting Console
+                Live API Endpoint & 2022 Baseline Inspector
               </h2>
               <div className="text-xs text-slate-400 font-mono">
-                Verify hourly public feeds, JSON schema integrity & 2022 swing baselines
+                Inspect live civicAPI v2 JSON payloads & 2022 swing baselines
               </div>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors cursor-pointer"
           >
             <X className="w-5 h-5" />
           </button>
@@ -131,15 +131,15 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
         {/* Modal Content */}
         <div className="p-6 overflow-y-auto space-y-6 text-xs text-slate-300">
           
-          {/* Section 1: Hourly Live Endpoint Config */}
+          {/* Section 1: Live Endpoint Config */}
           <div className="space-y-3 bg-slate-900/60 p-4 rounded-xl border border-slate-800">
             <div className="flex items-center justify-between">
               <span className="font-semibold text-white uppercase tracking-wider font-mono text-[11px]">
-                1. Hourly Live Feed Configuration
+                1. Live civicAPI v2 Endpoint Inspector
               </span>
               <span className="text-emerald-400 font-mono text-[11px] flex items-center gap-1">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                Hourly Poller Active
+                Live Feed Active
               </span>
             </div>
 
@@ -149,15 +149,15 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
                 value={apiUrl}
                 onChange={(e) => setApiUrl(e.target.value)}
                 className="w-full bg-slate-950 border border-slate-700 rounded-lg px-3 py-2 text-xs font-mono text-slate-200 focus:outline-none focus:border-purple-500"
-                placeholder="https://api.elections.org/v1/midterm-tally"
+                placeholder="https://civicapi.org/api/v2/race/87528"
               />
               <button
                 onClick={handleTestEndpoint}
                 disabled={isTesting}
-                className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap"
+                className="w-full sm:w-auto px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white font-semibold rounded-lg transition-colors flex items-center justify-center gap-1.5 shrink-0 whitespace-nowrap cursor-pointer"
               >
                 <RefreshCw className={`w-3.5 h-3.5 ${isTesting ? 'animate-spin' : ''}`} />
-                <span>Test Feed</span>
+                <span>Fetch Live JSON</span>
               </button>
             </div>
 
@@ -165,7 +165,7 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
               <div className="p-3 bg-slate-950 rounded-lg border border-slate-800 font-mono text-[11px] space-y-2">
                 <div className="flex items-center justify-between text-slate-400">
                   <span className="flex items-center gap-1 text-emerald-400 font-semibold">
-                    <CheckCircle className="w-3.5 h-3.5" /> 200 OK · Schema Valid
+                    <CheckCircle className="w-3.5 h-3.5" /> {testResult.status === 'success' ? '200 OK · Live Payload' : 'Request Failed'}
                   </span>
                   <span>Latency: {testResult.latencyMs}ms · Checked at {testResult.timestamp}</span>
                 </div>
@@ -226,7 +226,7 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
                       </div>
                     </div>
                     <div>
-                      <div className="text-slate-500">2026 Model</div>
+                      <div className="text-slate-500">2026 Live</div>
                       <div className="font-semibold text-slate-300">
                         {currentState.senate.demCandidate.pct}% D - {currentState.senate.gopCandidate.pct}% R
                       </div>
@@ -260,7 +260,7 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
               </span>
               <button
                 onClick={handleRunBatchBacktest}
-                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-mono font-semibold transition-colors flex items-center gap-1.5"
+                className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 rounded text-xs font-mono font-semibold transition-colors flex items-center gap-1.5 cursor-pointer"
               >
                 <PlayCircle className="w-3.5 h-3.5 text-purple-400" />
                 <span>Execute Sanity Pass</span>
@@ -294,11 +294,11 @@ export const ApiInspectorModal: React.FC<ApiInspectorModalProps> = ({
         {/* Modal Footer */}
         <div className="p-4 border-t border-slate-800 bg-slate-900/50 flex items-center justify-between">
           <span className="text-[11px] text-slate-500 font-mono">
-            Ground Truth: 2022 Midterm Certified Results Archive
+            Ground Truth: 2022 Midterm Certified Results Archive + civicAPI v2 Live
           </span>
           <button
             onClick={onClose}
-            className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors"
+            className="px-4 py-1.5 bg-slate-800 hover:bg-slate-700 text-white rounded-lg text-xs font-semibold transition-colors cursor-pointer"
           >
             Done
           </button>

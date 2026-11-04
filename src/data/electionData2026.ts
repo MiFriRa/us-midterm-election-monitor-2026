@@ -29,1505 +29,3139 @@ export interface HourlySnapshot {
 
 export const BASE_STATES: StateElectionResult[] = [
   {
-    id: 'AL',
-    stateCode: 'AL',
-    stateName: 'Alabama',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 7,
-    senate: {
-      demCandidate: { name: 'Doug Jones', party: 'DEM', votes: 685400, pct: 38.2 },
-      gopCandidate: { name: 'Tommy Tuberville', party: 'GOP', votes: 1105200, pct: 61.8 },
-      otherVotes: 8500,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 34.5, gopPct: 65.2, margin: -30.7, winner: 'gop', reportingPct: 100 }
+    "id": "AL",
+    "stateCode": "AL",
+    "stateName": "Alabama",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 7,
+    "senate": {
+      "demCandidate": {
+        "name": "Everett Wess",
+        "party": "DEM",
+        "votes": 759335,
+        "pct": 45.3
+      },
+      "gopCandidate": {
+        "name": "Barry Moore",
+        "party": "GOP",
+        "votes": 917347,
+        "pct": 54.7
+      },
+      "otherVotes": 8500,
+      "reportingPct": 98,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 34.5,
+        "gopPct": 65.2,
+        "margin": -30.7,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Yolanda Flowers', party: 'DEM', votes: 590000, pct: 33.1 },
-      gopCandidate: { name: 'Kay Ivey', party: 'GOP', votes: 1190000, pct: 66.9 },
-      otherVotes: 12000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 30.6, gopPct: 66.9, margin: -36.3, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Doug Jones",
+        "party": "DEM",
+        "votes": 803468,
+        "pct": 47.9
+      },
+      "gopCandidate": {
+        "name": "Tommy Tuberville",
+        "party": "GOP",
+        "votes": 872445,
+        "pct": 52.1
+      },
+      "otherVotes": 12000,
+      "reportingPct": 98,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 30.6,
+        "gopPct": 66.9,
+        "margin": -36.3,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 7,
-      demSeats: 2,
-      gopSeats: 5,
-      uncalledSeats: 0,
-      popularDemVotes: 640000,
-      popularGopVotes: 1120000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 6, demPopularPct: 31.5, gopPopularPct: 67.2, margin: -35.7 }
+    "house": {
+      "totalSeats": 7,
+      "demSeats": 2,
+      "gopSeats": 5,
+      "uncalledSeats": 0,
+      "popularDemVotes": 763464,
+      "popularGopVotes": 914967,
+      "reportingPct": 95,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 6,
+        "demPopularPct": 31.5,
+        "gopPopularPct": 67.2,
+        "margin": -35.7
+      }
     }
   },
   {
-    id: 'AK',
-    stateCode: 'AK',
-    stateName: 'Alaska',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 1,
-    senate: {
-      demCandidate: { name: 'Mary Peltola', party: 'DEM', votes: 144500, pct: 49.4 },
-      gopCandidate: { name: 'Dan Sullivan', party: 'GOP', votes: 147800, pct: 50.6 },
-      otherVotes: 3200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 46.1, gopPct: 53.9, margin: -7.8, winner: 'gop', reportingPct: 100 }
+    "id": "AK",
+    "stateCode": "AK",
+    "stateName": "Alaska",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 1,
+    "senate": {
+      "demCandidate": {
+        "name": "Mary Peltola",
+        "party": "DEM",
+        "votes": 97782,
+        "pct": 47.6
+      },
+      "gopCandidate": {
+        "name": "Dan Sullivan",
+        "party": "GOP",
+        "votes": 99955,
+        "pct": 48.6
+      },
+      "otherVotes": 3200,
+      "reportingPct": 71,
+      "status": "too_close_to_call",
+      "historical2022": {
+        "demPct": 46.1,
+        "gopPct": 53.9,
+        "margin": -7.8,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Les Gara', party: 'DEM', votes: 132000, pct: 46.5 },
-      gopCandidate: { name: 'Mike Dunleavy', party: 'GOP', votes: 152000, pct: 53.5 },
-      otherVotes: 4000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 44.2, gopPct: 52.1, margin: -7.9, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Jonathan S. \"JKT\" Kreiss-Tomkins",
+        "party": "DEM",
+        "votes": 99572,
+        "pct": 49
+      },
+      "gopCandidate": {
+        "name": "Bernadette M. Wilson",
+        "party": "GOP",
+        "votes": 60037,
+        "pct": 29.5
+      },
+      "otherVotes": 4000,
+      "reportingPct": 70,
+      "status": "uncalled",
+      "historical2022": {
+        "demPct": 44.2,
+        "gopPct": 52.1,
+        "margin": -7.9,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 1,
-      demSeats: 0,
-      gopSeats: 1,
-      uncalledSeats: 0,
-      popularDemVotes: 145000,
-      popularGopVotes: 148000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 0, demPopularPct: 54.9, gopPopularPct: 45.1, margin: 9.8 }
+    "house": {
+      "totalSeats": 1,
+      "demSeats": 0,
+      "gopSeats": 0,
+      "uncalledSeats": 1,
+      "popularDemVotes": 14739,
+      "popularGopVotes": 102548,
+      "reportingPct": 70,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 0,
+        "demPopularPct": 54.9,
+        "gopPopularPct": 45.1,
+        "margin": 9.8
+      }
     }
   },
   {
-    id: 'AZ',
-    stateCode: 'AZ',
-    stateName: 'Arizona',
-    hasSenateRace: false, // Class 1 & 3 in other cycles
-    hasGovernorRace: true,
-    houseSeats: 9,
-    governor: {
-      demCandidate: { name: 'Katie Hobbs', party: 'DEM', votes: 1325400, pct: 50.9 },
-      gopCandidate: { name: 'Kari Lake', party: 'GOP', votes: 1278600, pct: 49.1 },
-      otherVotes: 14500,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 50.3, gopPct: 49.7, margin: 0.6, winner: 'dem', reportingPct: 100 }
+    "id": "AZ",
+    "stateCode": "AZ",
+    "stateName": "Arizona",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 9,
+    "governor": {
+      "demCandidate": {
+        "name": "Katie Hobbs",
+        "party": "DEM",
+        "votes": 1065872,
+        "pct": 56.7
+      },
+      "gopCandidate": {
+        "name": "Andy Biggs",
+        "party": "GOP",
+        "votes": 781506,
+        "pct": 41.6
+      },
+      "otherVotes": 14500,
+      "reportingPct": 59,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 50.3,
+        "gopPct": 49.7,
+        "margin": 0.6,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 9,
-      demSeats: 3,
-      gopSeats: 6,
-      uncalledSeats: 0,
-      popularDemVotes: 1280000,
-      popularGopVotes: 1315000,
-      reportingPct: 100,
-      historical2022: { demSeats: 3, gopSeats: 6, demPopularPct: 47.8, gopPopularPct: 52.2, margin: -4.4 },
-      keyBattlegroundDistricts: [
-        { district: 'AZ-01', demName: 'Amish Shah', gopName: 'David Schweikert', demVotes: 185400, gopVotes: 189600, demPct: 49.4, gopPct: 50.6, reportingPct: 100, status: 'called_gop', swingVs2022: 0.8 },
-        { district: 'AZ-06', demName: 'Kirsten Engel', gopName: 'Juan Ciscomani', demVotes: 171200, gopVotes: 174900, demPct: 49.5, gopPct: 50.5, reportingPct: 100, status: 'called_gop', swingVs2022: 1.1 }
+    "house": {
+      "totalSeats": 9,
+      "demSeats": 4,
+      "gopSeats": 1,
+      "uncalledSeats": 4,
+      "popularDemVotes": 1031185,
+      "popularGopVotes": 803629,
+      "reportingPct": 59,
+      "historical2022": {
+        "demSeats": 3,
+        "gopSeats": 6,
+        "demPopularPct": 47.8,
+        "gopPopularPct": 52.2,
+        "margin": -4.4
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "AZ-01",
+          "demName": "Amish Shah",
+          "gopName": "David Schweikert",
+          "demVotes": 185400,
+          "gopVotes": 189600,
+          "demPct": 49.4,
+          "gopPct": 50.6,
+          "reportingPct": 100,
+          "status": "called_gop",
+          "swingVs2022": 0.8
+        },
+        {
+          "district": "AZ-06",
+          "demName": "Kirsten Engel",
+          "gopName": "Juan Ciscomani",
+          "demVotes": 171200,
+          "gopVotes": 174900,
+          "demPct": 49.5,
+          "gopPct": 50.5,
+          "reportingPct": 100,
+          "status": "called_gop",
+          "swingVs2022": 1.1
+        }
       ]
     }
   },
   {
-    id: 'AR',
-    stateCode: 'AR',
-    stateName: 'Arkansas',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 4,
-    senate: {
-      demCandidate: { name: 'Natalie James', party: 'DEM', votes: 345000, pct: 36.5 },
-      gopCandidate: { name: 'Tom Cotton', party: 'GOP', votes: 600000, pct: 63.5 },
-      otherVotes: 11000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 31.1, gopPct: 65.7, margin: -34.6, winner: 'gop', reportingPct: 100 }
+    "id": "AR",
+    "stateCode": "AR",
+    "stateName": "Arkansas",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 4,
+    "senate": {
+      "demCandidate": {
+        "name": "Hallie Shoffner",
+        "party": "DEM",
+        "votes": 375596,
+        "pct": 42.4
+      },
+      "gopCandidate": {
+        "name": "Tom Cotton",
+        "party": "GOP",
+        "votes": 480526,
+        "pct": 54.3
+      },
+      "otherVotes": 11000,
+      "reportingPct": 100,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 31.1,
+        "gopPct": 65.7,
+        "margin": -34.6,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Chris Jones', party: 'DEM', votes: 365000, pct: 38.0 },
-      gopCandidate: { name: 'Sarah Huckabee Sanders', party: 'GOP', votes: 595000, pct: 62.0 },
-      otherVotes: 9800,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 35.2, gopPct: 63.0, margin: -27.8, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Fredrick Love",
+        "party": "DEM",
+        "votes": 341621,
+        "pct": 38.6
+      },
+      "gopCandidate": {
+        "name": "Sarah Huckabee Sanders",
+        "party": "GOP",
+        "votes": 477040,
+        "pct": 53.9
+      },
+      "otherVotes": 9800,
+      "reportingPct": 100,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 35.2,
+        "gopPct": 63,
+        "margin": -27.8,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 4,
-      demSeats: 0,
-      gopSeats: 4,
-      uncalledSeats: 0,
-      popularDemVotes: 340000,
-      popularGopVotes: 610000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 4, demPopularPct: 32.8, gopPopularPct: 67.2, margin: -34.4 }
+    "house": {
+      "totalSeats": 4,
+      "demSeats": 0,
+      "gopSeats": 3,
+      "uncalledSeats": 1,
+      "popularDemVotes": 348414,
+      "popularGopVotes": 512885,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 4,
+        "demPopularPct": 32.8,
+        "gopPopularPct": 67.2,
+        "margin": -34.4
+      }
     }
   },
   {
-    id: 'CA',
-    stateCode: 'CA',
-    stateName: 'California',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 52,
-    governor: {
-      demCandidate: { name: 'Eleni Kounalakis', party: 'DEM', votes: 6840000, pct: 58.4 },
-      gopCandidate: { name: 'Brian Dahle', party: 'GOP', votes: 4870000, pct: 41.6 },
-      otherVotes: 75000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 59.2, gopPct: 40.8, margin: 18.4, winner: 'dem', reportingPct: 100 }
+    "id": "CA",
+    "stateCode": "CA",
+    "stateName": "California",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 52,
+    "governor": {
+      "demCandidate": {
+        "name": "Xavier Becerra",
+        "party": "DEM",
+        "votes": 4631469,
+        "pct": 64.1
+      },
+      "gopCandidate": {
+        "name": "Steve Hilton",
+        "party": "GOP",
+        "votes": 2596022,
+        "pct": 35.9
+      },
+      "otherVotes": 75000,
+      "reportingPct": 54,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 59.2,
+        "gopPct": 40.8,
+        "margin": 18.4,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 52,
-      demSeats: 41,
-      gopSeats: 11,
-      uncalledSeats: 0,
-      popularDemVotes: 6950000,
-      popularGopVotes: 4890000,
-      reportingPct: 100,
-      historical2022: { demSeats: 40, gopSeats: 12, demPopularPct: 58.7, gopPopularPct: 41.3, margin: 17.4 },
-      keyBattlegroundDistricts: [
-        { district: 'CA-13', demName: 'Adam Gray', gopName: 'John Duarte', demVotes: 104200, gopVotes: 102800, demPct: 50.3, gopPct: 49.7, reportingPct: 100, status: 'called_dem', swingVs2022: 1.1 },
-        { district: 'CA-22', demName: 'Rudy Salas', gopName: 'David Valadao', demVotes: 76500, gopVotes: 75900, demPct: 50.2, gopPct: 49.8, reportingPct: 100, status: 'called_dem', swingVs2022: 3.5 },
-        { district: 'CA-27', demName: 'George Whitesides', gopName: 'Mike Garcia', demVotes: 142100, gopVotes: 139800, demPct: 50.4, gopPct: 49.6, reportingPct: 100, status: 'called_dem', swingVs2022: 4.2 }
+    "house": {
+      "totalSeats": 52,
+      "demSeats": 42,
+      "gopSeats": 2,
+      "uncalledSeats": 8,
+      "popularDemVotes": 4756390,
+      "popularGopVotes": 2188443,
+      "reportingPct": 77,
+      "historical2022": {
+        "demSeats": 40,
+        "gopSeats": 12,
+        "demPopularPct": 58.7,
+        "gopPopularPct": 41.3,
+        "margin": 17.4
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "CA-13",
+          "demName": "Adam Gray",
+          "gopName": "John Duarte",
+          "demVotes": 104200,
+          "gopVotes": 102800,
+          "demPct": 50.3,
+          "gopPct": 49.7,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 1.1
+        },
+        {
+          "district": "CA-22",
+          "demName": "Rudy Salas",
+          "gopName": "David Valadao",
+          "demVotes": 76500,
+          "gopVotes": 75900,
+          "demPct": 50.2,
+          "gopPct": 49.8,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 3.5
+        },
+        {
+          "district": "CA-27",
+          "demName": "George Whitesides",
+          "gopName": "Mike Garcia",
+          "demVotes": 142100,
+          "gopVotes": 139800,
+          "demPct": 50.4,
+          "gopPct": 49.6,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 4.2
+        }
       ]
     }
   },
   {
-    id: 'CO',
-    stateCode: 'CO',
-    stateName: 'Colorado',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 8,
-    senate: {
-      demCandidate: { name: 'John Hickenlooper', party: 'DEM', votes: 1450000, pct: 56.2 },
-      gopCandidate: { name: 'Gabe Evans', party: 'GOP', votes: 1130000, pct: 43.8 },
-      otherVotes: 25000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 54.5, gopPct: 44.5, margin: 10.0, winner: 'dem', reportingPct: 100 }
+    "id": "CO",
+    "stateCode": "CO",
+    "stateName": "Colorado",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 8,
+    "senate": {
+      "demCandidate": {
+        "name": "John Hickenlooper",
+        "party": "DEM",
+        "votes": 1301297,
+        "pct": 60.4
+      },
+      "gopCandidate": {
+        "name": "Mark Baisley",
+        "party": "GOP",
+        "votes": 763732,
+        "pct": 35.4
+      },
+      "otherVotes": 25000,
+      "reportingPct": 76,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 54.5,
+        "gopPct": 44.5,
+        "margin": 10,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Jared Polis', party: 'DEM', votes: 1520000, pct: 58.7 },
-      gopCandidate: { name: 'Heidi Ganahl', party: 'GOP', votes: 1070000, pct: 41.3 },
-      otherVotes: 21000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 58.5, gopPct: 39.2, margin: 19.3, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Phil Weiser",
+        "party": "DEM",
+        "votes": 1310463,
+        "pct": 61.1
+      },
+      "gopCandidate": {
+        "name": "Victor Marx",
+        "party": "GOP",
+        "votes": 718385,
+        "pct": 33.5
+      },
+      "otherVotes": 21000,
+      "reportingPct": 76,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 58.5,
+        "gopPct": 39.2,
+        "margin": 19.3,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 8,
-      demSeats: 4,
-      gopSeats: 4,
-      uncalledSeats: 0,
-      popularDemVotes: 1390000,
-      popularGopVotes: 1180000,
-      reportingPct: 100,
-      historical2022: { demSeats: 5, gopSeats: 3, demPopularPct: 53.4, gopPopularPct: 45.1, margin: 8.3 }
+    "house": {
+      "totalSeats": 8,
+      "demSeats": 5,
+      "gopSeats": 0,
+      "uncalledSeats": 3,
+      "popularDemVotes": 1285628,
+      "popularGopVotes": 786658,
+      "reportingPct": 75,
+      "historical2022": {
+        "demSeats": 5,
+        "gopSeats": 3,
+        "demPopularPct": 53.4,
+        "gopPopularPct": 45.1,
+        "margin": 8.3
+      }
     }
   },
   {
-    id: 'CT',
-    stateCode: 'CT',
-    stateName: 'Connecticut',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 5,
-    governor: {
-      demCandidate: { name: 'Ned Lamont', party: 'DEM', votes: 785000, pct: 57.2 },
-      gopCandidate: { name: 'Bob Stefanowski', party: 'GOP', votes: 588000, pct: 42.8 },
-      otherVotes: 9800,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 56.0, gopPct: 43.0, margin: 13.0, winner: 'dem', reportingPct: 100 }
+    "id": "CT",
+    "stateCode": "CT",
+    "stateName": "Connecticut",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 5,
+    "governor": {
+      "demCandidate": {
+        "name": "Ned Lamont",
+        "party": "DEM",
+        "votes": 672431,
+        "pct": 58.4
+      },
+      "gopCandidate": {
+        "name": "Ryan Fazio",
+        "party": "GOP",
+        "votes": 479667,
+        "pct": 41.6
+      },
+      "otherVotes": 9800,
+      "reportingPct": 80,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 56,
+        "gopPct": 43,
+        "margin": 13,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 5,
-      demSeats: 5,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 760000,
-      popularGopVotes: 590000,
-      reportingPct: 100,
-      historical2022: { demSeats: 5, gopSeats: 0, demPopularPct: 55.4, gopPopularPct: 44.2, margin: 11.2 }
+    "house": {
+      "totalSeats": 5,
+      "demSeats": 5,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 699644,
+      "popularGopVotes": 417274,
+      "reportingPct": 82,
+      "historical2022": {
+        "demSeats": 5,
+        "gopSeats": 0,
+        "demPopularPct": 55.4,
+        "gopPopularPct": 44.2,
+        "margin": 11.2
+      }
     }
   },
   {
-    id: 'DE',
-    stateCode: 'DE',
-    stateName: 'Delaware',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 1,
-    senate: {
-      demCandidate: { name: 'Chris Coons', party: 'DEM', votes: 265000, pct: 60.5 },
-      gopCandidate: { name: 'Lauren Witzke', party: 'GOP', votes: 173000, pct: 39.5 },
-      otherVotes: 3200,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 58.8, gopPct: 39.5, margin: 19.3, winner: 'dem', reportingPct: 100 }
+    "id": "DE",
+    "stateCode": "DE",
+    "stateName": "Delaware",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 1,
+    "senate": {
+      "demCandidate": {
+        "name": "Chris Coons",
+        "party": "DEM",
+        "votes": 240347,
+        "pct": 63.6
+      },
+      "gopCandidate": {
+        "name": "Michael \"Dr. Mike\" Katz",
+        "party": "GOP",
+        "votes": 137764,
+        "pct": 36.4
+      },
+      "otherVotes": 3200,
+      "reportingPct": 100,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 58.8,
+        "gopPct": 39.5,
+        "margin": 19.3,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 1,
-      demSeats: 1,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 255000,
-      popularGopVotes: 180000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 0, demPopularPct: 56.4, gopPopularPct: 43.6, margin: 12.8 }
+    "house": {
+      "totalSeats": 1,
+      "demSeats": 1,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 243467,
+      "popularGopVotes": 134966,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 0,
+        "demPopularPct": 56.4,
+        "gopPopularPct": 43.6,
+        "margin": 12.8
+      }
     }
   },
   {
-    id: 'FL',
-    stateCode: 'FL',
-    stateName: 'Florida',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 28,
-    governor: {
-      demCandidate: { name: 'Jerry Demings', party: 'DEM', votes: 3680000, pct: 45.2 },
-      gopCandidate: { name: 'Casey DeSantis', party: 'GOP', votes: 4460000, pct: 54.8 },
-      otherVotes: 48000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 40.0, gopPct: 59.4, margin: -19.4, winner: 'gop', reportingPct: 100 }
+    "id": "FL",
+    "stateCode": "FL",
+    "stateName": "Florida",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 28,
+    "governor": {
+      "demCandidate": {
+        "name": "David Jolly",
+        "party": "DEM",
+        "votes": 4024180,
+        "pct": 48.7
+      },
+      "gopCandidate": {
+        "name": "Byron Donalds",
+        "party": "GOP",
+        "votes": 4132112,
+        "pct": 50
+      },
+      "otherVotes": 48000,
+      "reportingPct": 93,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 40,
+        "gopPct": 59.4,
+        "margin": -19.4,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 28,
-      demSeats: 8,
-      gopSeats: 20,
-      uncalledSeats: 0,
-      popularDemVotes: 3750000,
-      popularGopVotes: 4410000,
-      reportingPct: 100,
-      historical2022: { demSeats: 8, gopSeats: 20, demPopularPct: 41.2, gopPopularPct: 58.2, margin: -17.0 }
+    "house": {
+      "totalSeats": 28,
+      "demSeats": 7,
+      "gopSeats": 17,
+      "uncalledSeats": 4,
+      "popularDemVotes": 3864435,
+      "popularGopVotes": 4037727,
+      "reportingPct": 92,
+      "historical2022": {
+        "demSeats": 8,
+        "gopSeats": 20,
+        "demPopularPct": 41.2,
+        "gopPopularPct": 58.2,
+        "margin": -17
+      }
+    },
+    "senate": {
+      "demCandidate": {
+        "name": "Angie Nixon",
+        "party": "DEM",
+        "votes": 3968811,
+        "pct": 48
+      },
+      "gopCandidate": {
+        "name": "Ashley Moody",
+        "party": "GOP",
+        "votes": 4207774,
+        "pct": 50.9
+      },
+      "otherVotes": 0,
+      "reportingPct": 93,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 41.3,
+        "gopPct": 57.7,
+        "margin": -16.4,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     }
   },
   {
-    id: 'GA',
-    stateCode: 'GA',
-    stateName: 'Georgia',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 14,
-    senate: {
-      demCandidate: { name: 'Jon Ossoff', party: 'DEM', votes: 2045000, pct: 50.8 },
-      gopCandidate: { name: 'Chris Carr', party: 'GOP', votes: 1980000, pct: 49.2 },
-      otherVotes: 24000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 51.4, gopPct: 48.6, margin: 2.8, winner: 'dem', reportingPct: 100 }
+    "id": "GA",
+    "stateCode": "GA",
+    "stateName": "Georgia",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 14,
+    "senate": {
+      "demCandidate": {
+        "name": "Jon Ossoff",
+        "party": "DEM",
+        "votes": 2453525,
+        "pct": 58.9
+      },
+      "gopCandidate": {
+        "name": "Mike Collins",
+        "party": "GOP",
+        "votes": 1709237,
+        "pct": 41.1
+      },
+      "otherVotes": 24000,
+      "reportingPct": 89,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 51.4,
+        "gopPct": 48.6,
+        "margin": 2.8,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Lucy McBath', party: 'DEM', votes: 1990000, pct: 49.6 },
-      gopCandidate: { name: 'Burt Jones', party: 'GOP', votes: 2025000, pct: 50.4 },
-      otherVotes: 22000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 45.9, gopPct: 53.4, margin: -7.5, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Keisha Lance Bottoms",
+        "party": "DEM",
+        "votes": 2259100,
+        "pct": 54.2
+      },
+      "gopCandidate": {
+        "name": "Rick Jackson",
+        "party": "GOP",
+        "votes": 1905921,
+        "pct": 45.8
+      },
+      "otherVotes": 22000,
+      "reportingPct": 89,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 45.9,
+        "gopPct": 53.4,
+        "margin": -7.5,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 14,
-      demSeats: 5,
-      gopSeats: 9,
-      uncalledSeats: 0,
-      popularDemVotes: 1980000,
-      popularGopVotes: 2030000,
-      reportingPct: 100,
-      historical2022: { demSeats: 5, gopSeats: 9, demPopularPct: 47.7, gopPopularPct: 52.3, margin: -4.6 }
+    "house": {
+      "totalSeats": 14,
+      "demSeats": 5,
+      "gopSeats": 9,
+      "uncalledSeats": 0,
+      "popularDemVotes": 2330097,
+      "popularGopVotes": 1822118,
+      "reportingPct": 98,
+      "historical2022": {
+        "demSeats": 5,
+        "gopSeats": 9,
+        "demPopularPct": 47.7,
+        "gopPopularPct": 52.3,
+        "margin": -4.6
+      }
     }
   },
   {
-    id: 'HI',
-    stateCode: 'HI',
-    stateName: 'Hawaii',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 2,
-    governor: {
-      demCandidate: { name: 'Josh Green', party: 'DEM', votes: 275000, pct: 64.2 },
-      gopCandidate: { name: 'Duke Aiona', party: 'GOP', votes: 153000, pct: 35.8 },
-      otherVotes: 3500,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 63.2, gopPct: 36.5, margin: 26.7, winner: 'dem', reportingPct: 100 }
+    "id": "HI",
+    "stateCode": "HI",
+    "stateName": "Hawaii",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 2,
+    "governor": {
+      "demCandidate": {
+        "name": "Josh Green",
+        "party": "DEM",
+        "votes": 227046,
+        "pct": 74.9
+      },
+      "gopCandidate": {
+        "name": "Gary Cordery",
+        "party": "GOP",
+        "votes": 75978,
+        "pct": 25.1
+      },
+      "otherVotes": 3500,
+      "reportingPct": 66,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 63.2,
+        "gopPct": 36.5,
+        "margin": 26.7,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 2,
-      demSeats: 2,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 270000,
-      popularGopVotes: 150000,
-      reportingPct: 100,
-      historical2022: { demSeats: 2, gopSeats: 0, demPopularPct: 64.0, gopPopularPct: 36.0, margin: 28.0 }
+    "house": {
+      "totalSeats": 2,
+      "demSeats": 2,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 208465,
+      "popularGopVotes": 77449,
+      "reportingPct": 64,
+      "historical2022": {
+        "demSeats": 2,
+        "gopSeats": 0,
+        "demPopularPct": 64,
+        "gopPopularPct": 36,
+        "margin": 28
+      }
     }
   },
   {
-    id: 'ID',
-    stateCode: 'ID',
-    stateName: 'Idaho',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 2,
-    senate: {
-      demCandidate: { name: 'David Roth', party: 'DEM', votes: 210000, pct: 33.1 },
-      gopCandidate: { name: 'Jim Risch', party: 'GOP', votes: 425000, pct: 66.9 },
-      otherVotes: 7800,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 31.5, gopPct: 62.8, margin: -31.3, winner: 'gop', reportingPct: 100 }
+    "id": "ID",
+    "stateCode": "ID",
+    "stateName": "Idaho",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 2,
+    "senate": {
+      "demCandidate": {
+        "name": "Todd Achilles",
+        "party": "IND",
+        "votes": 212775,
+        "pct": 33.8
+      },
+      "gopCandidate": {
+        "name": "Jim Risch",
+        "party": "GOP",
+        "votes": 354662,
+        "pct": 56.4
+      },
+      "otherVotes": 7800,
+      "reportingPct": 87,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 31.5,
+        "gopPct": 62.8,
+        "margin": -31.3,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Stephen Heidt', party: 'DEM', votes: 205000, pct: 32.4 },
-      gopCandidate: { name: 'Brad Little', party: 'GOP', votes: 428000, pct: 67.6 },
-      otherVotes: 8200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 20.3, gopPct: 60.5, margin: -40.2, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Terri Pickens",
+        "party": "DEM",
+        "votes": 204261,
+        "pct": 32.4
+      },
+      "gopCandidate": {
+        "name": "Brad Little",
+        "party": "GOP",
+        "votes": 359863,
+        "pct": 57
+      },
+      "otherVotes": 8200,
+      "reportingPct": 87,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 20.3,
+        "gopPct": 60.5,
+        "margin": -40.2,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 2,
-      demSeats: 0,
-      gopSeats: 2,
-      uncalledSeats: 0,
-      popularDemVotes: 215000,
-      popularGopVotes: 420000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 2, demPopularPct: 31.9, gopPopularPct: 68.1, margin: -36.2 }
+    "house": {
+      "totalSeats": 2,
+      "demSeats": 0,
+      "gopSeats": 1,
+      "uncalledSeats": 1,
+      "popularDemVotes": 215309,
+      "popularGopVotes": 365933,
+      "reportingPct": 86,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 2,
+        "demPopularPct": 31.9,
+        "gopPopularPct": 68.1,
+        "margin": -36.2
+      }
     }
   },
   {
-    id: 'IL',
-    stateCode: 'IL',
-    stateName: 'Illinois',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 17,
-    senate: {
-      demCandidate: { name: 'Dick Durbin', party: 'DEM', votes: 2520000, pct: 58.1 },
-      gopCandidate: { name: 'Mark Curran', party: 'GOP', votes: 1815000, pct: 41.9 },
-      otherVotes: 32000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 57.0, gopPct: 41.4, margin: 15.6, winner: 'dem', reportingPct: 100 }
+    "id": "IL",
+    "stateCode": "IL",
+    "stateName": "Illinois",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 17,
+    "senate": {
+      "demCandidate": {
+        "name": "Juliana Stratton",
+        "party": "DEM",
+        "votes": 2280261,
+        "pct": 62.8
+      },
+      "gopCandidate": {
+        "name": "Don Tracy",
+        "party": "GOP",
+        "votes": 1290749,
+        "pct": 35.6
+      },
+      "otherVotes": 32000,
+      "reportingPct": 78,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 57,
+        "gopPct": 41.4,
+        "margin": 15.6,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'JB Pritzker', party: 'DEM', votes: 2490000, pct: 57.5 },
-      gopCandidate: { name: 'Darren Bailey', party: 'GOP', votes: 1840000, pct: 42.5 },
-      otherVotes: 28000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 54.9, gopPct: 42.4, margin: 12.5, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "JB Pritzker",
+        "party": "DEM",
+        "votes": 2206001,
+        "pct": 61.9
+      },
+      "gopCandidate": {
+        "name": "Darren Bailey",
+        "party": "GOP",
+        "votes": 1237935,
+        "pct": 34.8
+      },
+      "otherVotes": 28000,
+      "reportingPct": 77,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 54.9,
+        "gopPct": 42.4,
+        "margin": 12.5,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 17,
-      demSeats: 14,
-      gopSeats: 3,
-      uncalledSeats: 0,
-      popularDemVotes: 2470000,
-      popularGopVotes: 1820000,
-      reportingPct: 100,
-      historical2022: { demSeats: 14, gopSeats: 3, demPopularPct: 56.1, gopPopularPct: 43.9, margin: 12.2 }
+    "house": {
+      "totalSeats": 17,
+      "demSeats": 14,
+      "gopSeats": 3,
+      "uncalledSeats": 0,
+      "popularDemVotes": 2253578,
+      "popularGopVotes": 1251647,
+      "reportingPct": 76,
+      "historical2022": {
+        "demSeats": 14,
+        "gopSeats": 3,
+        "demPopularPct": 56.1,
+        "gopPopularPct": 43.9,
+        "margin": 12.2
+      }
     }
   },
   {
-    id: 'IN',
-    stateCode: 'IN',
-    stateName: 'Indiana',
-    hasSenateRace: false,
-    hasGovernorRace: false,
-    houseSeats: 9,
-    house: {
-      totalSeats: 9,
-      demSeats: 2,
-      gopSeats: 7,
-      uncalledSeats: 0,
-      popularDemVotes: 890000,
-      popularGopVotes: 1320000,
-      reportingPct: 100,
-      historical2022: { demSeats: 2, gopSeats: 7, demPopularPct: 39.8, gopPopularPct: 60.2, margin: -20.4 }
+    "id": "IN",
+    "stateCode": "IN",
+    "stateName": "Indiana",
+    "hasSenateRace": false,
+    "hasGovernorRace": false,
+    "houseSeats": 9,
+    "house": {
+      "totalSeats": 9,
+      "demSeats": 3,
+      "gopSeats": 6,
+      "uncalledSeats": 0,
+      "popularDemVotes": 981428,
+      "popularGopVotes": 915898,
+      "reportingPct": 98,
+      "historical2022": {
+        "demSeats": 2,
+        "gopSeats": 7,
+        "demPopularPct": 39.8,
+        "gopPopularPct": 60.2,
+        "margin": -20.4
+      }
     }
   },
   {
-    id: 'IA',
-    stateCode: 'IA',
-    stateName: 'Iowa',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 4,
-    senate: {
-      demCandidate: { name: 'Rob Sand', party: 'DEM', votes: 642000, pct: 49.3 },
-      gopCandidate: { name: 'Joni Ernst', party: 'GOP', votes: 660500, pct: 50.7 },
-      otherVotes: 8200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 43.8, gopPct: 56.1, margin: -12.3, winner: 'gop', reportingPct: 100 }
+    "id": "IA",
+    "stateCode": "IA",
+    "stateName": "Iowa",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 4,
+    "senate": {
+      "demCandidate": {
+        "name": "Josh Turek",
+        "party": "DEM",
+        "votes": 683576,
+        "pct": 50.5
+      },
+      "gopCandidate": {
+        "name": "Ashley Hinson",
+        "party": "GOP",
+        "votes": 627878,
+        "pct": 46.4
+      },
+      "otherVotes": 8200,
+      "reportingPct": 99,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 43.8,
+        "gopPct": 56.1,
+        "margin": -12.3,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Deidre DeJear', party: 'DEM', votes: 610000, pct: 47.1 },
-      gopCandidate: { name: 'Kim Reynolds', party: 'GOP', votes: 685000, pct: 52.9 },
-      otherVotes: 7500,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 39.5, gopPct: 58.0, margin: -18.5, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Rob Sand",
+        "party": "DEM",
+        "votes": 752967,
+        "pct": 55.5
+      },
+      "gopCandidate": {
+        "name": "Zach Lahn",
+        "party": "GOP",
+        "votes": 604087,
+        "pct": 44.5
+      },
+      "otherVotes": 7500,
+      "reportingPct": 99,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 39.5,
+        "gopPct": 58,
+        "margin": -18.5,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 4,
-      demSeats: 0,
-      gopSeats: 4,
-      uncalledSeats: 0,
-      popularDemVotes: 625000,
-      popularGopVotes: 672000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 4, demPopularPct: 45.2, gopPopularPct: 54.8, margin: -9.6 }
+    "house": {
+      "totalSeats": 4,
+      "demSeats": 3,
+      "gopSeats": 1,
+      "uncalledSeats": 0,
+      "popularDemVotes": 662799,
+      "popularGopVotes": 647049,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 4,
+        "demPopularPct": 45.2,
+        "gopPopularPct": 54.8,
+        "margin": -9.6
+      }
     }
   },
   {
-    id: 'KS',
-    stateCode: 'KS',
-    stateName: 'Kansas',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 4,
-    senate: {
-      demCandidate: { name: 'Mark Holland', party: 'DEM', votes: 450000, pct: 44.2 },
-      gopCandidate: { name: 'Roger Marshall', party: 'GOP', votes: 568000, pct: 55.8 },
-      otherVotes: 12000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 37.0, gopPct: 60.0, margin: -23.0, winner: 'gop', reportingPct: 100 }
+    "id": "KS",
+    "stateCode": "KS",
+    "stateName": "Kansas",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 4,
+    "senate": {
+      "demCandidate": {
+        "name": "Adam Hamilton",
+        "party": "DEM",
+        "votes": 556580,
+        "pct": 50.9
+      },
+      "gopCandidate": {
+        "name": "Roger Marshall",
+        "party": "GOP",
+        "votes": 501408,
+        "pct": 45.8
+      },
+      "otherVotes": 12000,
+      "reportingPct": 96,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 37,
+        "gopPct": 60,
+        "margin": -23,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Laura Kelly', party: 'DEM', votes: 525000, pct: 51.5 },
-      gopCandidate: { name: 'Derek Schmidt', party: 'GOP', votes: 495000, pct: 48.5 },
-      otherVotes: 11000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 49.5, gopPct: 47.3, margin: 2.2, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Cindy Holscher",
+        "party": "DEM",
+        "votes": 546609,
+        "pct": 50.3
+      },
+      "gopCandidate": {
+        "name": "Ty Masterson",
+        "party": "GOP",
+        "votes": 541047,
+        "pct": 49.7
+      },
+      "otherVotes": 11000,
+      "reportingPct": 95,
+      "status": "too_close_to_call",
+      "historical2022": {
+        "demPct": 49.5,
+        "gopPct": 47.3,
+        "margin": 2.2,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 4,
-      demSeats: 1,
-      gopSeats: 3,
-      uncalledSeats: 0,
-      popularDemVotes: 470000,
-      popularGopVotes: 545000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 3, demPopularPct: 43.7, gopPopularPct: 56.3, margin: -12.6 }
+    "house": {
+      "totalSeats": 4,
+      "demSeats": 1,
+      "gopSeats": 3,
+      "uncalledSeats": 0,
+      "popularDemVotes": 517778,
+      "popularGopVotes": 542494,
+      "reportingPct": 96,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 3,
+        "demPopularPct": 43.7,
+        "gopPopularPct": 56.3,
+        "margin": -12.6
+      }
     }
   },
   {
-    id: 'KY',
-    stateCode: 'KY',
-    stateName: 'Kentucky',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 6,
-    senate: {
-      demCandidate: { name: 'Charles Booker', party: 'DEM', votes: 640000, pct: 41.5 },
-      gopCandidate: { name: 'Mitch McConnell', party: 'GOP', votes: 902000, pct: 58.5 },
-      otherVotes: 14000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 37.8, gopPct: 61.8, margin: -24.0, winner: 'gop', reportingPct: 100 }
+    "id": "KY",
+    "stateCode": "KY",
+    "stateName": "Kentucky",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 6,
+    "senate": {
+      "demCandidate": {
+        "name": "Charles Booker",
+        "party": "DEM",
+        "votes": 611987,
+        "pct": 42.9
+      },
+      "gopCandidate": {
+        "name": "Andy Barr",
+        "party": "GOP",
+        "votes": 784000,
+        "pct": 55
+      },
+      "otherVotes": 14000,
+      "reportingPct": 86,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 37.8,
+        "gopPct": 61.8,
+        "margin": -24,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 6,
-      demSeats: 1,
-      gopSeats: 5,
-      uncalledSeats: 0,
-      popularDemVotes: 610000,
-      popularGopVotes: 915000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 5, demPopularPct: 37.0, gopPopularPct: 63.0, margin: -26.0 }
+    "house": {
+      "totalSeats": 6,
+      "demSeats": 2,
+      "gopSeats": 4,
+      "uncalledSeats": 0,
+      "popularDemVotes": 622091,
+      "popularGopVotes": 764309,
+      "reportingPct": 85,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 5,
+        "demPopularPct": 37,
+        "gopPopularPct": 63,
+        "margin": -26
+      }
     }
   },
   {
-    id: 'LA',
-    stateCode: 'LA',
-    stateName: 'Louisiana',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 6,
-    senate: {
-      demCandidate: { name: 'Gary Chambers', party: 'DEM', votes: 520000, pct: 40.2 },
-      gopCandidate: { name: 'Bill Cassidy', party: 'GOP', votes: 775000, pct: 59.8 },
-      otherVotes: 12000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 34.0, gopPct: 61.5, margin: -27.5, winner: 'gop', reportingPct: 100 }
+    "id": "LA",
+    "stateCode": "LA",
+    "stateName": "Louisiana",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 6,
+    "senate": {
+      "demCandidate": {
+        "name": "Jamie Davis",
+        "party": "DEM",
+        "votes": 720106,
+        "pct": 49.1
+      },
+      "gopCandidate": {
+        "name": "Julia Letlow",
+        "party": "GOP",
+        "votes": 745963,
+        "pct": 50.9
+      },
+      "otherVotes": 12000,
+      "reportingPct": 100,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 34,
+        "gopPct": 61.5,
+        "margin": -27.5,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 6,
-      demSeats: 2,
-      gopSeats: 4,
-      uncalledSeats: 0,
-      popularDemVotes: 515000,
-      popularGopVotes: 770000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 5, demPopularPct: 35.2, gopPopularPct: 64.8, margin: -29.6 }
+    "house": {
+      "totalSeats": 6,
+      "demSeats": 1,
+      "gopSeats": 3,
+      "uncalledSeats": 2,
+      "popularDemVotes": 645809,
+      "popularGopVotes": 789442,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 5,
+        "demPopularPct": 35.2,
+        "gopPopularPct": 64.8,
+        "margin": -29.6
+      }
     }
   },
   {
-    id: 'ME',
-    stateCode: 'ME',
-    stateName: 'Maine',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 2,
-    senate: {
-      demCandidate: { name: 'Troy Jackson', party: 'DEM', votes: 362000, pct: 49.4 },
-      gopCandidate: { name: 'Susan Collins', party: 'GOP', votes: 371000, pct: 50.6 },
-      otherVotes: 7500,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 48.0, gopPct: 52.0, margin: -4.0, winner: 'gop', reportingPct: 100 }
+    "id": "ME",
+    "stateCode": "ME",
+    "stateName": "Maine",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 2,
+    "senate": {
+      "demCandidate": {
+        "name": "Troy Jackson",
+        "party": "DEM",
+        "votes": 333912,
+        "pct": 54
+      },
+      "gopCandidate": {
+        "name": "Susan Collins",
+        "party": "GOP",
+        "votes": 283751,
+        "pct": 45.9
+      },
+      "otherVotes": 7500,
+      "reportingPct": 83,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 48,
+        "gopPct": 52,
+        "margin": -4,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Janet Mills', party: 'DEM', votes: 395000, pct: 54.2 },
-      gopCandidate: { name: 'Paul LePage', party: 'GOP', votes: 334000, pct: 45.8 },
-      otherVotes: 6200,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 55.7, gopPct: 42.4, margin: 13.3, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Hannah Pingree",
+        "party": "DEM",
+        "votes": 343813,
+        "pct": 55.4
+      },
+      "gopCandidate": {
+        "name": "Bobby Charles",
+        "party": "GOP",
+        "votes": 227768,
+        "pct": 36.7
+      },
+      "otherVotes": 6200,
+      "reportingPct": 84,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 55.7,
+        "gopPct": 42.4,
+        "margin": 13.3,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 2,
-      demSeats: 2,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 380000,
-      popularGopVotes: 345000,
-      reportingPct: 100,
-      historical2022: { demSeats: 2, gopSeats: 0, demPopularPct: 53.0, gopPopularPct: 47.0, margin: 6.0 }
+    "house": {
+      "totalSeats": 2,
+      "demSeats": 1,
+      "gopSeats": 0,
+      "uncalledSeats": 1,
+      "popularDemVotes": 363602,
+      "popularGopVotes": 250952,
+      "reportingPct": 83,
+      "historical2022": {
+        "demSeats": 2,
+        "gopSeats": 0,
+        "demPopularPct": 53,
+        "gopPopularPct": 47,
+        "margin": 6
+      }
     }
   },
   {
-    id: 'MD',
-    stateCode: 'MD',
-    stateName: 'Maryland',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 8,
-    governor: {
-      demCandidate: { name: 'Wes Moore', party: 'DEM', votes: 1380000, pct: 65.5 },
-      gopCandidate: { name: 'Dan Cox', party: 'GOP', votes: 728000, pct: 34.5 },
-      otherVotes: 19000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 64.5, gopPct: 32.1, margin: 32.4, winner: 'dem', reportingPct: 100 }
+    "id": "MD",
+    "stateCode": "MD",
+    "stateName": "Maryland",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 8,
+    "governor": {
+      "demCandidate": {
+        "name": "Wes Moore",
+        "party": "DEM",
+        "votes": 1161743,
+        "pct": 62.5
+      },
+      "gopCandidate": {
+        "name": "Dan Cox",
+        "party": "GOP",
+        "votes": 616315,
+        "pct": 33.2
+      },
+      "otherVotes": 19000,
+      "reportingPct": 74,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 64.5,
+        "gopPct": 32.1,
+        "margin": 32.4,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 8,
-      demSeats: 7,
-      gopSeats: 1,
-      uncalledSeats: 0,
-      popularDemVotes: 1340000,
-      popularGopVotes: 730000,
-      reportingPct: 100,
-      historical2022: { demSeats: 7, gopSeats: 1, demPopularPct: 63.8, gopPopularPct: 36.2, margin: 27.6 }
+    "house": {
+      "totalSeats": 8,
+      "demSeats": 7,
+      "gopSeats": 1,
+      "uncalledSeats": 0,
+      "popularDemVotes": 1239400,
+      "popularGopVotes": 589118,
+      "reportingPct": 83,
+      "historical2022": {
+        "demSeats": 7,
+        "gopSeats": 1,
+        "demPopularPct": 63.8,
+        "gopPopularPct": 36.2,
+        "margin": 27.6
+      }
     }
   },
   {
-    id: 'MA',
-    stateCode: 'MA',
-    stateName: 'Massachusetts',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 9,
-    senate: {
-      demCandidate: { name: 'Ed Markey', party: 'DEM', votes: 1720000, pct: 67.2 },
-      gopCandidate: { name: 'Kevin O’Connor', party: 'GOP', votes: 839000, pct: 32.8 },
-      otherVotes: 21000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 65.0, gopPct: 33.5, margin: 31.5, winner: 'dem', reportingPct: 100 }
+    "id": "MA",
+    "stateCode": "MA",
+    "stateName": "Massachusetts",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 9,
+    "senate": {
+      "demCandidate": {
+        "name": "Edward J. Markey",
+        "party": "DEM",
+        "votes": 1360734,
+        "pct": 63.9
+      },
+      "gopCandidate": {
+        "name": "John Deaton",
+        "party": "GOP",
+        "votes": 671618,
+        "pct": 31.5
+      },
+      "otherVotes": 21000,
+      "reportingPct": 75,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 65,
+        "gopPct": 33.5,
+        "margin": 31.5,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Maura Healey', party: 'DEM', votes: 1740000, pct: 66.8 },
-      gopCandidate: { name: 'Geoff Diehl', party: 'GOP', votes: 865000, pct: 33.2 },
-      otherVotes: 18000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 63.7, gopPct: 34.6, margin: 29.1, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Maura Healey",
+        "party": "DEM",
+        "votes": 1339723,
+        "pct": 62.9
+      },
+      "gopCandidate": {
+        "name": "Michael Roger Minogue",
+        "party": "GOP",
+        "votes": 718031,
+        "pct": 33.7
+      },
+      "otherVotes": 18000,
+      "reportingPct": 75,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 63.7,
+        "gopPct": 34.6,
+        "margin": 29.1,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 9,
-      demSeats: 9,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 1690000,
-      popularGopVotes: 840000,
-      reportingPct: 100,
-      historical2022: { demSeats: 9, gopSeats: 0, demPopularPct: 68.2, gopPopularPct: 31.8, margin: 36.4 }
+    "house": {
+      "totalSeats": 9,
+      "demSeats": 9,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 900640,
+      "popularGopVotes": 387030,
+      "reportingPct": 47,
+      "historical2022": {
+        "demSeats": 9,
+        "gopSeats": 0,
+        "demPopularPct": 68.2,
+        "gopPopularPct": 31.8,
+        "margin": 36.4
+      }
     }
   },
   {
-    id: 'MI',
-    stateCode: 'MI',
-    stateName: 'Michigan',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 13,
-    senate: {
-      demCandidate: { name: 'Gary Peters', party: 'DEM', votes: 2315000, pct: 51.2 },
-      gopCandidate: { name: 'John James', party: 'GOP', votes: 2206000, pct: 48.8 },
-      otherVotes: 32000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 50.8, gopPct: 47.9, margin: 2.9, winner: 'dem', reportingPct: 100 }
+    "id": "MI",
+    "stateCode": "MI",
+    "stateName": "Michigan",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 13,
+    "senate": {
+      "demCandidate": {
+        "name": "Abdul El-Sayed",
+        "party": "DEM",
+        "votes": 2341679,
+        "pct": 52.1
+      },
+      "gopCandidate": {
+        "name": "Mike Rogers",
+        "party": "GOP",
+        "votes": 2059684,
+        "pct": 45.8
+      },
+      "otherVotes": 32000,
+      "reportingPct": 91,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 50.8,
+        "gopPct": 47.9,
+        "margin": 2.9,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Gretchen Whitmer', party: 'DEM', votes: 2410000, pct: 53.6 },
-      gopCandidate: { name: 'Tudor Dixon', party: 'GOP', votes: 2085000, pct: 46.4 },
-      otherVotes: 29000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 54.5, gopPct: 43.9, margin: 10.6, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Jocelyn Benson",
+        "party": "DEM",
+        "votes": 2437762,
+        "pct": 54.2
+      },
+      "gopCandidate": {
+        "name": "John James",
+        "party": "GOP",
+        "votes": 1983096,
+        "pct": 44.1
+      },
+      "otherVotes": 29000,
+      "reportingPct": 91,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 54.5,
+        "gopPct": 43.9,
+        "margin": 10.6,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 13,
-      demSeats: 6,
-      gopSeats: 7,
-      uncalledSeats: 0,
-      popularDemVotes: 2230000,
-      popularGopVotes: 2280000,
-      reportingPct: 100,
-      historical2022: { demSeats: 7, gopSeats: 6, demPopularPct: 50.5, gopPopularPct: 49.5, margin: 1.0 },
-      keyBattlegroundDistricts: [
-        { district: 'MI-07', demName: 'Curtis Hertel', gopName: 'Tom Barrett', demVotes: 181200, gopVotes: 190500, demPct: 48.7, gopPct: 51.3, reportingPct: 100, status: 'called_gop', swingVs2022: -4.2 },
-        { district: 'MI-08', demName: 'Kristen McDonald Rivet', gopName: 'Paul Junge', demVotes: 178900, gopVotes: 171300, demPct: 51.1, gopPct: 48.9, reportingPct: 100, status: 'called_dem', swingVs2022: 1.5 }
+    "house": {
+      "totalSeats": 13,
+      "demSeats": 6,
+      "gopSeats": 4,
+      "uncalledSeats": 3,
+      "popularDemVotes": 2343237,
+      "popularGopVotes": 1991998,
+      "reportingPct": 89,
+      "historical2022": {
+        "demSeats": 7,
+        "gopSeats": 6,
+        "demPopularPct": 50.5,
+        "gopPopularPct": 49.5,
+        "margin": 1
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "MI-07",
+          "demName": "Curtis Hertel",
+          "gopName": "Tom Barrett",
+          "demVotes": 181200,
+          "gopVotes": 190500,
+          "demPct": 48.7,
+          "gopPct": 51.3,
+          "reportingPct": 100,
+          "status": "called_gop",
+          "swingVs2022": -4.2
+        },
+        {
+          "district": "MI-08",
+          "demName": "Kristen McDonald Rivet",
+          "gopName": "Paul Junge",
+          "demVotes": 178900,
+          "gopVotes": 171300,
+          "demPct": 51.1,
+          "gopPct": 48.9,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 1.5
+        }
       ]
     }
   },
   {
-    id: 'MN',
-    stateCode: 'MN',
-    stateName: 'Minnesota',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 8,
-    senate: {
-      demCandidate: { name: 'Tina Smith', party: 'DEM', votes: 1420000, pct: 53.8 },
-      gopCandidate: { name: 'Jason Lewis', party: 'GOP', votes: 1220000, pct: 46.2 },
-      otherVotes: 22000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 52.4, gopPct: 45.3, margin: 7.1, winner: 'dem', reportingPct: 100 }
+    "id": "MN",
+    "stateCode": "MN",
+    "stateName": "Minnesota",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 8,
+    "senate": {
+      "demCandidate": {
+        "name": "Peggy Flanagan",
+        "party": "DEM",
+        "votes": 1519712,
+        "pct": 53.7
+      },
+      "gopCandidate": {
+        "name": "Michele Tafoya",
+        "party": "GOP",
+        "votes": 1231407,
+        "pct": 43.5
+      },
+      "otherVotes": 22000,
+      "reportingPct": 99,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 52.4,
+        "gopPct": 45.3,
+        "margin": 7.1,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Tim Walz', party: 'DEM', votes: 1445000, pct: 54.6 },
-      gopCandidate: { name: 'Scott Jensen', party: 'GOP', votes: 1201000, pct: 45.4 },
-      otherVotes: 25000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 52.3, gopPct: 44.6, margin: 7.7, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Amy Klobuchar",
+        "party": "DEM",
+        "votes": 1568497,
+        "pct": 55.5
+      },
+      "gopCandidate": {
+        "name": "Lisa Demuth",
+        "party": "GOP",
+        "votes": 1204506,
+        "pct": 42.6
+      },
+      "otherVotes": 25000,
+      "reportingPct": 99,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 52.3,
+        "gopPct": 44.6,
+        "margin": 7.7,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 8,
-      demSeats: 4,
-      gopSeats: 4,
-      uncalledSeats: 0,
-      popularDemVotes: 1390000,
-      popularGopVotes: 1230000,
-      reportingPct: 100,
-      historical2022: { demSeats: 4, gopSeats: 4, demPopularPct: 51.2, gopPopularPct: 48.8, margin: 2.4 }
+    "house": {
+      "totalSeats": 8,
+      "demSeats": 4,
+      "gopSeats": 3,
+      "uncalledSeats": 1,
+      "popularDemVotes": 1572922,
+      "popularGopVotes": 1212573,
+      "reportingPct": 99,
+      "historical2022": {
+        "demSeats": 4,
+        "gopSeats": 4,
+        "demPopularPct": 51.2,
+        "gopPopularPct": 48.8,
+        "margin": 2.4
+      }
     }
   },
   {
-    id: 'MS',
-    stateCode: 'MS',
-    stateName: 'Mississippi',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 4,
-    senate: {
-      demCandidate: { name: 'Mike Espy', party: 'DEM', votes: 440000, pct: 43.1 },
-      gopCandidate: { name: 'Cindy Hyde-Smith', party: 'GOP', votes: 580000, pct: 56.9 },
-      otherVotes: 9800,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 41.5, gopPct: 57.8, margin: -16.3, winner: 'gop', reportingPct: 100 }
+    "id": "MS",
+    "stateCode": "MS",
+    "stateName": "Mississippi",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 4,
+    "senate": {
+      "demCandidate": {
+        "name": "Scott Colom",
+        "party": "DEM",
+        "votes": 462821,
+        "pct": 49
+      },
+      "gopCandidate": {
+        "name": "Cindy Hyde-Smith",
+        "party": "GOP",
+        "votes": 462778,
+        "pct": 48.9
+      },
+      "otherVotes": 9800,
+      "reportingPct": 97,
+      "status": "too_close_to_call",
+      "historical2022": {
+        "demPct": 41.5,
+        "gopPct": 57.8,
+        "margin": -16.3,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 4,
-      demSeats: 1,
-      gopSeats: 3,
-      uncalledSeats: 0,
-      popularDemVotes: 425000,
-      popularGopVotes: 585000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 3, demPopularPct: 39.2, gopPopularPct: 60.8, margin: -21.6 }
+    "house": {
+      "totalSeats": 4,
+      "demSeats": 1,
+      "gopSeats": 3,
+      "uncalledSeats": 0,
+      "popularDemVotes": 437272,
+      "popularGopVotes": 486397,
+      "reportingPct": 96,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 3,
+        "demPopularPct": 39.2,
+        "gopPopularPct": 60.8,
+        "margin": -21.6
+      }
     }
   },
   {
-    id: 'MO',
-    stateCode: 'MO',
-    stateName: 'Missouri',
-    hasSenateRace: false,
-    hasGovernorRace: false,
-    houseSeats: 8,
-    house: {
-      totalSeats: 8,
-      demSeats: 2,
-      gopSeats: 6,
-      uncalledSeats: 0,
-      popularDemVotes: 890000,
-      popularGopVotes: 1230000,
-      reportingPct: 100,
-      historical2022: { demSeats: 2, gopSeats: 6, demPopularPct: 41.6, gopPopularPct: 58.4, margin: -16.8 }
+    "id": "MO",
+    "stateCode": "MO",
+    "stateName": "Missouri",
+    "hasSenateRace": false,
+    "hasGovernorRace": false,
+    "houseSeats": 8,
+    "house": {
+      "totalSeats": 8,
+      "demSeats": 3,
+      "gopSeats": 5,
+      "uncalledSeats": 0,
+      "popularDemVotes": 1007479,
+      "popularGopVotes": 1019744,
+      "reportingPct": 98,
+      "historical2022": {
+        "demSeats": 2,
+        "gopSeats": 6,
+        "demPopularPct": 41.6,
+        "gopPopularPct": 58.4,
+        "margin": -16.8
+      }
     }
   },
   {
-    id: 'MT',
-    stateCode: 'MT',
-    stateName: 'Montana',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 2,
-    senate: {
-      demCandidate: { name: 'Steve Bullock', party: 'DEM', votes: 254000, pct: 47.8 },
-      gopCandidate: { name: 'Steve Daines', party: 'GOP', votes: 277000, pct: 52.2 },
-      otherVotes: 6200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 44.5, gopPct: 55.5, margin: -11.0, winner: 'gop', reportingPct: 100 }
+    "id": "MT",
+    "stateCode": "MT",
+    "stateName": "Montana",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 2,
+    "senate": {
+      "demCandidate": {
+        "name": "Alani Bankhead",
+        "party": "DEM",
+        "votes": 47972,
+        "pct": 11.8
+      },
+      "gopCandidate": {
+        "name": "Kurt Alme",
+        "party": "GOP",
+        "votes": 195805,
+        "pct": 48.3
+      },
+      "otherVotes": 6200,
+      "reportingPct": 72,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 44.5,
+        "gopPct": 55.5,
+        "margin": -11,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 2,
-      demSeats: 0,
-      gopSeats: 2,
-      uncalledSeats: 0,
-      popularDemVotes: 245000,
-      popularGopVotes: 285000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 2, demPopularPct: 44.2, gopPopularPct: 55.8, margin: -11.6 }
+    "house": {
+      "totalSeats": 2,
+      "demSeats": 1,
+      "gopSeats": 1,
+      "uncalledSeats": 0,
+      "popularDemVotes": 169658,
+      "popularGopVotes": 210333,
+      "reportingPct": 71,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 2,
+        "demPopularPct": 44.2,
+        "gopPopularPct": 55.8,
+        "margin": -11.6
+      }
     }
   },
   {
-    id: 'NE',
-    stateCode: 'NE',
-    stateName: 'Nebraska',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 3,
-    senate: {
-      demCandidate: { name: 'Dan Osborn', party: 'IND', votes: 345000, pct: 47.6 },
-      gopCandidate: { name: 'Ben Sasse / Pete Ricketts', party: 'GOP', votes: 380000, pct: 52.4 },
-      otherVotes: 8500,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 35.8, gopPct: 64.2, margin: -28.4, winner: 'gop', reportingPct: 100 }
+    "id": "NE",
+    "stateCode": "NE",
+    "stateName": "Nebraska",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 3,
+    "senate": {
+      "demCandidate": {
+        "name": "Dan  Osborn",
+        "party": "IND",
+        "votes": 311791,
+        "pct": 44
+      },
+      "gopCandidate": {
+        "name": "Pete  Ricketts",
+        "party": "GOP",
+        "votes": 355492,
+        "pct": 50.1
+      },
+      "otherVotes": 8500,
+      "reportingPct": 92,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 35.8,
+        "gopPct": 64.2,
+        "margin": -28.4,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Carol Blood', party: 'DEM', votes: 310000, pct: 42.5 },
-      gopCandidate: { name: 'Jim Pillen', party: 'GOP', votes: 420000, pct: 57.5 },
-      otherVotes: 7200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 36.3, gopPct: 59.7, margin: -23.4, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Lynne Walz",
+        "party": "DEM",
+        "votes": 302666,
+        "pct": 42.6
+      },
+      "gopCandidate": {
+        "name": "Jim Pillen",
+        "party": "GOP",
+        "votes": 358273,
+        "pct": 50.4
+      },
+      "otherVotes": 7200,
+      "reportingPct": 92,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 36.3,
+        "gopPct": 59.7,
+        "margin": -23.4,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 3,
-      demSeats: 0,
-      gopSeats: 3,
-      uncalledSeats: 0,
-      popularDemVotes: 320000,
-      popularGopVotes: 405000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 3, demPopularPct: 38.6, gopPopularPct: 61.4, margin: -22.8 },
-      keyBattlegroundDistricts: [
-        { district: 'NE-02', demName: 'Tony Vargas', gopName: 'Don Bacon', demVotes: 138700, gopVotes: 143300, demPct: 49.2, gopPct: 50.8, reportingPct: 100, status: 'called_gop', swingVs2022: 1.1 }
+    "house": {
+      "totalSeats": 3,
+      "demSeats": 1,
+      "gopSeats": 1,
+      "uncalledSeats": 1,
+      "popularDemVotes": 292867,
+      "popularGopVotes": 380062,
+      "reportingPct": 92,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 3,
+        "demPopularPct": 38.6,
+        "gopPopularPct": 61.4,
+        "margin": -22.8
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "NE-02",
+          "demName": "Tony Vargas",
+          "gopName": "Don Bacon",
+          "demVotes": 138700,
+          "gopVotes": 143300,
+          "demPct": 49.2,
+          "gopPct": 50.8,
+          "reportingPct": 100,
+          "status": "called_gop",
+          "swingVs2022": 1.1
+        }
       ]
     }
   },
   {
-    id: 'NV',
-    stateCode: 'NV',
-    stateName: 'Nevada',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 4,
-    governor: {
-      demCandidate: { name: 'Steve Sisolak', party: 'DEM', votes: 522000, pct: 49.4 },
-      gopCandidate: { name: 'Joe Lombardo', party: 'GOP', votes: 535000, pct: 50.6 },
-      otherVotes: 12000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 47.3, gopPct: 48.8, margin: -1.5, winner: 'gop', reportingPct: 100 }
+    "id": "NV",
+    "stateCode": "NV",
+    "stateName": "Nevada",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 4,
+    "governor": {
+      "demCandidate": {
+        "name": "Aaron Ford",
+        "party": "DEM",
+        "votes": 408364,
+        "pct": 51.3
+      },
+      "gopCandidate": {
+        "name": "Joe Lombardo",
+        "party": "GOP",
+        "votes": 356084,
+        "pct": 44.7
+      },
+      "otherVotes": 12000,
+      "reportingPct": 65,
+      "status": "uncalled",
+      "historical2022": {
+        "demPct": 47.3,
+        "gopPct": 48.8,
+        "margin": -1.5,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 4,
-      demSeats: 3,
-      gopSeats: 1,
-      uncalledSeats: 0,
-      popularDemVotes: 530000,
-      popularGopVotes: 520000,
-      reportingPct: 100,
-      historical2022: { demSeats: 3, gopSeats: 1, demPopularPct: 51.1, gopPopularPct: 48.9, margin: 2.2 }
+    "house": {
+      "totalSeats": 4,
+      "demSeats": 0,
+      "gopSeats": 0,
+      "uncalledSeats": 4,
+      "popularDemVotes": 469448,
+      "popularGopVotes": 359918,
+      "reportingPct": 67,
+      "historical2022": {
+        "demSeats": 3,
+        "gopSeats": 1,
+        "demPopularPct": 51.1,
+        "gopPopularPct": 48.9,
+        "margin": 2.2
+      }
     }
   },
   {
-    id: 'NH',
-    stateCode: 'NH',
-    stateName: 'New Hampshire',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 2,
-    senate: {
-      demCandidate: { name: 'Jeanne Shaheen', party: 'DEM', votes: 395000, pct: 55.4 },
-      gopCandidate: { name: 'Corky Messner', party: 'GOP', votes: 318000, pct: 44.6 },
-      otherVotes: 8500,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 53.5, gopPct: 44.4, margin: 9.1, winner: 'dem', reportingPct: 100 }
+    "id": "NH",
+    "stateCode": "NH",
+    "stateName": "New Hampshire",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 2,
+    "senate": {
+      "demCandidate": {
+        "name": "Chris Pappas",
+        "party": "DEM",
+        "votes": 219480,
+        "pct": 53.7
+      },
+      "gopCandidate": {
+        "name": "John E. Sununu",
+        "party": "GOP",
+        "votes": 180913,
+        "pct": 44.3
+      },
+      "otherVotes": 8500,
+      "reportingPct": 59,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 53.5,
+        "gopPct": 44.4,
+        "margin": 9.1,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Joyce Craig', party: 'DEM', votes: 348000, pct: 47.6 },
-      gopCandidate: { name: 'Kelly Ayotte', party: 'GOP', votes: 384000, pct: 52.4 },
-      otherVotes: 6800,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 41.5, gopPct: 57.0, margin: -15.5, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Cinde Warmington",
+        "party": "DEM",
+        "votes": 182309,
+        "pct": 44.6
+      },
+      "gopCandidate": {
+        "name": "Kelly Ayotte",
+        "party": "GOP",
+        "votes": 219311,
+        "pct": 53.7
+      },
+      "otherVotes": 6800,
+      "reportingPct": 59,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 41.5,
+        "gopPct": 57,
+        "margin": -15.5,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 2,
-      demSeats: 2,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 385000,
-      popularGopVotes: 340000,
-      reportingPct: 100,
-      historical2022: { demSeats: 2, gopSeats: 0, demPopularPct: 53.8, gopPopularPct: 46.2, margin: 7.6 }
+    "house": {
+      "totalSeats": 2,
+      "demSeats": 2,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 226795,
+      "popularGopVotes": 175248,
+      "reportingPct": 59,
+      "historical2022": {
+        "demSeats": 2,
+        "gopSeats": 0,
+        "demPopularPct": 53.8,
+        "gopPopularPct": 46.2,
+        "margin": 7.6
+      }
     }
   },
   {
-    id: 'NJ',
-    stateCode: 'NJ',
-    stateName: 'New Jersey',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 12,
-    senate: {
-      demCandidate: { name: 'Cory Booker', party: 'DEM', votes: 1950000, pct: 58.4 },
-      gopCandidate: { name: 'Rik Mehta', party: 'GOP', votes: 1390000, pct: 41.6 },
-      otherVotes: 25000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 55.0, gopPct: 43.5, margin: 11.5, winner: 'dem', reportingPct: 100 }
+    "id": "NJ",
+    "stateCode": "NJ",
+    "stateName": "New Jersey",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 12,
+    "senate": {
+      "demCandidate": {
+        "name": "Cory Booker",
+        "party": "DEM",
+        "votes": 1754951,
+        "pct": 62.3
+      },
+      "gopCandidate": {
+        "name": "Justin Murphy",
+        "party": "GOP",
+        "votes": 987422,
+        "pct": 35
+      },
+      "otherVotes": 25000,
+      "reportingPct": 79,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 55,
+        "gopPct": 43.5,
+        "margin": 11.5,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 12,
-      demSeats: 9,
-      gopSeats: 3,
-      uncalledSeats: 0,
-      popularDemVotes: 1890000,
-      popularGopVotes: 1420000,
-      reportingPct: 100,
-      historical2022: { demSeats: 9, gopSeats: 3, demPopularPct: 54.8, gopPopularPct: 45.2, margin: 9.6 }
+    "house": {
+      "totalSeats": 12,
+      "demSeats": 10,
+      "gopSeats": 1,
+      "uncalledSeats": 1,
+      "popularDemVotes": 1758597,
+      "popularGopVotes": 977827,
+      "reportingPct": 77,
+      "historical2022": {
+        "demSeats": 9,
+        "gopSeats": 3,
+        "demPopularPct": 54.8,
+        "gopPopularPct": 45.2,
+        "margin": 9.6
+      }
     }
   },
   {
-    id: 'NM',
-    stateCode: 'NM',
-    stateName: 'New Mexico',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 3,
-    senate: {
-      demCandidate: { name: 'Ben Ray Luján', party: 'DEM', votes: 472000, pct: 54.8 },
-      gopCandidate: { name: 'Mark Ronchetti', party: 'GOP', votes: 390000, pct: 45.2 },
-      otherVotes: 11000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 52.0, gopPct: 45.6, margin: 6.4, winner: 'dem', reportingPct: 100 }
+    "id": "NM",
+    "stateCode": "NM",
+    "stateName": "New Mexico",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 3,
+    "senate": {
+      "demCandidate": {
+        "name": "Ben Ray Luján",
+        "party": "DEM",
+        "votes": 455165,
+        "pct": 63.1
+      },
+      "gopCandidate": {
+        "name": "Larry Marker",
+        "party": "GOP",
+        "votes": 265557,
+        "pct": 36.9
+      },
+      "otherVotes": 11000,
+      "reportingPct": 88,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 52,
+        "gopPct": 45.6,
+        "margin": 6.4,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Michelle Lujan Grisham', party: 'DEM', votes: 485000, pct: 55.4 },
-      gopCandidate: { name: 'Mark Ronchetti', party: 'GOP', votes: 391000, pct: 44.6 },
-      otherVotes: 12000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 52.0, gopPct: 45.6, margin: 6.4, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Deb Haaland",
+        "party": "DEM",
+        "votes": 412834,
+        "pct": 57.3
+      },
+      "gopCandidate": {
+        "name": "Gregg Hull",
+        "party": "GOP",
+        "votes": 308315,
+        "pct": 42.8
+      },
+      "otherVotes": 12000,
+      "reportingPct": 89,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 52,
+        "gopPct": 45.6,
+        "margin": 6.4,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 3,
-      demSeats: 3,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 465000,
-      popularGopVotes: 392000,
-      reportingPct: 100,
-      historical2022: { demSeats: 3, gopSeats: 0, demPopularPct: 53.6, gopPopularPct: 46.4, margin: 7.2 }
+    "house": {
+      "totalSeats": 3,
+      "demSeats": 3,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 441341,
+      "popularGopVotes": 276604,
+      "reportingPct": 87,
+      "historical2022": {
+        "demSeats": 3,
+        "gopSeats": 0,
+        "demPopularPct": 53.6,
+        "gopPopularPct": 46.4,
+        "margin": 7.2
+      }
     }
   },
   {
-    id: 'NY',
-    stateCode: 'NY',
-    stateName: 'New York',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 26,
-    governor: {
-      demCandidate: { name: 'Kathy Hochul', party: 'DEM', votes: 3380000, pct: 55.1 },
-      gopCandidate: { name: 'Lee Zeldin', party: 'GOP', votes: 2750000, pct: 44.9 },
-      otherVotes: 45000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 53.2, gopPct: 46.8, margin: 6.4, winner: 'dem', reportingPct: 100 }
+    "id": "NY",
+    "stateCode": "NY",
+    "stateName": "New York",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 26,
+    "governor": {
+      "demCandidate": {
+        "name": "Kathy Hochul",
+        "party": "DEM",
+        "votes": 10419463,
+        "pct": 59.8
+      },
+      "gopCandidate": {
+        "name": "Bruce Blakeman",
+        "party": "GOP",
+        "votes": 6975559,
+        "pct": 40
+      },
+      "otherVotes": 45000,
+      "reportingPct": 99,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 53.2,
+        "gopPct": 46.8,
+        "margin": 6.4,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 26,
-      demSeats: 18,
-      gopSeats: 8,
-      uncalledSeats: 0,
-      popularDemVotes: 3410000,
-      popularGopVotes: 2720000,
-      reportingPct: 100,
-      historical2022: { demSeats: 15, gopSeats: 11, demPopularPct: 53.5, gopPopularPct: 46.5, margin: 7.0 },
-      keyBattlegroundDistricts: [
-        { district: 'NY-17', demName: 'Mondaire Jones', gopName: 'Mike Lawler', demVotes: 168400, gopVotes: 166200, demPct: 50.3, gopPct: 49.7, reportingPct: 100, status: 'called_dem', swingVs2022: 1.5 },
-        { district: 'NY-19', demName: 'Josh Riley', gopName: 'Marc Molinaro', demVotes: 157200, gopVotes: 154100, demPct: 50.5, gopPct: 49.5, reportingPct: 100, status: 'called_dem', swingVs2022: 2.1 }
+    "house": {
+      "totalSeats": 26,
+      "demSeats": 17,
+      "gopSeats": 3,
+      "uncalledSeats": 6,
+      "popularDemVotes": 10618040,
+      "popularGopVotes": 6466699,
+      "reportingPct": 99,
+      "historical2022": {
+        "demSeats": 15,
+        "gopSeats": 11,
+        "demPopularPct": 53.5,
+        "gopPopularPct": 46.5,
+        "margin": 7
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "NY-17",
+          "demName": "Mondaire Jones",
+          "gopName": "Mike Lawler",
+          "demVotes": 168400,
+          "gopVotes": 166200,
+          "demPct": 50.3,
+          "gopPct": 49.7,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 1.5
+        },
+        {
+          "district": "NY-19",
+          "demName": "Josh Riley",
+          "gopName": "Marc Molinaro",
+          "demVotes": 157200,
+          "gopVotes": 154100,
+          "demPct": 50.5,
+          "gopPct": 49.5,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 2.1
+        }
       ]
     }
   },
   {
-    id: 'NC',
-    stateCode: 'NC',
-    stateName: 'North Carolina',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 14,
-    senate: {
-      demCandidate: { name: 'Roy Cooper', party: 'DEM', votes: 2510000, pct: 50.6 },
-      gopCandidate: { name: 'Thom Tillis', party: 'GOP', votes: 2450000, pct: 49.4 },
-      otherVotes: 35000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 47.3, gopPct: 50.5, margin: -3.2, winner: 'gop', reportingPct: 100 }
+    "id": "NC",
+    "stateCode": "NC",
+    "stateName": "North Carolina",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 14,
+    "senate": {
+      "demCandidate": {
+        "name": "Roy Cooper",
+        "party": "DEM",
+        "votes": 2462440,
+        "pct": 58.7
+      },
+      "gopCandidate": {
+        "name": "Michael Whatley",
+        "party": "GOP",
+        "votes": 1640368,
+        "pct": 39.1
+      },
+      "otherVotes": 35000,
+      "reportingPct": 100,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 47.3,
+        "gopPct": 50.5,
+        "margin": -3.2,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 14,
-      demSeats: 4,
-      gopSeats: 10,
-      uncalledSeats: 0,
-      popularDemVotes: 2420000,
-      popularGopVotes: 2530000,
-      reportingPct: 100,
-      historical2022: { demSeats: 7, gopSeats: 7, demPopularPct: 48.9, gopPopularPct: 51.1, margin: -2.2 }
+    "house": {
+      "totalSeats": 14,
+      "demSeats": 4,
+      "gopSeats": 0,
+      "uncalledSeats": 10,
+      "popularDemVotes": 2380066,
+      "popularGopVotes": 1749866,
+      "reportingPct": 99,
+      "historical2022": {
+        "demSeats": 7,
+        "gopSeats": 7,
+        "demPopularPct": 48.9,
+        "gopPopularPct": 51.1,
+        "margin": -2.2
+      }
     }
   },
   {
-    id: 'ND',
-    stateCode: 'ND',
-    stateName: 'North Dakota',
-    hasSenateRace: false,
-    hasGovernorRace: false,
-    houseSeats: 1,
-    house: {
-      totalSeats: 1,
-      demSeats: 0,
-      gopSeats: 1,
-      uncalledSeats: 0,
-      popularDemVotes: 85000,
-      popularGopVotes: 180000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 1, demPopularPct: 29.8, gopPopularPct: 70.2, margin: -40.4 }
+    "id": "ND",
+    "stateCode": "ND",
+    "stateName": "North Dakota",
+    "hasSenateRace": false,
+    "hasGovernorRace": false,
+    "houseSeats": 1,
+    "house": {
+      "totalSeats": 1,
+      "demSeats": 0,
+      "gopSeats": 1,
+      "uncalledSeats": 0,
+      "popularDemVotes": 85892,
+      "popularGopVotes": 134477,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 1,
+        "demPopularPct": 29.8,
+        "gopPopularPct": 70.2,
+        "margin": -40.4
+      }
     }
   },
   {
-    id: 'OH',
-    stateCode: 'OH',
-    stateName: 'Ohio',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 15,
-    governor: {
-      demCandidate: { name: 'Amy Acton', party: 'DEM', votes: 2010000, pct: 44.8 },
-      gopCandidate: { name: 'Jon Husted', party: 'GOP', votes: 2480000, pct: 55.2 },
-      otherVotes: 32000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 37.4, gopPct: 62.4, margin: -25.0, winner: 'gop', reportingPct: 100 }
+    "id": "OH",
+    "stateCode": "OH",
+    "stateName": "Ohio",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 15,
+    "governor": {
+      "demCandidate": {
+        "name": "Amy Acton",
+        "party": "DEM",
+        "votes": 2350266,
+        "pct": 52
+      },
+      "gopCandidate": {
+        "name": "Vivek Ramaswamy",
+        "party": "GOP",
+        "votes": 2023379,
+        "pct": 44.7
+      },
+      "otherVotes": 32000,
+      "reportingPct": 95,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 37.4,
+        "gopPct": 62.4,
+        "margin": -25,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 15,
-      demSeats: 5,
-      gopSeats: 10,
-      uncalledSeats: 0,
-      popularDemVotes: 1980000,
-      popularGopVotes: 2490000,
-      reportingPct: 100,
-      historical2022: { demSeats: 5, gopSeats: 10, demPopularPct: 43.1, gopPopularPct: 56.9, margin: -13.8 }
+    "house": {
+      "totalSeats": 15,
+      "demSeats": 7,
+      "gopSeats": 7,
+      "uncalledSeats": 1,
+      "popularDemVotes": 2264432,
+      "popularGopVotes": 2161686,
+      "reportingPct": 97,
+      "historical2022": {
+        "demSeats": 5,
+        "gopSeats": 10,
+        "demPopularPct": 43.1,
+        "gopPopularPct": 56.9,
+        "margin": -13.8
+      }
+    },
+    "senate": {
+      "demCandidate": {
+        "name": "Sherrod Brown",
+        "party": "DEM",
+        "votes": 2249214,
+        "pct": 49.6
+      },
+      "gopCandidate": {
+        "name": "Jon Husted",
+        "party": "GOP",
+        "votes": 2060829,
+        "pct": 45.5
+      },
+      "otherVotes": 0,
+      "reportingPct": 95,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 46.9,
+        "gopPct": 53,
+        "margin": -6.1,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     }
   },
   {
-    id: 'OK',
-    stateCode: 'OK',
-    stateName: 'Oklahoma',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 5,
-    senate: {
-      demCandidate: { name: 'Abby Broyles', party: 'DEM', votes: 460000, pct: 36.2 },
-      gopCandidate: { name: 'Jim Inhofe / Markwayne Mullin', party: 'GOP', votes: 810000, pct: 63.8 },
-      otherVotes: 14000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 32.8, gopPct: 61.8, margin: -29.0, winner: 'gop', reportingPct: 100 }
+    "id": "OK",
+    "stateCode": "OK",
+    "stateName": "Oklahoma",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 5,
+    "senate": {
+      "demCandidate": {
+        "name": "N'Kiyla Jasmine Thomas",
+        "party": "DEM",
+        "votes": 430935,
+        "pct": 39.2
+      },
+      "gopCandidate": {
+        "name": "Kevin Hern",
+        "party": "GOP",
+        "votes": 629947,
+        "pct": 57.3
+      },
+      "otherVotes": 14000,
+      "reportingPct": 84,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 32.8,
+        "gopPct": 61.8,
+        "margin": -29,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Joy Hofmeister', party: 'DEM', votes: 495000, pct: 38.8 },
-      gopCandidate: { name: 'Kevin Stitt', party: 'GOP', votes: 780000, pct: 61.2 },
-      otherVotes: 12000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 41.8, gopPct: 55.4, margin: -13.6, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Cyndi Munson",
+        "party": "DEM",
+        "votes": 505188,
+        "pct": 45.9
+      },
+      "gopCandidate": {
+        "name": "Mike Mazzei",
+        "party": "GOP",
+        "votes": 572716,
+        "pct": 52
+      },
+      "otherVotes": 12000,
+      "reportingPct": 84,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 41.8,
+        "gopPct": 55.4,
+        "margin": -13.6,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 5,
-      demSeats: 0,
-      gopSeats: 5,
-      uncalledSeats: 0,
-      popularDemVotes: 440000,
-      popularGopVotes: 820000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 5, demPopularPct: 34.2, gopPopularPct: 65.8, margin: -31.6 }
+    "house": {
+      "totalSeats": 5,
+      "demSeats": 0,
+      "gopSeats": 4,
+      "uncalledSeats": 1,
+      "popularDemVotes": 446489,
+      "popularGopVotes": 633887,
+      "reportingPct": 95,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 5,
+        "demPopularPct": 34.2,
+        "gopPopularPct": 65.8,
+        "margin": -31.6
+      }
     }
   },
   {
-    id: 'OR',
-    stateCode: 'OR',
-    stateName: 'Oregon',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 6,
-    senate: {
-      demCandidate: { name: 'Jeff Merkley', party: 'DEM', votes: 1140000, pct: 59.2 },
-      gopCandidate: { name: 'Jo Rae Perkins', party: 'GOP', votes: 785000, pct: 40.8 },
-      otherVotes: 21000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 56.0, gopPct: 41.0, margin: 15.0, winner: 'dem', reportingPct: 100 }
+    "id": "OR",
+    "stateCode": "OR",
+    "stateName": "Oregon",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 6,
+    "senate": {
+      "demCandidate": {
+        "name": "Jeff Merkley",
+        "party": "DEM",
+        "votes": 845700,
+        "pct": 56.8
+      },
+      "gopCandidate": {
+        "name": "David Brock Smith",
+        "party": "GOP",
+        "votes": 600637,
+        "pct": 40.3
+      },
+      "otherVotes": 21000,
+      "reportingPct": 73,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 56,
+        "gopPct": 41,
+        "margin": 15,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Tina Kotek', party: 'DEM', votes: 1090000, pct: 53.8 },
-      gopCandidate: { name: 'Christine Drazan', party: 'GOP', votes: 935000, pct: 46.2 },
-      otherVotes: 24000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 47.0, gopPct: 43.5, margin: 3.5, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Tina Kotek",
+        "party": "DEM",
+        "votes": 778875,
+        "pct": 52
+      },
+      "gopCandidate": {
+        "name": "Christine Drazan",
+        "party": "GOP",
+        "votes": 678095,
+        "pct": 45.3
+      },
+      "otherVotes": 24000,
+      "reportingPct": 73,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 47,
+        "gopPct": 43.5,
+        "margin": 3.5,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 6,
-      demSeats: 4,
-      gopSeats: 2,
-      uncalledSeats: 0,
-      popularDemVotes: 1080000,
-      popularGopVotes: 890000,
-      reportingPct: 100,
-      historical2022: { demSeats: 4, gopSeats: 2, demPopularPct: 53.2, gopPopularPct: 46.8, margin: 6.4 }
+    "house": {
+      "totalSeats": 6,
+      "demSeats": 5,
+      "gopSeats": 1,
+      "uncalledSeats": 0,
+      "popularDemVotes": 843947,
+      "popularGopVotes": 619062,
+      "reportingPct": 72,
+      "historical2022": {
+        "demSeats": 4,
+        "gopSeats": 2,
+        "demPopularPct": 53.2,
+        "gopPopularPct": 46.8,
+        "margin": 6.4
+      }
     }
   },
   {
-    id: 'PA',
-    stateCode: 'PA',
-    stateName: 'Pennsylvania',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 17,
-    governor: {
-      demCandidate: { name: 'Josh Shapiro', party: 'DEM', votes: 3050000, pct: 56.5 },
-      gopCandidate: { name: 'Doug Mastriano', party: 'GOP', votes: 2350000, pct: 43.5 },
-      otherVotes: 42000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 56.5, gopPct: 41.7, margin: 14.8, winner: 'dem', reportingPct: 100 }
+    "id": "PA",
+    "stateCode": "PA",
+    "stateName": "Pennsylvania",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 17,
+    "governor": {
+      "demCandidate": {
+        "name": "Josh Shapiro",
+        "party": "DEM",
+        "votes": 2948412,
+        "pct": 60.1
+      },
+      "gopCandidate": {
+        "name": "Stacy Garrity",
+        "party": "GOP",
+        "votes": 1892438,
+        "pct": 38.6
+      },
+      "otherVotes": 42000,
+      "reportingPct": 81,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 56.5,
+        "gopPct": 41.7,
+        "margin": 14.8,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 17,
-      demSeats: 7,
-      gopSeats: 10,
-      uncalledSeats: 0,
-      popularDemVotes: 2710000,
-      popularGopVotes: 2810000,
-      reportingPct: 100,
-      historical2022: { demSeats: 9, gopSeats: 8, demPopularPct: 50.8, gopPopularPct: 49.2, margin: 1.6 },
-      keyBattlegroundDistricts: [
-        { district: 'PA-07', demName: 'Susan Wild', gopName: 'Ryan Mackenzie', demVotes: 177500, gopVotes: 183200, demPct: 49.2, gopPct: 50.8, reportingPct: 100, status: 'called_gop', swingVs2022: -2.6 },
-        { district: 'PA-08', demName: 'Matt Cartwright', gopName: 'Rob Bresnahan', demVotes: 165400, gopVotes: 171800, demPct: 49.0, gopPct: 51.0, reportingPct: 100, status: 'called_gop', swingVs2022: -3.2 },
-        { district: 'PA-10', demName: 'Janelle Stelson', gopName: 'Scott Perry', demVotes: 187100, gopVotes: 192400, demPct: 49.3, gopPct: 50.7, reportingPct: 100, status: 'called_gop', swingVs2022: 1.8 }
+    "house": {
+      "totalSeats": 17,
+      "demSeats": 11,
+      "gopSeats": 6,
+      "uncalledSeats": 0,
+      "popularDemVotes": 2741895,
+      "popularGopVotes": 2123136,
+      "reportingPct": 92,
+      "historical2022": {
+        "demSeats": 9,
+        "gopSeats": 8,
+        "demPopularPct": 50.8,
+        "gopPopularPct": 49.2,
+        "margin": 1.6
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "PA-07",
+          "demName": "Susan Wild",
+          "gopName": "Ryan Mackenzie",
+          "demVotes": 177500,
+          "gopVotes": 183200,
+          "demPct": 49.2,
+          "gopPct": 50.8,
+          "reportingPct": 100,
+          "status": "called_gop",
+          "swingVs2022": -2.6
+        },
+        {
+          "district": "PA-08",
+          "demName": "Matt Cartwright",
+          "gopName": "Rob Bresnahan",
+          "demVotes": 165400,
+          "gopVotes": 171800,
+          "demPct": 49,
+          "gopPct": 51,
+          "reportingPct": 100,
+          "status": "called_gop",
+          "swingVs2022": -3.2
+        },
+        {
+          "district": "PA-10",
+          "demName": "Janelle Stelson",
+          "gopName": "Scott Perry",
+          "demVotes": 187100,
+          "gopVotes": 192400,
+          "demPct": 49.3,
+          "gopPct": 50.7,
+          "reportingPct": 100,
+          "status": "called_gop",
+          "swingVs2022": 1.8
+        }
       ]
     }
   },
   {
-    id: 'RI',
-    stateCode: 'RI',
-    stateName: 'Rhode Island',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 2,
-    senate: {
-      demCandidate: { name: 'Jack Reed', party: 'DEM', votes: 295000, pct: 66.8 },
-      gopCandidate: { name: 'Allen Waters', party: 'GOP', votes: 146000, pct: 33.2 },
-      otherVotes: 3500,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 65.0, gopPct: 34.0, margin: 31.0, winner: 'dem', reportingPct: 100 }
+    "id": "RI",
+    "stateCode": "RI",
+    "stateName": "Rhode Island",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 2,
+    "senate": {
+      "demCandidate": {
+        "name": "John F. Reed",
+        "party": "DEM",
+        "votes": 235276,
+        "pct": 66.6
+      },
+      "gopCandidate": {
+        "name": "Raymond T. McKay",
+        "party": "GOP",
+        "votes": 103996,
+        "pct": 29.4
+      },
+      "otherVotes": 3500,
+      "reportingPct": 83,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 65,
+        "gopPct": 34,
+        "margin": 31,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Dan McKee', party: 'DEM', votes: 275000, pct: 58.2 },
-      gopCandidate: { name: 'Ashley Kalus', party: 'GOP', votes: 197000, pct: 41.8 },
-      otherVotes: 4100,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 58.0, gopPct: 39.0, margin: 19.0, winner: 'dem', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Helena Buonanno Foulkes",
+        "party": "DEM",
+        "votes": 202877,
+        "pct": 57.5
+      },
+      "gopCandidate": {
+        "name": "Aaron C. Guckian",
+        "party": "GOP",
+        "votes": 46656,
+        "pct": 13.2
+      },
+      "otherVotes": 4100,
+      "reportingPct": 83,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 58,
+        "gopPct": 39,
+        "margin": 19,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 2,
-      demSeats: 2,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 280000,
-      popularGopVotes: 160000,
-      reportingPct: 100,
-      historical2022: { demSeats: 2, gopSeats: 0, demPopularPct: 59.2, gopPopularPct: 40.8, margin: 18.4 }
+    "house": {
+      "totalSeats": 2,
+      "demSeats": 2,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 227886,
+      "popularGopVotes": 117215,
+      "reportingPct": 83,
+      "historical2022": {
+        "demSeats": 2,
+        "gopSeats": 0,
+        "demPopularPct": 59.2,
+        "gopPopularPct": 40.8,
+        "margin": 18.4
+      }
     }
   },
   {
-    id: 'SC',
-    stateCode: 'SC',
-    stateName: 'South Carolina',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 7,
-    senate: {
-      demCandidate: { name: 'Jaime Harrison', party: 'DEM', votes: 1080000, pct: 46.2 },
-      gopCandidate: { name: 'Lindsey Graham', party: 'GOP', votes: 1260000, pct: 53.8 },
-      otherVotes: 18000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 37.1, gopPct: 62.9, margin: -25.8, winner: 'gop', reportingPct: 100 }
+    "id": "SC",
+    "stateCode": "SC",
+    "stateName": "South Carolina",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 7,
+    "senate": {
+      "demCandidate": {
+        "name": "Annie Andrews",
+        "party": "DEM",
+        "votes": 1042362,
+        "pct": 51.1
+      },
+      "gopCandidate": {
+        "name": "Darline Graham",
+        "party": "GOP",
+        "votes": 951165,
+        "pct": 46.6
+      },
+      "otherVotes": 18000,
+      "reportingPct": 100,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 37.1,
+        "gopPct": 62.9,
+        "margin": -25.8,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Joe Cunningham', party: 'DEM', votes: 980000, pct: 42.1 },
-      gopCandidate: { name: 'Henry McMaster', party: 'GOP', votes: 1350000, pct: 57.9 },
-      otherVotes: 15000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 40.7, gopPct: 58.1, margin: -17.4, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Jermaine Johnson",
+        "party": "DEM",
+        "votes": 959001,
+        "pct": 47.1
+      },
+      "gopCandidate": {
+        "name": "Alan Wilson",
+        "party": "GOP",
+        "votes": 1050190,
+        "pct": 51.6
+      },
+      "otherVotes": 15000,
+      "reportingPct": 100,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 40.7,
+        "gopPct": 58.1,
+        "margin": -17.4,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 7,
-      demSeats: 1,
-      gopSeats: 6,
-      uncalledSeats: 0,
-      popularDemVotes: 990000,
-      popularGopVotes: 1340000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 6, demPopularPct: 42.4, gopPopularPct: 57.6, margin: -15.2 }
+    "house": {
+      "totalSeats": 7,
+      "demSeats": 1,
+      "gopSeats": 4,
+      "uncalledSeats": 2,
+      "popularDemVotes": 976888,
+      "popularGopVotes": 1030157,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 6,
+        "demPopularPct": 42.4,
+        "gopPopularPct": 57.6,
+        "margin": -15.2
+      }
     }
   },
   {
-    id: 'SD',
-    stateCode: 'SD',
-    stateName: 'South Dakota',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 1,
-    senate: {
-      demCandidate: { name: 'Dan Ahlers', party: 'DEM', votes: 140000, pct: 36.4 },
-      gopCandidate: { name: 'Mike Rounds', party: 'GOP', votes: 245000, pct: 63.6 },
-      otherVotes: 3200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 26.1, gopPct: 69.6, margin: -43.5, winner: 'gop', reportingPct: 100 }
+    "id": "SD",
+    "stateCode": "SD",
+    "stateName": "South Dakota",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 1,
+    "senate": {
+      "demCandidate": {
+        "name": "Brian Bengs",
+        "party": "IND",
+        "votes": 118984,
+        "pct": 39.3
+      },
+      "gopCandidate": {
+        "name": "Mike Rounds",
+        "party": "GOP",
+        "votes": 183791,
+        "pct": 60.7
+      },
+      "otherVotes": 3200,
+      "reportingPct": 79,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 26.1,
+        "gopPct": 69.6,
+        "margin": -43.5,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Jamie Smith', party: 'DEM', votes: 152000, pct: 39.5 },
-      gopCandidate: { name: 'Kristi Noem', party: 'GOP', votes: 233000, pct: 60.5 },
-      otherVotes: 4000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 35.2, gopPct: 62.0, margin: -26.8, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Dan Ahlers",
+        "party": "DEM",
+        "votes": 109996,
+        "pct": 36.4
+      },
+      "gopCandidate": {
+        "name": "Larry Rhoden",
+        "party": "GOP",
+        "votes": 192118,
+        "pct": 63.6
+      },
+      "otherVotes": 4000,
+      "reportingPct": 79,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 35.2,
+        "gopPct": 62,
+        "margin": -26.8,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 1,
-      demSeats: 0,
-      gopSeats: 1,
-      uncalledSeats: 0,
-      popularDemVotes: 138000,
-      popularGopVotes: 245000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 1, demPopularPct: 34.0, gopPopularPct: 66.0, margin: -32.0 }
+    "house": {
+      "totalSeats": 1,
+      "demSeats": 0,
+      "gopSeats": 1,
+      "uncalledSeats": 0,
+      "popularDemVotes": 108459,
+      "popularGopVotes": 194742,
+      "reportingPct": 79,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 1,
+        "demPopularPct": 34,
+        "gopPopularPct": 66,
+        "margin": -32
+      }
     }
   },
   {
-    id: 'TN',
-    stateCode: 'TN',
-    stateName: 'Tennessee',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 9,
-    senate: {
-      demCandidate: { name: 'Marquita Bradshaw', party: 'DEM', votes: 1040000, pct: 37.8 },
-      gopCandidate: { name: 'Bill Hagerty', party: 'GOP', votes: 1710000, pct: 62.2 },
-      otherVotes: 25000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 34.5, gopPct: 63.8, margin: -29.3, winner: 'gop', reportingPct: 100 }
+    "id": "TN",
+    "stateCode": "TN",
+    "stateName": "Tennessee",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 9,
+    "senate": {
+      "demCandidate": {
+        "name": "Marquita Bradshaw",
+        "party": "DEM",
+        "votes": 886911,
+        "pct": 42.9
+      },
+      "gopCandidate": {
+        "name": "Bill Hagerty",
+        "party": "GOP",
+        "votes": 1138407,
+        "pct": 55.1
+      },
+      "otherVotes": 25000,
+      "reportingPct": 89,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 34.5,
+        "gopPct": 63.8,
+        "margin": -29.3,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Jason Martin', party: 'DEM', votes: 980000, pct: 36.5 },
-      gopCandidate: { name: 'Bill Lee', party: 'GOP', votes: 1700000, pct: 63.5 },
-      otherVotes: 22000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 32.9, gopPct: 64.9, margin: -32.0, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Jerri Green",
+        "party": "DEM",
+        "votes": 902546,
+        "pct": 43.1
+      },
+      "gopCandidate": {
+        "name": "Marsha Blackburn",
+        "party": "GOP",
+        "votes": 950259,
+        "pct": 45.3
+      },
+      "otherVotes": 22000,
+      "reportingPct": 91,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 32.9,
+        "gopPct": 64.9,
+        "margin": -32,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 9,
-      demSeats: 1,
-      gopSeats: 8,
-      uncalledSeats: 0,
-      popularDemVotes: 970000,
-      popularGopVotes: 1720000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 8, demPopularPct: 35.8, gopPopularPct: 64.2, margin: -28.4 }
+    "house": {
+      "totalSeats": 9,
+      "demSeats": 0,
+      "gopSeats": 7,
+      "uncalledSeats": 2,
+      "popularDemVotes": 903816,
+      "popularGopVotes": 1088326,
+      "reportingPct": 87,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 8,
+        "demPopularPct": 35.8,
+        "gopPopularPct": 64.2,
+        "margin": -28.4
+      }
     }
   },
   {
-    id: 'TX',
-    stateCode: 'TX',
-    stateName: 'Texas',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 38,
-    senate: {
-      demCandidate: { name: 'Colin Allred', party: 'DEM', votes: 4720000, pct: 49.3 },
-      gopCandidate: { name: 'John Cornyn', party: 'GOP', votes: 4850000, pct: 50.7 },
-      otherVotes: 85000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 43.8, gopPct: 53.5, margin: -9.7, winner: 'gop', reportingPct: 100 }
+    "id": "TX",
+    "stateCode": "TX",
+    "stateName": "Texas",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 38,
+    "senate": {
+      "demCandidate": {
+        "name": "James Talarico",
+        "party": "DEM",
+        "votes": 5206111,
+        "pct": 54.1
+      },
+      "gopCandidate": {
+        "name": "Ken Paxton",
+        "party": "GOP",
+        "votes": 4231552,
+        "pct": 44
+      },
+      "otherVotes": 85000,
+      "reportingPct": 96,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 43.8,
+        "gopPct": 53.5,
+        "margin": -9.7,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Beto O’Rourke', party: 'DEM', votes: 4620000, pct: 48.6 },
-      gopCandidate: { name: 'Greg Abbott', party: 'GOP', votes: 4880000, pct: 51.4 },
-      otherVotes: 78000,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 43.9, gopPct: 54.8, margin: -10.9, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Gina Hinojosa",
+        "party": "DEM",
+        "votes": 5031200,
+        "pct": 52.9
+      },
+      "gopCandidate": {
+        "name": "Greg Abbott",
+        "party": "GOP",
+        "votes": 4349221,
+        "pct": 45.7
+      },
+      "otherVotes": 78000,
+      "reportingPct": 95,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 43.9,
+        "gopPct": 54.8,
+        "margin": -10.9,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 38,
-      demSeats: 13,
-      gopSeats: 25,
-      uncalledSeats: 0,
-      popularDemVotes: 4580000,
-      popularGopVotes: 4950000,
-      reportingPct: 100,
-      historical2022: { demSeats: 13, gopSeats: 25, demPopularPct: 44.1, gopPopularPct: 55.9, margin: -11.8 }
+    "house": {
+      "totalSeats": 38,
+      "demSeats": 13,
+      "gopSeats": 18,
+      "uncalledSeats": 7,
+      "popularDemVotes": 4950368,
+      "popularGopVotes": 4413781,
+      "reportingPct": 89,
+      "historical2022": {
+        "demSeats": 13,
+        "gopSeats": 25,
+        "demPopularPct": 44.1,
+        "gopPopularPct": 55.9,
+        "margin": -11.8
+      }
     }
   },
   {
-    id: 'UT',
-    stateCode: 'UT',
-    stateName: 'Utah',
-    hasSenateRace: false,
-    hasGovernorRace: false,
-    houseSeats: 4,
-    house: {
-      totalSeats: 4,
-      demSeats: 0,
-      gopSeats: 4,
-      uncalledSeats: 0,
-      popularDemVotes: 380000,
-      popularGopVotes: 640000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 4, demPopularPct: 37.0, gopPopularPct: 63.0, margin: -26.0 }
+    "id": "UT",
+    "stateCode": "UT",
+    "stateName": "Utah",
+    "hasSenateRace": false,
+    "hasGovernorRace": false,
+    "houseSeats": 4,
+    "house": {
+      "totalSeats": 4,
+      "demSeats": 1,
+      "gopSeats": 3,
+      "uncalledSeats": 0,
+      "popularDemVotes": 322028,
+      "popularGopVotes": 317266,
+      "reportingPct": 67,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 4,
+        "demPopularPct": 37,
+        "gopPopularPct": 63,
+        "margin": -26
+      }
     }
   },
   {
-    id: 'VT',
-    stateCode: 'VT',
-    stateName: 'Vermont',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 1,
-    governor: {
-      demCandidate: { name: 'Brenda Siegel', party: 'DEM', votes: 105000, pct: 36.2 },
-      gopCandidate: { name: 'Phil Scott', party: 'GOP', votes: 185000, pct: 63.8 },
-      otherVotes: 3200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 28.1, gopPct: 71.3, margin: -43.2, winner: 'gop', reportingPct: 100 }
+    "id": "VT",
+    "stateCode": "VT",
+    "stateName": "Vermont",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 1,
+    "governor": {
+      "demCandidate": {
+        "name": "Amanda Janoo",
+        "party": "DEM",
+        "votes": 140665,
+        "pct": 45.8
+      },
+      "gopCandidate": {
+        "name": "Phil Scott",
+        "party": "GOP",
+        "votes": 160813,
+        "pct": 52.4
+      },
+      "otherVotes": 3200,
+      "reportingPct": 100,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 28.1,
+        "gopPct": 71.3,
+        "margin": -43.2,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 1,
-      demSeats: 1,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 185000,
-      popularGopVotes: 98000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 0, demPopularPct: 63.5, gopPopularPct: 36.5, margin: 27.0 }
+    "house": {
+      "totalSeats": 1,
+      "demSeats": 1,
+      "gopSeats": 0,
+      "uncalledSeats": 0,
+      "popularDemVotes": 197546,
+      "popularGopVotes": 93351,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 0,
+        "demPopularPct": 63.5,
+        "gopPopularPct": 36.5,
+        "margin": 27
+      }
     }
   },
   {
-    id: 'VA',
-    stateCode: 'VA',
-    stateName: 'Virginia',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 11,
-    senate: {
-      demCandidate: { name: 'Mark Warner', party: 'DEM', votes: 2280000, pct: 56.4 },
-      gopCandidate: { name: 'Daniel Gade', party: 'GOP', votes: 1760000, pct: 43.6 },
-      otherVotes: 25000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 53.0, gopPct: 46.5, margin: 6.5, winner: 'dem', reportingPct: 100 }
+    "id": "VA",
+    "stateCode": "VA",
+    "stateName": "Virginia",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 11,
+    "senate": {
+      "demCandidate": {
+        "name": "Mark Warner",
+        "party": "DEM",
+        "votes": 2175916,
+        "pct": 61
+      },
+      "gopCandidate": {
+        "name": "Bert Mizusawa",
+        "party": "GOP",
+        "votes": 1384613,
+        "pct": 38.8
+      },
+      "otherVotes": 25000,
+      "reportingPct": 100,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 53,
+        "gopPct": 46.5,
+        "margin": 6.5,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 11,
-      demSeats: 6,
-      gopSeats: 5,
-      uncalledSeats: 0,
-      popularDemVotes: 2190000,
-      popularGopVotes: 1830000,
-      reportingPct: 100,
-      historical2022: { demSeats: 6, gopSeats: 5, demPopularPct: 52.1, gopPopularPct: 47.9, margin: 4.2 },
-      keyBattlegroundDistricts: [
-        { district: 'VA-02', demName: 'Missy Cotter Smasal', gopName: 'Jen Kiggans', demVotes: 165400, gopVotes: 162900, demPct: 50.4, gopPct: 49.6, reportingPct: 100, status: 'called_dem', swingVs2022: 4.2 },
-        { district: 'VA-07', demName: 'Eugene Vindman', gopName: 'Derrick Anderson', demVotes: 182100, gopVotes: 176400, demPct: 50.8, gopPct: 49.2, reportingPct: 100, status: 'called_dem', swingVs2022: -1.0 }
+    "house": {
+      "totalSeats": 11,
+      "demSeats": 7,
+      "gopSeats": 2,
+      "uncalledSeats": 2,
+      "popularDemVotes": 2083691,
+      "popularGopVotes": 1427423,
+      "reportingPct": 100,
+      "historical2022": {
+        "demSeats": 6,
+        "gopSeats": 5,
+        "demPopularPct": 52.1,
+        "gopPopularPct": 47.9,
+        "margin": 4.2
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "VA-02",
+          "demName": "Missy Cotter Smasal",
+          "gopName": "Jen Kiggans",
+          "demVotes": 165400,
+          "gopVotes": 162900,
+          "demPct": 50.4,
+          "gopPct": 49.6,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 4.2
+        },
+        {
+          "district": "VA-07",
+          "demName": "Eugene Vindman",
+          "gopName": "Derrick Anderson",
+          "demVotes": 182100,
+          "gopVotes": 176400,
+          "demPct": 50.8,
+          "gopPct": 49.2,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": -1
+        }
       ]
     }
   },
   {
-    id: 'WA',
-    stateCode: 'WA',
-    stateName: 'Washington',
-    hasSenateRace: false,
-    hasGovernorRace: false,
-    houseSeats: 10,
-    house: {
-      totalSeats: 10,
-      demSeats: 8,
-      gopSeats: 2,
-      uncalledSeats: 0,
-      popularDemVotes: 1980000,
-      popularGopVotes: 1420000,
-      reportingPct: 100,
-      historical2022: { demSeats: 8, gopSeats: 2, demPopularPct: 57.5, gopPopularPct: 42.5, margin: 15.0 },
-      keyBattlegroundDistricts: [
-        { district: 'WA-03', demName: 'Marie Gluesenkamp Perez', gopName: 'Joe Kent', demVotes: 176200, gopVotes: 171400, demPct: 50.7, gopPct: 49.3, reportingPct: 100, status: 'called_dem', swingVs2022: 0.9 }
+    "id": "WA",
+    "stateCode": "WA",
+    "stateName": "Washington",
+    "hasSenateRace": false,
+    "hasGovernorRace": false,
+    "houseSeats": 10,
+    "house": {
+      "totalSeats": 10,
+      "demSeats": 7,
+      "gopSeats": 0,
+      "uncalledSeats": 3,
+      "popularDemVotes": 1258247,
+      "popularGopVotes": 713484,
+      "reportingPct": 71,
+      "historical2022": {
+        "demSeats": 8,
+        "gopSeats": 2,
+        "demPopularPct": 57.5,
+        "gopPopularPct": 42.5,
+        "margin": 15
+      },
+      "keyBattlegroundDistricts": [
+        {
+          "district": "WA-03",
+          "demName": "Marie Gluesenkamp Perez",
+          "gopName": "Joe Kent",
+          "demVotes": 176200,
+          "gopVotes": 171400,
+          "demPct": 50.7,
+          "gopPct": 49.3,
+          "reportingPct": 100,
+          "status": "called_dem",
+          "swingVs2022": 0.9
+        }
       ]
     }
   },
   {
-    id: 'WV',
-    stateCode: 'WV',
-    stateName: 'West Virginia',
-    hasSenateRace: true,
-    hasGovernorRace: false,
-    houseSeats: 2,
-    senate: {
-      demCandidate: { name: 'Paula Jean Swearengin', party: 'DEM', votes: 215000, pct: 30.5 },
-      gopCandidate: { name: 'Shelley Moore Capito', party: 'GOP', votes: 490000, pct: 69.5 },
-      otherVotes: 7500,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 29.7, gopPct: 70.3, margin: -40.6, winner: 'gop', reportingPct: 100 }
+    "id": "WV",
+    "stateCode": "WV",
+    "stateName": "West Virginia",
+    "hasSenateRace": true,
+    "hasGovernorRace": false,
+    "houseSeats": 2,
+    "senate": {
+      "demCandidate": {
+        "name": "Rachel Fetty Anderson",
+        "party": "DEM",
+        "votes": 172922,
+        "pct": 37.9
+      },
+      "gopCandidate": {
+        "name": "Shelley Moore Capito",
+        "party": "GOP",
+        "votes": 266068,
+        "pct": 58.3
+      },
+      "otherVotes": 7500,
+      "reportingPct": 75,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 29.7,
+        "gopPct": 70.3,
+        "margin": -40.6,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 2,
-      demSeats: 0,
-      gopSeats: 2,
-      uncalledSeats: 0,
-      popularDemVotes: 210000,
-      popularGopVotes: 495000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 2, demPopularPct: 31.0, gopPopularPct: 69.0, margin: -38.0 }
+    "house": {
+      "totalSeats": 2,
+      "demSeats": 0,
+      "gopSeats": 2,
+      "uncalledSeats": 0,
+      "popularDemVotes": 180582,
+      "popularGopVotes": 262492,
+      "reportingPct": 74,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 2,
+        "demPopularPct": 31,
+        "gopPopularPct": 69,
+        "margin": -38
+      }
     }
   },
   {
-    id: 'WI',
-    stateCode: 'WI',
-    stateName: 'Wisconsin',
-    hasSenateRace: false,
-    hasGovernorRace: true,
-    houseSeats: 8,
-    governor: {
-      demCandidate: { name: 'Tony Evers', party: 'DEM', votes: 1420000, pct: 51.5 },
-      gopCandidate: { name: 'Tim Michels', party: 'GOP', votes: 1335000, pct: 48.5 },
-      otherVotes: 18000,
-      reportingPct: 100,
-      status: 'called_dem',
-      historical2022: { demPct: 51.2, gopPct: 47.8, margin: 3.4, winner: 'dem', reportingPct: 100 }
+    "id": "WI",
+    "stateCode": "WI",
+    "stateName": "Wisconsin",
+    "hasSenateRace": false,
+    "hasGovernorRace": true,
+    "houseSeats": 8,
+    "governor": {
+      "demCandidate": {
+        "name": "David Crowley",
+        "party": "DEM",
+        "votes": 1442541,
+        "pct": 54.2
+      },
+      "gopCandidate": {
+        "name": "Tom Tiffany",
+        "party": "GOP",
+        "votes": 1218939,
+        "pct": 45.8
+      },
+      "otherVotes": 18000,
+      "reportingPct": 89,
+      "status": "called_dem",
+      "historical2022": {
+        "demPct": 51.2,
+        "gopPct": 47.8,
+        "margin": 3.4,
+        "winner": "dem",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 8,
-      demSeats: 2,
-      gopSeats: 6,
-      uncalledSeats: 0,
-      popularDemVotes: 1350000,
-      popularGopVotes: 1400000,
-      reportingPct: 100,
-      historical2022: { demSeats: 2, gopSeats: 6, demPopularPct: 48.9, gopPopularPct: 51.1, margin: -2.2 }
+    "house": {
+      "totalSeats": 8,
+      "demSeats": 4,
+      "gopSeats": 4,
+      "uncalledSeats": 0,
+      "popularDemVotes": 1420428,
+      "popularGopVotes": 1111568,
+      "reportingPct": 85,
+      "historical2022": {
+        "demSeats": 2,
+        "gopSeats": 6,
+        "demPopularPct": 48.9,
+        "gopPopularPct": 51.1,
+        "margin": -2.2
+      }
     }
   },
   {
-    id: 'WY',
-    stateCode: 'WY',
-    stateName: 'Wyoming',
-    hasSenateRace: true,
-    hasGovernorRace: true,
-    houseSeats: 1,
-    senate: {
-      demCandidate: { name: 'Merav Ben-David', party: 'DEM', votes: 68000, pct: 27.2 },
-      gopCandidate: { name: 'Cynthia Lummis', party: 'GOP', votes: 182000, pct: 72.8 },
-      otherVotes: 3100,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 24.3, gopPct: 73.0, margin: -48.7, winner: 'gop', reportingPct: 100 }
+    "id": "WY",
+    "stateCode": "WY",
+    "stateName": "Wyoming",
+    "hasSenateRace": true,
+    "hasGovernorRace": true,
+    "houseSeats": 1,
+    "senate": {
+      "demCandidate": {
+        "name": "James W. Byrd",
+        "party": "DEM",
+        "votes": 65097,
+        "pct": 34.8
+      },
+      "gopCandidate": {
+        "name": "Harriet Hageman",
+        "party": "GOP",
+        "votes": 122157,
+        "pct": 65.2
+      },
+      "otherVotes": 3100,
+      "reportingPct": 86,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 24.3,
+        "gopPct": 73,
+        "margin": -48.7,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    governor: {
-      demCandidate: { name: 'Theresa Livingston', party: 'DEM', votes: 55000, pct: 22.8 },
-      gopCandidate: { name: 'Mark Gordon', party: 'GOP', votes: 186000, pct: 77.2 },
-      otherVotes: 3200,
-      reportingPct: 100,
-      status: 'called_gop',
-      historical2022: { demPct: 17.8, gopPct: 78.7, margin: -60.9, winner: 'gop', reportingPct: 100 }
+    "governor": {
+      "demCandidate": {
+        "name": "Kenneth Casner",
+        "party": "DEM",
+        "votes": 27469,
+        "pct": 14.7
+      },
+      "gopCandidate": {
+        "name": "Eric Barlow",
+        "party": "GOP",
+        "votes": 128480,
+        "pct": 68.6
+      },
+      "otherVotes": 3200,
+      "reportingPct": 86,
+      "status": "called_gop",
+      "historical2022": {
+        "demPct": 17.8,
+        "gopPct": 78.7,
+        "margin": -60.9,
+        "winner": "gop",
+        "reportingPct": 100
+      }
     },
-    house: {
-      totalSeats: 1,
-      demSeats: 0,
-      gopSeats: 1,
-      uncalledSeats: 0,
-      popularDemVotes: 65000,
-      popularGopVotes: 185000,
-      reportingPct: 100,
-      historical2022: { demSeats: 0, gopSeats: 1, demPopularPct: 24.5, gopPopularPct: 75.5, margin: -51.0 }
+    "house": {
+      "totalSeats": 1,
+      "demSeats": 0,
+      "gopSeats": 1,
+      "uncalledSeats": 0,
+      "popularDemVotes": 61687,
+      "popularGopVotes": 99891,
+      "reportingPct": 84,
+      "historical2022": {
+        "demSeats": 0,
+        "gopSeats": 1,
+        "demPopularPct": 24.5,
+        "gopPopularPct": 75.5,
+        "margin": -51
+      }
     }
   },
   {
-    id: 'DC',
-    stateCode: 'DC',
-    stateName: 'District of Columbia',
-    hasSenateRace: false,
-    hasGovernorRace: false,
-    houseSeats: 1,
-    house: {
-      totalSeats: 1,
-      demSeats: 1,
-      gopSeats: 0,
-      uncalledSeats: 0,
-      popularDemVotes: 220000,
-      popularGopVotes: 14000,
-      reportingPct: 100,
-      historical2022: { demSeats: 1, gopSeats: 0, demPopularPct: 92.5, gopPopularPct: 5.2, margin: 87.3 }
+    "id": "DC",
+    "stateCode": "DC",
+    "stateName": "District of Columbia",
+    "hasSenateRace": false,
+    "hasGovernorRace": false,
+    "houseSeats": 1,
+    "house": {
+      "totalSeats": 1,
+      "demSeats": 0,
+      "gopSeats": 0,
+      "uncalledSeats": 1,
+      "popularDemVotes": 0,
+      "popularGopVotes": 0,
+      "reportingPct": 0,
+      "historical2022": {
+        "demSeats": 1,
+        "gopSeats": 0,
+        "demPopularPct": 92.5,
+        "gopPopularPct": 5.2,
+        "margin": 87.3
+      }
     }
   }
 ];
@@ -1778,7 +3412,7 @@ export const HOURLY_TIMELINE: HourlySnapshot[] = [
     hourLabel: 'Final Projection',
     cetLabel: 'Final (99%+)',
     timeString: 'All Races Projected — Full 50-State Midterm Tally',
-    description: 'Complete 2026 Midterm projection. GOP holds House (224-211) & Senate (52-48); full swing analysis vs. 2022 available.',
+    description: 'Live 2026 U.S. Midterm Election returns from civicAPI v2; full swing analysis vs. 2022 certified baseline.',
     nationalReportingPct: 100,
     stateProgress: {} // In final projection, uses full BASE_STATES data
   }

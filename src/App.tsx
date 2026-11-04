@@ -18,6 +18,7 @@ import {
 import {
   LiveFeedProvider,
   LiveSyncResponse,
+  fetchFromCivicApiLive,
   fetchFromCustomJsonEndpoint,
   getTimelineIndexForRealTime,
   applyLivePatchesToStates
@@ -27,8 +28,8 @@ export default function App() {
   const [chamber, setChamber] = useState<ChamberType>('senate');
   const [mapMode, setMapMode] = useState<MapDisplayMode>('purple_margin');
   const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
-  // Default to index 0 (Pre-Close / Polls Open) so it never falsely claims LIVE counting before polls close
-  const [currentHourIndex, setCurrentHourIndex] = useState<number>(() => getTimelineIndexForRealTime());
+  // Default to final index (BASE_STATES, populated with real civicAPI returns) while initial live fetch completes
+  const [currentHourIndex, setCurrentHourIndex] = useState<number>(HOURLY_TIMELINE.length - 1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
   const [isBacktestMode, setIsBacktestMode] = useState<boolean>(false);
 
@@ -38,13 +39,13 @@ export default function App() {
   const [isLiveAdapterOpen, setIsLiveAdapterOpen] = useState<boolean>(false);
   const [isElectionScheduleOpen, setIsElectionScheduleOpen] = useState<boolean>(false);
 
-  // Live adapter engine state (100% free, zero API keys required)
+  // Live adapter engine state — Connected directly to real-time civicAPI.org v2 election returns by default
   const [isLivePolling, setIsLivePolling] = useState<boolean>(true);
   const [pollingIntervalSeconds, setPollingIntervalSeconds] = useState<number>(60);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
   const [recordedSnapshotsCount, setRecordedSnapshotsCount] = useState<number>(HOURLY_TIMELINE.length);
-  const [selectedFeed, setSelectedFeed] = useState<LiveFeedProvider>('cet_live_clock');
-  const [customUrl, setCustomUrl] = useState<string>('/live-test-feed.json');
+  const [selectedFeed, setSelectedFeed] = useState<LiveFeedProvider>('civic_live_api');
+  const [customUrl, setCustomUrl] = useState<string>('https://civicapi.org/api/v2/race/87528');
   const [liveSyncData, setLiveSyncData] = useState<LiveSyncResponse | null>(null);
   const [isSyncingLive, setIsSyncingLive] = useState<boolean>(false);
   const [lastSyncStatus, setLastSyncStatus] = useState<{ ok: boolean; message: string; latencyMs?: number } | null>(null);
@@ -72,6 +73,34 @@ export default function App() {
         message: 'Manual timeline mode active. Use the bottom timeline bar to step through election night snapshots.',
         latencyMs: 5
       });
+      return;
+    }
+
+    if (selectedFeed === 'civic_live_api') {
+      setIsSyncingLive(true);
+      const startMs = performance.now();
+      try {
+        const response = await fetchFromCivicApiLive();
+        const latencyMs = Math.round(performance.now() - startMs);
+        setLiveSyncData(response);
+        setIsBacktestMode(false);
+        setLastSyncTime(new Date());
+        setRecordedSnapshotsCount(prev => prev + 1);
+        setLastSyncStatus({
+          ok: true,
+          message: `Live U.S. Election Returns synced via civicAPI v2 (${response.statesUpdated} states · Senate ${response.senateReportingPct}% · House ${response.houseReportingPct}% · Gov ${response.governorReportingPct}%).`,
+          latencyMs
+        });
+      } catch (err: any) {
+        const latencyMs = Math.round(performance.now() - startMs);
+        setLastSyncStatus({
+          ok: false,
+          message: err?.message || 'Failed to fetch live civicAPI endpoint.',
+          latencyMs
+        });
+      } finally {
+        setIsSyncingLive(false);
+      }
       return;
     }
 
@@ -124,22 +153,23 @@ export default function App() {
     setIsSyncingLive(true);
     const startMs = performance.now();
     try {
-      const response = await fetchFromCustomJsonEndpoint('/live-test-feed.json');
+      const response = await fetchFromCivicApiLive();
       const latencyMs = Math.round(performance.now() - startMs);
+      setSelectedFeed('civic_live_api');
       setLiveSyncData(response);
       setIsBacktestMode(false);
       setLastSyncTime(new Date());
       setRecordedSnapshotsCount(prev => prev + 1);
       setLastSyncStatus({
         ok: true,
-        message: `END-TO-END TEST OK (${latencyMs}ms): Received ${response.statesUpdated} states (IN, KY, GA, NC, VA, FL, OH) via JSON feed. National reporting set to ${response.nationalReportingPct}%, and Biggest Surprises + Equal-Area map updated!`,
+        message: `LIVE API VERIFIED (${latencyMs}ms): Connected to civicapi.org/api/v2/race — ${response.statesUpdated} states updated (Senate ${response.senateReportingPct}%, House ${response.houseReportingPct}%, Governors ${response.governorReportingPct}%).`,
         latencyMs
       });
     } catch (err: any) {
       const latencyMs = Math.round(performance.now() - startMs);
       setLastSyncStatus({
         ok: false,
-        message: `Test failed: ${err?.message || 'Unknown error'}`,
+        message: `Live API check failed: ${err?.message || 'Unknown error'}`,
         latencyMs
       });
     } finally {
@@ -149,11 +179,19 @@ export default function App() {
 
   const handleClearLiveSync = useCallback(() => {
     setLiveSyncData(null);
+    setSelectedFeed('simulation');
+    setCurrentHourIndex(0);
     setLastSyncStatus({
       ok: true,
-      message: 'Reset to 0% (Polls Open) — ready for official counting at 00:00 CET.'
+      message: 'Switched to manual timeline mode (0% Pre-Close).'
     });
   }, []);
+
+  // Fetch live U.S. Midterm Election returns immediately on mount, then every pollingIntervalSeconds
+  useEffect(() => {
+    handleManualSync();
+  }, [handleManualSync]);
+
   useEffect(() => {
     if (!isLivePolling) return;
     const interval = setInterval(() => {
@@ -296,13 +334,19 @@ export default function App() {
   const nationalReportingPct = isBacktestMode
     ? 100
     : isLiveFeedActive
-    ? liveSyncData.nationalReportingPct
+    ? chamber === 'senate' && liveSyncData.senateReportingPct !== undefined
+      ? liveSyncData.senateReportingPct
+      : chamber === 'house' && liveSyncData.houseReportingPct !== undefined
+      ? liveSyncData.houseReportingPct
+      : chamber === 'governor' && liveSyncData.governorReportingPct !== undefined
+      ? liveSyncData.governorReportingPct
+      : liveSyncData.nationalReportingPct
     : currentSnapshot.nationalReportingPct;
   const isCountingActive = !isBacktestMode && nationalReportingPct > 0;
 
   // Compute CET time representation accurately for each snapshot
   const currentCetLabel = isLiveFeedActive
-    ? `LIVE SYNC (${new Date(liveSyncData.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET)`
+    ? `LIVE API (${new Date(liveSyncData.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET)`
     : currentSnapshot.cetLabel || currentSnapshot.hourLabel;
   const currentHourLabel = isBacktestMode
     ? '2022 Certified Archive'
@@ -487,6 +531,9 @@ export default function App() {
         }}
         isBacktestMode={isBacktestMode}
         onToggleBacktestMode={() => setIsBacktestMode(prev => !prev)}
+        isLiveFeedActive={isLiveFeedActive}
+        liveLabel={currentHourLabel}
+        onReturnToLive={handleTestLivePipeline}
       />
 
       {/* Timelapse Video & Replay Studio Modal */}

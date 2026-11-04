@@ -1,5 +1,5 @@
 import React from 'react';
-import { Play, Pause, ChevronLeft, ChevronRight, Clock, History, FastForward, ExternalLink } from 'lucide-react';
+import { Play, Pause, ChevronLeft, ChevronRight, Clock, History, FastForward, ExternalLink, Radio } from 'lucide-react';
 import { HOURLY_TIMELINE } from '../data/electionData2026';
 
 interface HourlyTimelineControllerProps {
@@ -9,6 +9,9 @@ interface HourlyTimelineControllerProps {
   onTogglePlay: () => void;
   isBacktestMode: boolean;
   onToggleBacktestMode: () => void;
+  isLiveFeedActive?: boolean;
+  liveLabel?: string;
+  onReturnToLive?: () => void;
 }
 
 export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> = ({
@@ -17,7 +20,10 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
   isPlaying,
   onTogglePlay,
   isBacktestMode,
-  onToggleBacktestMode
+  onToggleBacktestMode,
+  isLiveFeedActive = false,
+  liveLabel,
+  onReturnToLive
 }) => {
   const currentSnapshot = HOURLY_TIMELINE[currentHourIndex];
 
@@ -30,7 +36,7 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
           <div className="flex items-center gap-1 bg-slate-900 border border-slate-800 p-0.5 rounded-lg">
             <button
               onClick={() => onHourChange(Math.max(0, currentHourIndex - 1))}
-              disabled={currentHourIndex === 0}
+              disabled={!isLiveFeedActive && currentHourIndex === 0}
               className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Previous hour"
             >
@@ -47,12 +53,12 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
               aria-label={isPlaying ? 'Pause hourly stream' : 'Play hourly stream'}
             >
               {isPlaying ? <Pause className="w-3 h-3" /> : <Play className="w-3 h-3" />}
-              <span>{isPlaying ? 'Pause' : 'Play'}</span>
+              <span>{isPlaying ? 'Pause' : 'Replay'}</span>
             </button>
 
             <button
               onClick={() => onHourChange(Math.min(HOURLY_TIMELINE.length - 1, currentHourIndex + 1))}
-              disabled={currentHourIndex === HOURLY_TIMELINE.length - 1}
+              disabled={!isLiveFeedActive && currentHourIndex === HOURLY_TIMELINE.length - 1}
               className="p-1 rounded text-slate-400 hover:text-white hover:bg-slate-800 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
               aria-label="Next hour"
             >
@@ -61,23 +67,36 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
           </div>
 
           <div className="flex items-center gap-1.5 font-mono">
-            <Clock className="w-3.5 h-3.5 text-slate-400" />
-            <div className="flex items-baseline gap-1.5">
-              <span className="text-xs font-bold text-white leading-none">
-                {currentSnapshot.hourLabel}
-              </span>
-              <span className="text-[10px] text-slate-400 truncate hidden lg:inline">
-                ({currentSnapshot.timeString})
-              </span>
-            </div>
+            {isLiveFeedActive ? (
+              <>
+                <Radio className="w-3.5 h-3.5 text-emerald-400 animate-pulse" />
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-xs font-bold text-emerald-300 leading-none">
+                    {liveLabel || 'Live U.S. Returns (civicAPI)'}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <>
+                <Clock className="w-3.5 h-3.5 text-slate-400" />
+                <div className="flex items-baseline gap-1.5">
+                  <span className="text-xs font-bold text-white leading-none">
+                    {currentSnapshot.hourLabel}
+                  </span>
+                  <span className="text-[10px] text-slate-400 truncate hidden lg:inline">
+                    ({currentSnapshot.timeString})
+                  </span>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
         {/* Timeline Scrubbing Bar */}
         <div className="flex-1 w-full max-w-xl flex items-center gap-2">
           {HOURLY_TIMELINE.map((snap, idx) => {
-            const isSelected = idx === currentHourIndex;
-            const isPassed = idx <= currentHourIndex;
+            const isSelected = !isLiveFeedActive && idx === currentHourIndex;
+            const isPassed = isLiveFeedActive || idx <= currentHourIndex;
 
             return (
               <button
@@ -108,6 +127,16 @@ export const HourlyTimelineController: React.FC<HourlyTimelineControllerProps> =
 
         {/* Mode Quick Jumps & Company Credit */}
         <div className="flex items-center gap-2 w-full md:w-auto justify-end shrink-0">
+          {!isLiveFeedActive && onReturnToLive && (
+            <button
+              onClick={onReturnToLive}
+              className="px-2.5 py-1 text-[11px] font-mono font-bold text-emerald-300 hover:text-white bg-emerald-950/60 border border-emerald-700/80 hover:border-emerald-500 rounded transition-colors flex items-center gap-1 cursor-pointer"
+            >
+              <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
+              <span>Live API</span>
+            </button>
+          )}
+
           <button
             onClick={() => onHourChange(HOURLY_TIMELINE.length - 1)}
             className="px-2.5 py-1 text-[11px] font-mono text-slate-300 hover:text-white bg-slate-900 border border-slate-800 hover:border-slate-700 rounded transition-colors flex items-center gap-1 cursor-pointer"

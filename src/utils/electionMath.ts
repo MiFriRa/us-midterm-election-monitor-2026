@@ -310,8 +310,9 @@ export function calculateNationalChamberTally(
   if (chamber === 'senate') {
     // Baseline Senate seats not up for election in 2026 (Class 1 & Class 3):
     // 34 Democratic/Independent caucusing + 33 Republican holdovers = 67 non-contested seats (plus 33 Class 2 seats = 100 total)
-    let holdoverDem = 34;
-    let holdoverGop = 33;
+    const contestedCount = results.filter(st => st.hasSenateRace && st.senate).length;
+    const holdoverDem = 34;
+    const holdoverGop = contestedCount >= 35 ? 31 : 33;
 
     results.forEach(st => {
       if (!st.hasSenateRace || !st.senate) return;
