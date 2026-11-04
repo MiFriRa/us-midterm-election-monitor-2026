@@ -1079,6 +1079,8 @@ export function calculateSenateSeatDistribution(
 /**
  * Computes the 435-seat distribution for the U.S. House of Representatives.
  * Normalizes heights and sorts according to Option 1B (surprises pushing towards center).
+ * Prevents artificial flattening in asymmetric wave environments by computing relative
+ * outperformance, margin tightness (closeness bonus), and intra-state district spread.
  */
 export function calculateHouseSeatDistribution(
   results: StateElectionResult[],
@@ -1134,25 +1136,28 @@ export function calculateHouseSeatDistribution(
       let districtLabel = `${st.stateCode}-Seat ${seatIndex}`;
       let swing = demStateSwing;
       let isFlip = false;
+      let districtMargin = currMargin;
 
       if (bgDemIdx < bgDemDistricts.length) {
         const bg = bgDemDistricts[bgDemIdx++];
         districtLabel = `${bg.district} (${bg.demName})`;
         swing = bg.swingVs2022;
-        isFlip = swing > 3.0 || demFlipsAssigned < flipsToDemCount;
+        districtMargin = Number((bg.demPct - bg.gopPct).toFixed(1));
+        isFlip = bg.swingVs2022 > 3.0 || demFlipsAssigned < flipsToDemCount;
         if (isFlip) demFlipsAssigned++;
       } else if (demFlipsAssigned < flipsToDemCount) {
         isFlip = true;
         demFlipsAssigned++;
         districtLabel = `${st.stateCode}-Flip to Dem #${demFlipsAssigned}`;
         swing = Math.max(demStateSwing, 4.0);
+        districtMargin = Math.max(currMargin, 2.0);
       } else {
         districtLabel = `${st.stateCode}-Held Dem #${seatIndex}`;
+        // Slight intra-state district variance so multi-seat delegations form a smooth natural gradient
+        const variance = totalDem > 1 ? ((seatIndex - 1) / (totalDem - 1) - 0.5) * 6.0 : 0;
+        swing = Number((demStateSwing + variance).toFixed(1));
+        districtMargin = Number((currMargin + variance).toFixed(1));
       }
-
-      const swingBonus = Math.max(0, swing);
-      const flipBonus = isFlip ? 15.0 : 0.0;
-      const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
 
       rawDemSeats.push({
         id: `house-dem-${st.stateCode}-${seatIndex}`,
@@ -1163,10 +1168,10 @@ export function calculateHouseSeatDistribution(
         isHoldover: false,
         isFlip,
         swingVs2022: swing,
-        rawSurpriseScore,
+        rawSurpriseScore: 0,
         normalizedHeight: minHeightRatio,
         reportingPct: h.reportingPct,
-        margin2026: currMargin,
+        margin2026: districtMargin,
         margin2022: h.historical2022.margin
       });
 
@@ -1183,25 +1188,28 @@ export function calculateHouseSeatDistribution(
       let districtLabel = `${st.stateCode}-Seat ${seatIndex}`;
       let swing = gopStateSwing;
       let isFlip = false;
+      let districtMargin = -currMargin;
 
       if (bgGopIdx < bgGopDistricts.length) {
         const bg = bgGopDistricts[bgGopIdx++];
         districtLabel = `${bg.district} (${bg.gopName})`;
         swing = -bg.swingVs2022;
-        isFlip = swing > 3.0 || gopFlipsAssigned < flipsToGopCount;
+        districtMargin = Number((bg.gopPct - bg.demPct).toFixed(1));
+        isFlip = bg.swingVs2022 < -3.0 || gopFlipsAssigned < flipsToGopCount;
         if (isFlip) gopFlipsAssigned++;
       } else if (gopFlipsAssigned < flipsToGopCount) {
         isFlip = true;
         gopFlipsAssigned++;
         districtLabel = `${st.stateCode}-Flip to GOP #${gopFlipsAssigned}`;
         swing = Math.max(gopStateSwing, 4.0);
+        districtMargin = Math.max(-currMargin, 2.0);
       } else {
         districtLabel = `${st.stateCode}-Held GOP #${seatIndex}`;
+        // Slight intra-state district variance so multi-seat delegations form a smooth natural gradient
+        const variance = totalGop > 1 ? ((seatIndex - 1) / (totalGop - 1) - 0.5) * 6.0 : 0;
+        swing = Number((gopStateSwing + variance).toFixed(1));
+        districtMargin = Number((-currMargin + variance).toFixed(1));
       }
-
-      const swingBonus = Math.max(0, swing);
-      const flipBonus = isFlip ? 15.0 : 0.0;
-      const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
 
       rawGopSeats.push({
         id: `house-gop-${st.stateCode}-${seatIndex}`,
@@ -1212,15 +1220,37 @@ export function calculateHouseSeatDistribution(
         isHoldover: false,
         isFlip,
         swingVs2022: swing,
-        rawSurpriseScore,
+        rawSurpriseScore: 0,
         normalizedHeight: minHeightRatio,
         reportingPct: h.reportingPct,
-        margin2026: -currMargin,
+        margin2026: districtMargin,
         margin2022: -h.historical2022.margin
       });
 
       remainingGop--;
     }
+  });
+
+  // Calculate dynamic baseline floors so that relative resistance, tight battleground holds,
+  // and flips form a continuous, organic gradient across all 435 seats
+  const allDemSwings = rawDemSeats.map(s => s.swingVs2022);
+  const minDemSwing = allDemSwings.length > 0 ? Math.min(...allDemSwings, 0) : 0;
+
+  const allGopSwings = rawGopSeats.map(s => s.swingVs2022);
+  const minGopSwing = allGopSwings.length > 0 ? Math.min(...allGopSwings, 0) : 0;
+
+  rawDemSeats.forEach(s => {
+    const relSwing = Math.max(0, s.swingVs2022 - minDemSwing);
+    const closenessBonus = Math.max(0, 15 - Math.abs(s.margin2026)) * 0.3;
+    const flipBonus = s.isFlip ? 12.0 : 0.0;
+    s.rawSurpriseScore = Number((relSwing * 0.6 + closenessBonus + flipBonus).toFixed(2));
+  });
+
+  rawGopSeats.forEach(s => {
+    const relSwing = Math.max(0, s.swingVs2022 - minGopSwing);
+    const closenessBonus = Math.max(0, 15 - Math.abs(s.margin2026)) * 0.3;
+    const flipBonus = s.isFlip ? 12.0 : 0.0;
+    s.rawSurpriseScore = Number((relSwing * 0.6 + closenessBonus + flipBonus).toFixed(2));
   });
 
   // Normalize heights across called seats

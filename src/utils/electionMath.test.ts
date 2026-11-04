@@ -565,6 +565,24 @@ test('getEffectiveRaceMarginAndSwing generalizes Top-2 competitor margin in mult
   assert.equal(mtSeat.normalizedHeight, 0.20, 'Montana seat height should be baseline 0.20');
 });
 
+test('calculateHouseSeatDistribution provides smooth continuous height gradient across GOP seats without artificial cliff', () => {
+  const dist = calculateHouseSeatDistribution(BASE_STATES);
+  assert.equal(dist.gopSeats.length > 100, true);
+
+  const uniqueHeights = new Set(dist.gopSeats.map(s => s.normalizedHeight));
+  // Must have a rich gradation of heights (> 20 unique heights) rather than an artificial flat cliff
+  assert.ok(uniqueHeights.size >= 20, `Expected at least 20 unique GOP heights, got ${uniqueHeights.size}`);
+
+  // Heights must be sorted descending towards the center (Option 1B)
+  for (let i = 0; i < dist.gopSeats.length - 1; i++) {
+    assert.ok(
+      dist.gopSeats[i].normalizedHeight >= dist.gopSeats[i + 1].normalizedHeight,
+      `GOP seats not monotonically sorted at index ${i}`
+    );
+  }
+});
+
+
 
 
 
