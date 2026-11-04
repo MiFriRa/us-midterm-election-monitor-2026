@@ -419,7 +419,7 @@ export const USMap: React.FC<USMapProps> = ({
             onMouseMove={handleMouseMove}
           >
             {EQUAL_AREA_TILES.map((tile) => {
-              const { fill, stroke, strokeWidth, opacity, hasRace, swingValue, isTossup, surpriseItem } = getStateRenderProps(tile.id);
+              const { fill, stroke, strokeWidth, opacity, hasRace, reportingPct, swingValue, isTossup, surpriseItem } = getStateRenderProps(tile.id);
               
               const tileSize = 64;
               const gap = 8;
@@ -480,7 +480,7 @@ export const USMap: React.FC<USMapProps> = ({
 
                   <text
                     x={x + tileSize / 2}
-                    y={y + (surpriseItem && hasRace ? 36 : 38)}
+                    y={y + (surpriseItem && hasRace ? 36 : hasRace && reportingPct > 0 && reportingPct < 100 ? 34 : !hasRace ? 33 : 38)}
                     textAnchor="middle"
                     fill={hasRace ? (isTossup || isSelected ? '#ffffff' : '#f8fafc') : '#64748b'}
                     fontSize="19"
@@ -491,7 +491,7 @@ export const USMap: React.FC<USMapProps> = ({
                     {tile.id}
                   </text>
 
-                  {surpriseItem && hasRace && (
+                  {surpriseItem && hasRace ? (
                     <text
                       x={x + tileSize / 2}
                       y={y + 54}
@@ -504,7 +504,33 @@ export const USMap: React.FC<USMapProps> = ({
                     >
                       {swingValue > 0 ? `+${swingValue.toFixed(1)}D` : `+${Math.abs(swingValue).toFixed(1)}R`}
                     </text>
-                  )}
+                  ) : hasRace && reportingPct > 0 && reportingPct < 100 ? (
+                    <text
+                      x={x + tileSize / 2}
+                      y={y + 52}
+                      textAnchor="middle"
+                      fill="#cbd5e1"
+                      fontSize="10"
+                      fontWeight="700"
+                      fontFamily="'JetBrains Mono', monospace"
+                      className="pointer-events-none opacity-85 drop-shadow-[0_1px_2px_rgba(0,0,0,0.9)]"
+                    >
+                      {reportingPct}%
+                    </text>
+                  ) : !hasRace ? (
+                    <text
+                      x={x + tileSize / 2}
+                      y={y + 51}
+                      textAnchor="middle"
+                      fill="#475569"
+                      fontSize="8.5"
+                      fontWeight="700"
+                      fontFamily="'JetBrains Mono', monospace"
+                      className="pointer-events-none"
+                    >
+                      NO RACE
+                    </text>
+                  ) : null}
                 </g>
               );
             })}

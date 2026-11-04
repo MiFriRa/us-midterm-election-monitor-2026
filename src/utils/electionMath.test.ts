@@ -265,7 +265,8 @@ test('parseExternalElectionJson and applyLivePatchesToStates normalize and apply
 
 import fs from 'node:fs';
 import path from 'node:path';
-import { BASE_STATES } from '../data/electionData2026.js';
+import { BASE_STATES, HOURLY_TIMELINE } from '../data/electionData2026.js';
+import { getTimelineIndexForRealTime } from './liveElectionFeed.js';
 
 test('end-to-end live-test-feed.json parses, updates 50 states, and computes Top Surprises accurately', () => {
   const feedPath = path.resolve(process.cwd(), 'public/live-test-feed.json');
@@ -289,6 +290,22 @@ test('end-to-end live-test-feed.json parses, updates 50 states, and computes Top
   for (const s of surprises) {
     assert.ok(s.reportingPct > 0, `Expected ${s.stateCode} to have reportingPct > 0`);
   }
+});
+
+test('Wednesday morning 07:15 CET wave shows active counting (76%) with undecided battleground seats', () => {
+  const wedMorningCet = new Date('2026-11-04T07:15:00+01:00');
+  const idx = getTimelineIndexForRealTime(wedMorningCet);
+  assert.equal(idx, 6);
+
+  const snap = HOURLY_TIMELINE[idx];
+  assert.equal(snap.nationalReportingPct, 76);
+  assert.equal(snap.cetLabel, '07:00 CET');
+
+  // Verify all 51 jurisdictions have closed polls and are reporting in wave 6
+  assert.equal(Object.keys(snap.stateProgress).length, 51);
+  assert.ok(snap.stateProgress['AK'].reportingPct > 0 && snap.stateProgress['AK'].reportingPct < 30);
+  assert.ok(snap.stateProgress['CA'].reportingPct > 30 && snap.stateProgress['CA'].reportingPct < 60);
+  assert.ok(snap.stateProgress['FL'].reportingPct >= 95);
 });
 
 

@@ -248,26 +248,32 @@ export async function fetchFromCustomJsonEndpoint(url: string): Promise<LiveSync
 
 /**
  * Computes the appropriate hourly timeline index based on the real-world CET/UTC clock
- * for Election Night (Nov 3-4, 2026):
- * - Before Nov 3 23:00 UTC (00:00 CET): index 0 (0% Pre-Close)
- * - Nov 4 00:00 UTC (01:00 CET): index 1 (19:00 EST / 01:00 CET)
- * - Nov 4 01:00 UTC (02:00 CET): index 2 (20:00 EST / 02:00 CET)
- * - Nov 4 02:00 UTC (03:00 CET): index 3 (21:00 EST / 03:00 CET)
- * - Nov 4 03:00 UTC (04:00 CET): index 4 (22:00 EST / 04:00 CET)
- * - Nov 4 04:00 UTC (05:00 CET): index 5 (23:00 EST / 05:00 CET)
- * - Nov 4 06:00+ UTC (07:00+ CET): index 6 (Final Call)
+ * for Election Night & Wednesday Counting (Nov 3-4, 2026):
+ * - Before Nov 3 23:30 UTC (00:30 CET): index 0 (0% Pre-Close)
+ * - 00:30–01:45 CET: index 1 (19:00 EST / 01:00 CET · 9%)
+ * - 01:45–02:45 CET: index 2 (20:00 EST / 02:00 CET · 26%)
+ * - 02:45–03:45 CET: index 3 (21:00 EST / 03:00 CET · 46%)
+ * - 03:45–04:45 CET: index 4 (22:00 EST / 04:00 CET · 59%)
+ * - 04:45–06:15 CET: index 5 (23:00 EST / 05:00 CET · 68%)
+ * - 06:15–09:30 CET: index 6 (01:00 EST / 07:00 CET · 76% — Alaska closes, overnight battlegrounds counting)
+ * - 09:30–14:00 CET: index 7 (04:00 EST / 10:00 CET · 84% — Late urban & mail precincts)
+ * - 14:00–21:00 CET: index 8 (09:00 EST / 15:00 CET · 92% — Wednesday day mail drops)
+ * - After 21:00 CET (Wed): index 9 (Final Projection · 100%)
  */
 export function getTimelineIndexForRealTime(now: Date = new Date()): number {
   const electionCloseStartUtc = Date.UTC(2026, 10, 3, 23, 30, 0); // Nov 3, 2026 23:30 UTC (00:30 CET)
   const diffHours = (now.getTime() - electionCloseStartUtc) / (1000 * 60 * 60);
 
   if (diffHours < 0) return 0; // Polls still open (0% counted)
-  if (diffHours < 1.2) return 1; // 01:00 CET wave
-  if (diffHours < 2.2) return 2; // 02:00 CET wave
-  if (diffHours < 3.2) return 3; // 03:00 CET wave
-  if (diffHours < 4.2) return 4; // 04:00 CET wave
-  if (diffHours < 6.0) return 5; // 05:00 CET wave
-  return 6; // Final Call
+  if (diffHours < 1.25) return 1; // 01:00 CET wave (9%)
+  if (diffHours < 2.25) return 2; // 02:00 CET wave (26%)
+  if (diffHours < 3.25) return 3; // 03:00 CET wave (46%)
+  if (diffHours < 4.25) return 4; // 04:00 CET wave (59%)
+  if (diffHours < 5.75) return 5; // 05:00 CET wave (68%)
+  if (diffHours < 9.0) return 6;  // 07:00 CET wave (76% — Active Wednesday morning)
+  if (diffHours < 13.5) return 7; // 10:00 CET wave (84%)
+  if (diffHours < 20.5) return 8; // 15:00 CET wave (92%)
+  return 9; // Final Projection
 }
 
 /**

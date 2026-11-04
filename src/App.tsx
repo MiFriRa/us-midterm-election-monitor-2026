@@ -222,14 +222,16 @@ export default function App() {
           }
         }
         if (copy.governor) {
+          const gDem = prog.govDemVotes ?? prog.demVotes;
+          const gGop = prog.govGopVotes ?? prog.gopVotes;
           copy.governor.reportingPct = prog.reportingPct;
-          copy.governor.status = prog.status;
-          copy.governor.demCandidate.votes = prog.demVotes;
-          copy.governor.gopCandidate.votes = prog.gopVotes;
-          const total = prog.demVotes + prog.gopVotes;
+          copy.governor.status = prog.govStatus ?? prog.status;
+          copy.governor.demCandidate.votes = gDem;
+          copy.governor.gopCandidate.votes = gGop;
+          const total = gDem + gGop;
           if (total > 0) {
-            copy.governor.demCandidate.pct = Number(((prog.demVotes / total) * 100).toFixed(1));
-            copy.governor.gopCandidate.pct = Number(((prog.gopVotes / total) * 100).toFixed(1));
+            copy.governor.demCandidate.pct = Number(((gDem / total) * 100).toFixed(1));
+            copy.governor.gopCandidate.pct = Number(((gGop / total) * 100).toFixed(1));
           }
         }
         if (copy.house && prog.houseDemSeats !== undefined && prog.houseGopSeats !== undefined) {
@@ -237,8 +239,8 @@ export default function App() {
           copy.house.gopSeats = prog.houseGopSeats;
           copy.house.uncalledSeats = copy.house.totalSeats - prog.houseDemSeats - prog.houseGopSeats;
           copy.house.reportingPct = prog.reportingPct;
-          copy.house.popularDemVotes = prog.demVotes;
-          copy.house.popularGopVotes = prog.gopVotes;
+          copy.house.popularDemVotes = prog.houseDemVotes ?? prog.demVotes;
+          copy.house.popularGopVotes = prog.houseGopVotes ?? prog.gopVotes;
         }
       } else {
         // Polls not closed yet in this hour
@@ -299,10 +301,9 @@ export default function App() {
   const isCountingActive = !isBacktestMode && nationalReportingPct > 0;
 
   // Compute CET time representation accurately for each snapshot
-  const cetHourMap = ['21:00 CET (Tue)', '01:00 CET', '02:00 CET', '03:00 CET', '04:00 CET', '05:00 CET', '08:00 CET'];
   const currentCetLabel = isLiveFeedActive
     ? `LIVE SYNC (${new Date(liveSyncData.timestamp).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })} CET)`
-    : cetHourMap[currentHourIndex] || '00:00 CET';
+    : currentSnapshot.cetLabel || currentSnapshot.hourLabel;
   const currentHourLabel = isBacktestMode
     ? '2022 Certified Archive'
     : isLiveFeedActive

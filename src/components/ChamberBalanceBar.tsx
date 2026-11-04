@@ -34,7 +34,8 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
   nationalReportingPct,
   currentCetLabel
 }) => {
-  const isCounting = nationalReportingPct > 0;
+  const isCounting = nationalReportingPct > 0 && nationalReportingPct < 100;
+  const isComplete = nationalReportingPct >= 100;
 
   const chambers: Array<{
     id: ChamberType;
@@ -60,10 +61,10 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
             <span className="inline-flex items-center gap-1.5 text-[11px] font-mono font-semibold text-slate-300">
               <span
                 className={`w-2 h-2 rounded-full ${
-                  isCounting ? 'bg-white animate-pulse' : 'bg-slate-500'
+                  isCounting ? 'bg-white animate-pulse' : isComplete ? 'bg-slate-300' : 'bg-slate-500'
                 }`}
               />
-              {isCounting ? 'Counting Active' : 'Polls Open'}
+              {isCounting ? 'Counting Active' : isComplete ? 'Final Projection' : 'Polls Open'}
             </span>
           </div>
 

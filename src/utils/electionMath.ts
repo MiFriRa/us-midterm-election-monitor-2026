@@ -324,15 +324,16 @@ export function calculateNationalChamberTally(
       } else if (s.status === 'called_gop') {
         gopSeats++;
         if (baseWinner === 'dem') flipsToGop++;
-      } else {
-        // Look at current leader if reporting > 0
-        if (s.demCandidate.votes > s.gopCandidate.votes && s.reportingPct > 0) {
+      } else if (s.reportingPct >= 100 && s.demCandidate.votes !== s.gopCandidate.votes) {
+        if (s.demCandidate.votes > s.gopCandidate.votes) {
           demSeats++;
-        } else if (s.gopCandidate.votes > s.demCandidate.votes && s.reportingPct > 0) {
-          gopSeats++;
+          if (baseWinner === 'gop') flipsToDem++;
         } else {
-          uncalledSeats++;
+          gopSeats++;
+          if (baseWinner === 'dem') flipsToGop++;
         }
+      } else {
+        uncalledSeats++;
       }
     });
 
@@ -366,14 +367,16 @@ export function calculateNationalChamberTally(
       } else if (g.status === 'called_gop') {
         gopSeats++;
         if (baseWinner === 'dem') flipsToGop++;
-      } else {
-        if (g.demCandidate.votes > g.gopCandidate.votes && g.reportingPct > 0) {
+      } else if (g.reportingPct >= 100 && g.demCandidate.votes !== g.gopCandidate.votes) {
+        if (g.demCandidate.votes > g.gopCandidate.votes) {
           demSeats++;
-        } else if (g.gopCandidate.votes > g.demCandidate.votes && g.reportingPct > 0) {
-          gopSeats++;
+          if (baseWinner === 'gop') flipsToDem++;
         } else {
-          uncalledSeats++;
+          gopSeats++;
+          if (baseWinner === 'dem') flipsToGop++;
         }
+      } else {
+        uncalledSeats++;
       }
     });
 

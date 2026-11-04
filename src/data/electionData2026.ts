@@ -7,7 +7,8 @@ import { StateElectionResult } from '../utils/electionMath';
  */
 
 export interface HourlySnapshot {
-  hourLabel: string; // e.g. "19:00 EST"
+  hourLabel: string; // e.g. "01:00 EST"
+  cetLabel?: string; // e.g. "07:00 CET"
   timeString: string;
   description: string;
   nationalReportingPct: number;
@@ -16,6 +17,11 @@ export interface HourlySnapshot {
     demVotes: number;
     gopVotes: number;
     status: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    govDemVotes?: number;
+    govGopVotes?: number;
+    govStatus?: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call';
+    houseDemVotes?: number;
+    houseGopVotes?: number;
     houseDemSeats?: number;
     houseGopSeats?: number;
   }>;
@@ -1527,116 +1533,252 @@ export const BASE_STATES: StateElectionResult[] = [
 ];
 
 /**
- * Hourly simulation snapshots for Election Night 2026.
- * Simulates poll closures, progressive reporting percentages, and race calls.
+ * Official State Poll-Closing Waves (CET / EST) and Tabulation Speed Profiles:
+ * - closeWave 1: 01:00 CET / 19:00 EST (IN, KY, GA, SC, VA, VT)
+ * - closeWave 2: 02:00 CET / 20:00 EST (NC, OH, WV, FL, PA, IL, MO, NH, ME, MA, MD, NJ, DE, CT, RI, DC, TN, AL, MS, OK)
+ * - closeWave 3: 03:00 CET / 21:00 EST (AR, TX, MI, WI, MN, CO, AZ, NM, NY, NE, KS, LA, SD, ND, WY)
+ * - closeWave 4: 04:00 CET / 22:00 EST (IA, MT, NV, UT)
+ * - closeWave 5: 05:00 CET / 23:00 EST (CA, WA, OR, ID, HI)
+ * - closeWave 6: 07:00 CET / 01:00 EST (AK)
+ */
+const STATE_CLOSE_WAVE: Record<string, { wave: number; speed: 'fast' | 'moderate' | 'battleground_slow' | 'west_mail_slow' }> = {
+  IN: { wave: 1, speed: 'fast' },
+  KY: { wave: 1, speed: 'fast' },
+  SC: { wave: 1, speed: 'fast' },
+  VT: { wave: 1, speed: 'fast' },
+  VA: { wave: 1, speed: 'moderate' },
+  GA: { wave: 1, speed: 'battleground_slow' },
+
+  FL: { wave: 2, speed: 'fast' },
+  OH: { wave: 2, speed: 'fast' },
+  WV: { wave: 2, speed: 'fast' },
+  OK: { wave: 2, speed: 'fast' },
+  TN: { wave: 2, speed: 'fast' },
+  AL: { wave: 2, speed: 'fast' },
+  DE: { wave: 2, speed: 'fast' },
+  RI: { wave: 2, speed: 'fast' },
+  NH: { wave: 2, speed: 'fast' },
+  MS: { wave: 2, speed: 'moderate' },
+  IL: { wave: 2, speed: 'moderate' },
+  MO: { wave: 2, speed: 'moderate' },
+  MA: { wave: 2, speed: 'moderate' },
+  MD: { wave: 2, speed: 'moderate' },
+  NJ: { wave: 2, speed: 'moderate' },
+  CT: { wave: 2, speed: 'moderate' },
+  DC: { wave: 2, speed: 'moderate' },
+  NC: { wave: 2, speed: 'battleground_slow' },
+  PA: { wave: 2, speed: 'battleground_slow' },
+  ME: { wave: 2, speed: 'battleground_slow' },
+
+  AR: { wave: 3, speed: 'fast' },
+  LA: { wave: 3, speed: 'fast' },
+  ND: { wave: 3, speed: 'fast' },
+  SD: { wave: 3, speed: 'fast' },
+  WY: { wave: 3, speed: 'fast' },
+  NE: { wave: 3, speed: 'fast' },
+  KS: { wave: 3, speed: 'moderate' },
+  TX: { wave: 3, speed: 'moderate' },
+  MN: { wave: 3, speed: 'moderate' },
+  NM: { wave: 3, speed: 'moderate' },
+  NY: { wave: 3, speed: 'moderate' },
+  CO: { wave: 3, speed: 'west_mail_slow' },
+  AZ: { wave: 3, speed: 'west_mail_slow' },
+  MI: { wave: 3, speed: 'battleground_slow' },
+  WI: { wave: 3, speed: 'battleground_slow' },
+
+  IA: { wave: 4, speed: 'fast' },
+  MT: { wave: 4, speed: 'moderate' },
+  UT: { wave: 4, speed: 'west_mail_slow' },
+  NV: { wave: 4, speed: 'west_mail_slow' },
+
+  ID: { wave: 5, speed: 'moderate' },
+  HI: { wave: 5, speed: 'moderate' },
+  OR: { wave: 5, speed: 'west_mail_slow' },
+  WA: { wave: 5, speed: 'west_mail_slow' },
+  CA: { wave: 5, speed: 'west_mail_slow' },
+
+  AK: { wave: 6, speed: 'west_mail_slow' }
+};
+
+const SPEED_CURVES: Record<'fast' | 'moderate' | 'battleground_slow' | 'west_mail_slow', number[]> = {
+  // Indexed by waves elapsed since poll closure (0 = just closed, 1 = +1 wave, ..., 7 = late Wednesday)
+  fast:              [34, 74, 91, 96, 98, 99, 99, 100],
+  moderate:          [22, 54, 76, 86, 92, 95, 98, 100],
+  battleground_slow: [16, 40, 62, 76, 84, 91, 96, 100],
+  west_mail_slow:    [18, 36, 48, 58, 68, 79, 90, 100]
+};
+
+function computeCallStatus(
+  demVotes: number,
+  gopVotes: number,
+  reportingPct: number,
+  finalStatus: 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call'
+): 'uncalled' | 'called_dem' | 'called_gop' | 'too_close_to_call' {
+  if (reportingPct <= 0) return 'uncalled';
+  const total = demVotes + gopVotes;
+  const margin = total > 0 ? Math.abs(((demVotes - gopVotes) / total) * 100) : 0;
+
+  if (margin >= 14 && reportingPct >= 30) return finalStatus;
+  if (margin >= 8 && reportingPct >= 60) return finalStatus;
+  if (margin >= 4 && reportingPct >= 82) return finalStatus;
+  if (margin >= 2.2 && reportingPct >= 92) return finalStatus;
+  if (reportingPct >= 96) return finalStatus;
+
+  return margin < 3.5 && reportingPct >= 35 ? 'too_close_to_call' : 'uncalled';
+}
+
+function buildWaveStateProgress(waveIndex: number): HourlySnapshot['stateProgress'] {
+  const progress: HourlySnapshot['stateProgress'] = {};
+
+  BASE_STATES.forEach((st) => {
+    const meta = STATE_CLOSE_WAVE[st.id] || { wave: 2, speed: 'moderate' };
+    if (waveIndex < meta.wave) return; // Polls still open in this state
+
+    const stepsSinceClose = Math.min(7, waveIndex - meta.wave);
+    const reportingPct = SPEED_CURVES[meta.speed][stepsSinceClose];
+    const scale = reportingPct / 100;
+
+    // Slight realistic early-tabulation skew that fades to 0 as reporting approaches 100%
+    const unfinishedFactor = (100 - reportingPct) / 100;
+    const demFactor = Math.max(0.2, 1 + (meta.speed === 'battleground_slow' ? -0.025 : 0.015) * unfinishedFactor);
+    const gopFactor = Math.max(0.2, 1 + (meta.speed === 'battleground_slow' ? 0.025 : -0.015) * unfinishedFactor);
+
+    const senSource = st.senate || st.governor;
+    const senDemVotes = senSource ? Math.round(senSource.demCandidate.votes * scale * demFactor) : Math.round((st.house?.popularDemVotes || 100000) * scale * demFactor);
+    const senGopVotes = senSource ? Math.round(senSource.gopCandidate.votes * scale * gopFactor) : Math.round((st.house?.popularGopVotes || 100000) * scale * gopFactor);
+    const senStatus = st.senate
+      ? computeCallStatus(senDemVotes, senGopVotes, reportingPct, st.senate.status)
+      : 'uncalled';
+
+    const govDemVotes = st.governor ? Math.round(st.governor.demCandidate.votes * scale * demFactor) : senDemVotes;
+    const govGopVotes = st.governor ? Math.round(st.governor.gopCandidate.votes * scale * gopFactor) : senGopVotes;
+    const govStatus = st.governor
+      ? computeCallStatus(govDemVotes, govGopVotes, reportingPct, st.governor.status)
+      : 'uncalled';
+
+    const houseDemVotes = st.house ? Math.round(st.house.popularDemVotes * scale * demFactor) : senDemVotes;
+    const houseGopVotes = st.house ? Math.round(st.house.popularGopVotes * scale * gopFactor) : senGopVotes;
+
+    // Scale called House seats realistically with reporting percentage so competitive seats stay uncalled until late
+    let houseDemSeats = 0;
+    let houseGopSeats = 0;
+    if (st.house) {
+      const callRatio =
+        reportingPct >= 95
+          ? 1.0
+          : reportingPct >= 85
+          ? 0.9
+          : reportingPct >= 70
+          ? 0.78
+          : reportingPct >= 50
+          ? 0.62
+          : reportingPct >= 30
+          ? 0.42
+          : 0.2;
+      houseDemSeats = Math.min(st.house.demSeats, Math.floor(st.house.demSeats * callRatio));
+      houseGopSeats = Math.min(st.house.gopSeats, Math.floor(st.house.gopSeats * callRatio));
+    }
+
+    progress[st.id] = {
+      reportingPct,
+      demVotes: senDemVotes,
+      gopVotes: senGopVotes,
+      status: senStatus,
+      govDemVotes,
+      govGopVotes,
+      govStatus,
+      houseDemVotes,
+      houseGopVotes,
+      houseDemSeats,
+      houseGopSeats
+    };
+  });
+
+  return progress;
+}
+
+/**
+ * Hourly simulation snapshots for Election Night & Day-After Counting (Nov 3–4, 2026).
+ * Tracks official poll closures, progressive precinct reporting, and uncalled battlegrounds.
  */
 export const HOURLY_TIMELINE: HourlySnapshot[] = [
   {
     hourLabel: '15:00 EST (Pre-Close)',
+    cetLabel: '21:00 CET (Tue)',
     timeString: 'Polls Open — First Closures at 18:00 EST / 00:00 CET',
-    description: 'Voting underway across all 50 states. No precincts reporting yet. First polls close in Indiana & Kentucky in ~3 hours.',
+    description: 'Voting underway across all 50 states. No precincts reporting yet. First polls close in Indiana & Kentucky at 00:00 CET.',
     nationalReportingPct: 0,
     stateProgress: {}
   },
   {
     hourLabel: '19:00 EST',
+    cetLabel: '01:00 CET',
     timeString: 'Poll Closures: IN, KY, GA, SC, VA, VT',
-    description: 'Initial eastern polls close. Early exit tallies and initial precincts reporting.',
-    nationalReportingPct: 8,
-    stateProgress: {
-      IN: { reportingPct: 24, demVotes: 180000, gopVotes: 290000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 5 },
-      KY: { reportingPct: 22, demVotes: 120000, gopVotes: 210000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 4 },
-      GA: { reportingPct: 12, demVotes: 230000, gopVotes: 222000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 3 },
-      SC: { reportingPct: 15, demVotes: 140000, gopVotes: 195000, status: 'uncalled', houseDemSeats: 0, houseGopSeats: 4 },
-      VA: { reportingPct: 18, demVotes: 320000, gopVotes: 270000, status: 'uncalled', houseDemSeats: 3, houseGopSeats: 2 },
-      VT: { reportingPct: 20, demVotes: 35000, gopVotes: 18000, status: 'called_dem', houseDemSeats: 1, houseGopSeats: 0 }
-    }
+    description: 'Initial eastern polls close. First precincts reporting in Indiana, Kentucky, Georgia, and Virginia.',
+    nationalReportingPct: 9,
+    stateProgress: buildWaveStateProgress(1)
   },
   {
     hourLabel: '20:00 EST',
-    timeString: 'Poll Closures: PA, OH, NC, NH, FL, IL, MO, ME, MS, AL, OK, TN',
-    description: 'Major eastern battlegrounds open counts. Pennsylvania & North Carolina enter tight purple margins.',
-    nationalReportingPct: 28,
-    stateProgress: {
-      IN: { reportingPct: 68, demVotes: 510000, gopVotes: 820000, status: 'called_gop', houseDemSeats: 2, houseGopSeats: 7 },
-      KY: { reportingPct: 65, demVotes: 380000, gopVotes: 610000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 5 },
-      SC: { reportingPct: 55, demVotes: 520000, gopVotes: 710000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 6 },
-      VA: { reportingPct: 58, demVotes: 1180000, gopVotes: 990000, status: 'called_dem', houseDemSeats: 5, houseGopSeats: 4 },
-      VT: { reportingPct: 62, demVotes: 110000, gopVotes: 58000, status: 'called_dem', houseDemSeats: 1, houseGopSeats: 0 },
-      PA: { reportingPct: 35, demVotes: 940000, gopVotes: 980000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 5 },
-      NC: { reportingPct: 40, demVotes: 920000, gopVotes: 910000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 6 },
-      FL: { reportingPct: 75, demVotes: 2650000, gopVotes: 3340000, status: 'called_gop', houseDemSeats: 7, houseGopSeats: 18 },
-      OH: { reportingPct: 45, demVotes: 860000, gopVotes: 1080000, status: 'uncalled', houseDemSeats: 3, houseGopSeats: 8 },
-      IL: { reportingPct: 42, demVotes: 1020000, gopVotes: 730000, status: 'called_dem', houseDemSeats: 8, houseGopSeats: 2 },
-      NH: { reportingPct: 38, demVotes: 145000, gopVotes: 132000, status: 'uncalled', houseDemSeats: 1, houseGopSeats: 0 },
-      ME: { reportingPct: 32, demVotes: 120000, gopVotes: 118000, status: 'too_close_to_call', houseDemSeats: 1, houseGopSeats: 0 },
-      GA: { reportingPct: 52, demVotes: 1040000, gopVotes: 1015000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 7 }
-    }
+    cetLabel: '02:00 CET',
+    timeString: 'Poll Closures: NC, OH, PA, FL, IL, ME, NH, MA, NJ, MD, TN, AL, MS, OK',
+    description: 'Major eastern battlegrounds open counts. Florida counts rapidly while Pennsylvania, Georgia, and North Carolina enter tight margins.',
+    nationalReportingPct: 26,
+    stateProgress: buildWaveStateProgress(2)
   },
   {
     hourLabel: '21:00 EST',
-    timeString: 'Poll Closures: TX, MI, WI, MN, AZ, NM, CO, LA, KS, NE, WY, SD, ND',
-    description: 'Rust Belt and Midwest battlegrounds reporting. Texas, Michigan, and Wisconsin count rapidly.',
-    nationalReportingPct: 54,
-    stateProgress: {
-      IN: { reportingPct: 92, demVotes: 810000, gopVotes: 1210000, status: 'called_gop', houseDemSeats: 2, houseGopSeats: 7 },
-      KY: { reportingPct: 94, demVotes: 580000, gopVotes: 860000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 5 },
-      SC: { reportingPct: 88, demVotes: 890000, gopVotes: 1190000, status: 'called_gop', houseDemSeats: 1, houseGopSeats: 6 },
-      VA: { reportingPct: 86, demVotes: 1920000, gopVotes: 1580000, status: 'called_dem', houseDemSeats: 6, houseGopSeats: 5 },
-      FL: { reportingPct: 95, demVotes: 3550000, gopVotes: 4280000, status: 'called_gop', houseDemSeats: 8, houseGopSeats: 20 },
-      OH: { reportingPct: 82, demVotes: 1680000, gopVotes: 2120000, status: 'called_gop', houseDemSeats: 5, houseGopSeats: 10 },
-      IL: { reportingPct: 78, demVotes: 1980000, gopVotes: 1410000, status: 'called_dem', houseDemSeats: 13, houseGopSeats: 3 },
-      MI: { reportingPct: 50, demVotes: 1140000, gopVotes: 1160000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 5 },
-      WI: { reportingPct: 55, demVotes: 750000, gopVotes: 745000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 5 },
-      TX: { reportingPct: 62, demVotes: 2890000, gopVotes: 3140000, status: 'uncalled', houseDemSeats: 10, houseGopSeats: 21 },
-      CO: { reportingPct: 48, demVotes: 710000, gopVotes: 540000, status: 'called_dem', houseDemSeats: 3, houseGopSeats: 3 },
-      AZ: { reportingPct: 38, demVotes: 472000, gopVotes: 485000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 4 },
-      PA: { reportingPct: 68, demVotes: 1850000, gopVotes: 1920000, status: 'uncalled', houseDemSeats: 6, houseGopSeats: 8 },
-      NC: { reportingPct: 72, demVotes: 1780000, gopVotes: 1740000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 9 },
-      GA: { reportingPct: 78, demVotes: 1610000, gopVotes: 1560000, status: 'uncalled', houseDemSeats: 5, houseGopSeats: 8 }
-    }
+    cetLabel: '03:00 CET',
+    timeString: 'Poll Closures: TX, MI, WI, MN, AZ, CO, NM, NY, NE, KS, LA, SD, ND, WY',
+    description: 'Central, Rust Belt, and Southwest polls close. Texas, Michigan, and Wisconsin begin reporting.',
+    nationalReportingPct: 46,
+    stateProgress: buildWaveStateProgress(3)
   },
   {
     hourLabel: '22:00 EST',
-    timeString: 'Poll Closures: NV, UT, MT, IA, ID',
-    description: 'Mountain West polls close. Nevada joins razor-thin purple corridor; Senate and House balance reach critical threshold.',
-    nationalReportingPct: 72,
-    stateProgress: {
-      IN: { reportingPct: 99, demVotes: 880000, gopVotes: 1310000, status: 'called_gop', houseDemSeats: 2, houseGopSeats: 7 },
-      FL: { reportingPct: 99, demVotes: 3720000, gopVotes: 4400000, status: 'called_gop', houseDemSeats: 8, houseGopSeats: 20 },
-      OH: { reportingPct: 96, demVotes: 1950000, gopVotes: 2450000, status: 'called_gop', houseDemSeats: 5, houseGopSeats: 10 },
-      NC: { reportingPct: 90, demVotes: 2290000, gopVotes: 2250000, status: 'too_close_to_call', houseDemSeats: 4, houseGopSeats: 10 },
-      NV: { reportingPct: 45, demVotes: 232000, gopVotes: 236000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 1 },
-      AZ: { reportingPct: 65, demVotes: 832000, gopVotes: 855000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 5 },
-      PA: { reportingPct: 88, demVotes: 2420000, gopVotes: 2480000, status: 'called_gop', houseDemSeats: 7, houseGopSeats: 10 },
-      MI: { reportingPct: 76, demVotes: 1780000, gopVotes: 1710000, status: 'uncalled', houseDemSeats: 5, houseGopSeats: 6 },
-      WI: { reportingPct: 80, demVotes: 1140000, gopVotes: 1110000, status: 'uncalled', houseDemSeats: 2, houseGopSeats: 6 },
-      TX: { reportingPct: 86, demVotes: 4120000, gopVotes: 4450000, status: 'called_gop', houseDemSeats: 13, houseGopSeats: 24 },
-      GA: { reportingPct: 92, demVotes: 1890000, gopVotes: 1835000, status: 'called_dem', houseDemSeats: 5, houseGopSeats: 9 }
-    }
+    cetLabel: '04:00 CET',
+    timeString: 'Poll Closures: NV, UT, MT, IA',
+    description: 'Mountain West polls close. Early mail ballots drop in Nevada and Arizona while Midwest counts deepen.',
+    nationalReportingPct: 59,
+    stateProgress: buildWaveStateProgress(4)
   },
   {
     hourLabel: '23:00 EST',
-    timeString: 'Poll Closures: CA, WA, OR, HI',
-    description: 'West Coast poll closures add large delegate blocks. House and Senate majorities crystallize.',
-    nationalReportingPct: 85,
-    stateProgress: {
-      CA: { reportingPct: 45, demVotes: 3200000, gopVotes: 2200000, status: 'called_dem', houseDemSeats: 26, houseGopSeats: 8 },
-      WA: { reportingPct: 52, demVotes: 980000, gopVotes: 680000, status: 'called_dem', houseDemSeats: 6, houseGopSeats: 2 },
-      OR: { reportingPct: 50, demVotes: 540000, gopVotes: 450000, status: 'called_dem', houseDemSeats: 3, houseGopSeats: 1 },
-      PA: { reportingPct: 95, demVotes: 2640000, gopVotes: 2720000, status: 'called_gop', houseDemSeats: 7, houseGopSeats: 10 },
-      MI: { reportingPct: 91, demVotes: 2140000, gopVotes: 2050000, status: 'called_dem', houseDemSeats: 6, houseGopSeats: 7 },
-      WI: { reportingPct: 93, demVotes: 1320000, gopVotes: 1285000, status: 'called_dem', houseDemSeats: 2, houseGopSeats: 6 },
-      NC: { reportingPct: 96, demVotes: 2460000, gopVotes: 2410000, status: 'called_dem', houseDemSeats: 4, houseGopSeats: 10 },
-      TX: { reportingPct: 95, demVotes: 4480000, gopVotes: 4820000, status: 'called_gop', houseDemSeats: 13, houseGopSeats: 25 },
-      NV: { reportingPct: 75, demVotes: 395000, gopVotes: 402000, status: 'too_close_to_call', houseDemSeats: 2, houseGopSeats: 1 },
-      AZ: { reportingPct: 82, demVotes: 1060000, gopVotes: 1080000, status: 'too_close_to_call', houseDemSeats: 3, houseGopSeats: 6 }
-    }
+    cetLabel: '05:00 CET',
+    timeString: 'Poll Closures: CA, WA, OR, ID, HI',
+    description: 'West Coast polls close with initial mail-in ballot drops across California, Washington, and Oregon.',
+    nationalReportingPct: 68,
+    stateProgress: buildWaveStateProgress(5)
   },
   {
-    hourLabel: '02:00 EST (Final Projection)',
-    timeString: 'All Polls Closed - Late Absentee & Mail Drops In',
-    description: 'Final 2026 Midterm tallies. GOP holds House (224-211) & Senate (52-48); full swing analysis available.',
+    hourLabel: '01:00 EST (Wed)',
+    cetLabel: '07:00 CET',
+    timeString: 'Alaska Polls Close — Overnight Counting Across Battlegrounds & West Coast',
+    description: 'All polls now closed across the U.S. East Coast at ~90%+, Midwest battlegrounds (MI, WI, PA) at ~76-84%, and West Coast/Alaska mail ballots actively counting.',
+    nationalReportingPct: 76,
+    stateProgress: buildWaveStateProgress(6)
+  },
+  {
+    hourLabel: '04:00 EST (Wed)',
+    cetLabel: '10:00 CET',
+    timeString: 'Morning Update — Late Urban & Mail Precincts Reporting',
+    description: 'Overnight urban batches report in Georgia, North Carolina, Michigan, and Wisconsin; dozens of West Coast House districts remain uncalled.',
+    nationalReportingPct: 84,
+    stateProgress: buildWaveStateProgress(7)
+  },
+  {
+    hourLabel: '09:00 EST (Wed)',
+    cetLabel: '15:00 CET',
+    timeString: 'Wednesday Day Count — Absentee & West Coast Mail Drops',
+    description: 'Key Senate battlegrounds reach calls while California, Arizona, Nevada, Oregon, Washington, and Alaska continue tabulating mail ballots.',
+    nationalReportingPct: 92,
+    stateProgress: buildWaveStateProgress(8)
+  },
+  {
+    hourLabel: 'Final Projection',
+    cetLabel: 'Final (99%+)',
+    timeString: 'All Races Projected — Full 50-State Midterm Tally',
+    description: 'Complete 2026 Midterm projection. GOP holds House (224-211) & Senate (52-48); full swing analysis vs. 2022 available.',
     nationalReportingPct: 100,
     stateProgress: {} // In final projection, uses full BASE_STATES data
   }
