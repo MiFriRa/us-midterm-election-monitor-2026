@@ -8,6 +8,10 @@ import {
   calculateNationalChamberTally,
   getPoliticalImpactAssessment,
   getTopElectionSurprises,
+  calculateSenateSeatDistribution,
+  calculateHouseSeatDistribution,
+  normalizeSeatHeights,
+  VisualizedSeat,
   StateElectionResult
 } from './electionMath.js';
 
@@ -365,6 +369,170 @@ test('Alaska Senate race with Ranked Choice Voting includes all 4 candidates and
   const impact = getPoliticalImpactAssessment(alaskaState, 'senate');
   assert.ok(impact.whyItMatters.includes('Ranked-Choice Voting'));
 });
+
+test('normalizeSeatHeights uses full vertical height (1.0) and maintains minimum visibility baseline (0.20)', () => {
+  const mockDem: VisualizedSeat[] = [
+    {
+      id: 'd1',
+      stateCode: 'CA',
+      label: 'Safe Dem',
+      chamber: 'house',
+      party: 'dem',
+      isHoldover: true,
+      isFlip: false,
+      swingVs2022: 0,
+      rawSurpriseScore: 0,
+      normalizedHeight: 0,
+      reportingPct: 100,
+      margin2026: 30,
+      margin2022: 30
+    },
+    {
+      id: 'd2',
+      stateCode: 'OH',
+      label: 'Surprise Dem Flip',
+      chamber: 'house',
+      party: 'dem',
+      isHoldover: false,
+      isFlip: true,
+      swingVs2022: 8,
+      rawSurpriseScore: 23, // 8 + 15
+      normalizedHeight: 0,
+      reportingPct: 100,
+      margin2026: 2,
+      margin2022: -6
+    }
+  ];
+
+  const mockGop: VisualizedSeat[] = [
+    {
+      id: 'r1',
+      stateCode: 'WY',
+      label: 'Safe GOP',
+      chamber: 'house',
+      party: 'gop',
+      isHoldover: false,
+      isFlip: false,
+      swingVs2022: 0,
+      rawSurpriseScore: 0,
+      normalizedHeight: 0,
+      reportingPct: 100,
+      margin2026: 40,
+      margin2022: 40
+    },
+    {
+      id: 'r2',
+      stateCode: 'PA',
+      label: 'Moderate GOP Gain',
+      chamber: 'house',
+      party: 'gop',
+      isHoldover: false,
+      isFlip: false,
+      swingVs2022: 11.5,
+      rawSurpriseScore: 11.5,
+      normalizedHeight: 0,
+      reportingPct: 100,
+      margin2026: 5,
+      margin2022: -6.5
+    }
+  ];
+
+  const normalized = normalizeSeatHeights(mockDem, mockGop, 0.20);
+  assert.equal(normalized.maxRawSurprise, 23);
+
+  // Seat d1 (Holdover): exactly 0.20 baseline
+  assert.equal(normalized.demSeats[0].normalizedHeight, 0.20);
+
+  // Seat d2 (Max surprise): exactly 1.0 (uses full container height!)
+  assert.equal(normalized.demSeats[1].normalizedHeight, 1.0);
+
+  // Seat r1 (0 surprise): exactly 0.20 baseline
+  assert.equal(normalized.gopSeats[0].normalizedHeight, 0.20);
+
+  // Seat r2 (11.5 / 23 = 50% surprise): 0.20 + 0.80 * 0.5 = 0.60
+  assert.equal(normalized.gopSeats[1].normalizedHeight, 0.60);
+});
+
+test('calculateSenateSeatDistribution accounts for all 100 seats and sorts by Option 1B towards center', () => {
+  const dist = calculateSenateSeatDistribution(BASE_STATES);
+
+  // Total must be exactly 100
+  const totalCounted = dist.demSeats.length + dist.gopSeats.length + dist.uncalledCount;
+  assert.equal(totalCounted, 100, `Expected 100 total seats, got ${totalCounted}`);
+  assert.equal(dist.totalSeats, 100);
+  assert.equal(dist.majorityThreshold, 51);
+
+  // Normalization bounds: All seats must be between 0.20 and 1.0
+  [...dist.demSeats, ...dist.gopSeats].forEach(seat => {
+    assert.ok(seat.normalizedHeight >= 0.20 && seat.normalizedHeight <= 1.0,
+      `Seat ${seat.id} height ${seat.normalizedHeight} out of bounds [0.20, 1.0]`);
+  });
+
+  // Full height check: If any race had surprise, max height must be exactly 1.0
+  if (dist.maxRawSurprise > 0) {
+    const allHeights = [...dist.demSeats, ...dist.gopSeats].map(s => s.normalizedHeight);
+    const maxHeight = Math.max(...allHeights);
+    assert.equal(maxHeight, 1.0, `Expected max height 1.0, got ${maxHeight}`);
+  }
+
+  // Option 1B Sorting:
+  // Democrats: Ascending order (safest seats on outer left flank, highest surprise towards center)
+  for (let i = 0; i < dist.demSeats.length - 1; i++) {
+    assert.ok(
+      dist.demSeats[i].rawSurpriseScore <= dist.demSeats[i + 1].rawSurpriseScore,
+      `Dem seats not sorted ascending at index ${i}: ${dist.demSeats[i].rawSurpriseScore} > ${dist.demSeats[i + 1].rawSurpriseScore}`
+    );
+  }
+
+  // Republicans: Descending order (highest surprise near center, safest seats on outer right flank)
+  for (let i = 0; i < dist.gopSeats.length - 1; i++) {
+    assert.ok(
+      dist.gopSeats[i].rawSurpriseScore >= dist.gopSeats[i + 1].rawSurpriseScore,
+      `GOP seats not sorted descending at index ${i}: ${dist.gopSeats[i].rawSurpriseScore} < ${dist.gopSeats[i + 1].rawSurpriseScore}`
+    );
+  }
+});
+
+test('calculateHouseSeatDistribution accounts for all 435 voting seats and sorts by Option 1B towards center', () => {
+  const dist = calculateHouseSeatDistribution(BASE_STATES);
+
+  // Total must be exactly 435 voting seats
+  const totalCounted = dist.demSeats.length + dist.gopSeats.length + dist.uncalledCount;
+  assert.equal(totalCounted, 435, `Expected 435 total House seats, got ${totalCounted}`);
+  assert.equal(dist.totalSeats, 435);
+  assert.equal(dist.majorityThreshold, 218);
+
+  // Normalization bounds: All seats must be between 0.20 and 1.0
+  [...dist.demSeats, ...dist.gopSeats].forEach(seat => {
+    assert.ok(seat.normalizedHeight >= 0.20 && seat.normalizedHeight <= 1.0,
+      `Seat ${seat.id} height ${seat.normalizedHeight} out of bounds [0.20, 1.0]`);
+  });
+
+  // Full height check: Max height must be exactly 1.0
+  if (dist.maxRawSurprise > 0) {
+    const allHeights = [...dist.demSeats, ...dist.gopSeats].map(s => s.normalizedHeight);
+    const maxHeight = Math.max(...allHeights);
+    assert.equal(maxHeight, 1.0, `Expected max height 1.0, got ${maxHeight}`);
+  }
+
+  // Option 1B Sorting:
+  // Democrats: Ascending order
+  for (let i = 0; i < dist.demSeats.length - 1; i++) {
+    assert.ok(
+      dist.demSeats[i].rawSurpriseScore <= dist.demSeats[i + 1].rawSurpriseScore,
+      `Dem House seats not sorted ascending at index ${i}`
+    );
+  }
+
+  // Republicans: Descending order
+  for (let i = 0; i < dist.gopSeats.length - 1; i++) {
+    assert.ok(
+      dist.gopSeats[i].rawSurpriseScore >= dist.gopSeats[i + 1].rawSurpriseScore,
+      `GOP House seats not sorted descending at index ${i}`
+    );
+  }
+});
+
 
 
 

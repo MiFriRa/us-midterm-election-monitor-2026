@@ -465,6 +465,7 @@ export default function App() {
         governorTally={governorTally}
         nationalReportingPct={nationalReportingPct}
         currentCetLabel={currentCetLabel}
+        statesData={currentStatesData}
       />
 
       {/* Main Split Workspace: Big USA Map (Left) + 2) Biggest Surprises vs. 2022 (Right Sidebar) */}

@@ -826,3 +826,366 @@ export function getTopElectionSurprises(
   }));
 }
 
+/**
+ * VisualizedSeat represents an individual seat in the Senate (100) or House (435)
+ * for the compact binary surprise balance line.
+ */
+export interface VisualizedSeat {
+  id: string;
+  stateCode: string;
+  label: string;
+  chamber: 'senate' | 'house';
+  party: 'dem' | 'gop';
+  isHoldover?: boolean;
+  isFlip: boolean;
+  swingVs2022: number;
+  rawSurpriseScore: number;
+  normalizedHeight: number; // 0.20 (min baseline) to 1.0 (full container height)
+  reportingPct: number;
+  margin2026: number;
+  margin2022: number;
+  district?: string;
+}
+
+export interface ChamberSurpriseDistribution {
+  chamber: 'senate' | 'house';
+  totalSeats: number;
+  majorityThreshold: number;
+  demSeats: VisualizedSeat[]; // Sorted by surprise ASCENDING (safest on left flank, biggest surprises towards center)
+  gopSeats: VisualizedSeat[]; // Sorted by surprise DESCENDING (biggest surprises towards center, safest on right flank)
+  uncalledCount: number;
+  maxRawSurprise: number;
+}
+
+/**
+ * Normalizes seat heights linearly between minHeightRatio (default 0.20) and 1.0.
+ * Ensures the single biggest surprise reaches exactly 1.0 (full container height),
+ * and completely predictable/holdover seats have minHeightRatio (always visible).
+ */
+export function normalizeSeatHeights(
+  demSeats: VisualizedSeat[],
+  gopSeats: VisualizedSeat[],
+  minHeightRatio = 0.20
+): { demSeats: VisualizedSeat[]; gopSeats: VisualizedSeat[]; maxRawSurprise: number } {
+  const allScores = [...demSeats.map(s => s.rawSurpriseScore), ...gopSeats.map(s => s.rawSurpriseScore)];
+  const maxRawSurprise = allScores.length > 0 ? Math.max(0, ...allScores) : 0;
+
+  const normalize = (seat: VisualizedSeat): VisualizedSeat => {
+    if (seat.isHoldover || maxRawSurprise <= 0) {
+      return { ...seat, normalizedHeight: minHeightRatio };
+    }
+    const norm = Math.max(0, Math.min(1, seat.rawSurpriseScore / maxRawSurprise));
+    const height = Number((minHeightRatio + (1.0 - minHeightRatio) * norm).toFixed(3));
+    return { ...seat, normalizedHeight: height };
+  };
+
+  return {
+    demSeats: demSeats.map(normalize),
+    gopSeats: gopSeats.map(normalize),
+    maxRawSurprise
+  };
+}
+
+/**
+ * Computes the 100-seat distribution for the U.S. Senate.
+ * 34 Democratic holdovers + 31/33 Republican holdovers + 35 contested seats.
+ * Sorted according to Option 1B: safe seats on outer flanks, flips/surprises push towards the center.
+ */
+export function calculateSenateSeatDistribution(
+  results: StateElectionResult[],
+  minHeightRatio = 0.20
+): ChamberSurpriseDistribution {
+  const contestedCount = results.filter(st => st.hasSenateRace && st.senate).length;
+  const holdoverDemCount = 34;
+  const holdoverGopCount = contestedCount >= 35 ? 31 : 33;
+
+  const rawDemSeats: VisualizedSeat[] = [];
+  const rawGopSeats: VisualizedSeat[] = [];
+  let uncalledCount = 0;
+
+  // Add Dem holdovers (placed at the outer left edge)
+  for (let i = 1; i <= holdoverDemCount; i++) {
+    rawDemSeats.push({
+      id: `sen-dem-holdover-${i}`,
+      stateCode: 'USA',
+      label: `Democrat Non-Contested Holdover #${i}`,
+      chamber: 'senate',
+      party: 'dem',
+      isHoldover: true,
+      isFlip: false,
+      swingVs2022: 0,
+      rawSurpriseScore: 0,
+      normalizedHeight: minHeightRatio,
+      reportingPct: 100,
+      margin2026: 0,
+      margin2022: 0
+    });
+  }
+
+  // Add GOP holdovers (placed at the outer right edge)
+  for (let i = 1; i <= holdoverGopCount; i++) {
+    rawGopSeats.push({
+      id: `sen-gop-holdover-${i}`,
+      stateCode: 'USA',
+      label: `GOP Non-Contested Holdover #${i}`,
+      chamber: 'senate',
+      party: 'gop',
+      isHoldover: true,
+      isFlip: false,
+      swingVs2022: 0,
+      rawSurpriseScore: 0,
+      normalizedHeight: minHeightRatio,
+      reportingPct: 100,
+      margin2026: 0,
+      margin2022: 0
+    });
+  }
+
+  results.forEach(st => {
+    if (!st.hasSenateRace || !st.senate) return;
+    const s = st.senate;
+    const baseWinner = s.historical2022.winner;
+    const isDemCalled = s.status === 'called_dem' || (s.reportingPct >= 100 && s.demCandidate.votes > s.gopCandidate.votes);
+    const isGopCalled = s.status === 'called_gop' || (s.reportingPct >= 100 && s.gopCandidate.votes > s.demCandidate.votes);
+
+    if (isDemCalled) {
+      const isFlip = baseWinner === 'gop';
+      const margin2026 = Number((s.demCandidate.pct - s.gopCandidate.pct).toFixed(1));
+      const margin2022 = Number(s.historical2022.margin.toFixed(1));
+      const swing = Number((margin2026 - margin2022).toFixed(1));
+      const swingBonus = Math.max(0, swing);
+      const flipBonus = isFlip ? 15.0 : 0.0;
+      const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
+
+      rawDemSeats.push({
+        id: `sen-${st.stateCode}`,
+        stateCode: st.stateCode,
+        label: `${st.stateName}: ${s.demCandidate.name} (DEM)`,
+        chamber: 'senate',
+        party: 'dem',
+        isHoldover: false,
+        isFlip,
+        swingVs2022: swing,
+        rawSurpriseScore,
+        normalizedHeight: minHeightRatio,
+        reportingPct: s.reportingPct,
+        margin2026,
+        margin2022
+      });
+    } else if (isGopCalled) {
+      const isFlip = baseWinner === 'dem';
+      const margin2026 = Number((s.gopCandidate.pct - s.demCandidate.pct).toFixed(1));
+      const margin2022 = Number((-s.historical2022.margin).toFixed(1));
+      const swing = Number((margin2026 - margin2022).toFixed(1));
+      const swingBonus = Math.max(0, swing);
+      const flipBonus = isFlip ? 15.0 : 0.0;
+      const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
+
+      rawGopSeats.push({
+        id: `sen-${st.stateCode}`,
+        stateCode: st.stateCode,
+        label: `${st.stateName}: ${s.gopCandidate.name} (GOP)`,
+        chamber: 'senate',
+        party: 'gop',
+        isHoldover: false,
+        isFlip,
+        swingVs2022: swing,
+        rawSurpriseScore,
+        normalizedHeight: minHeightRatio,
+        reportingPct: s.reportingPct,
+        margin2026,
+        margin2022
+      });
+    } else {
+      uncalledCount++;
+    }
+  });
+
+  // Normalize heights across called seats
+  const { demSeats: normDem, gopSeats: normGop, maxRawSurprise } = normalizeSeatHeights(
+    rawDemSeats,
+    rawGopSeats,
+    minHeightRatio
+  );
+
+  // Option 1B Sorting:
+  // Democrats: ASCENDING (safe seats on outer left flank, surprises toward center)
+  normDem.sort((a, b) => a.rawSurpriseScore - b.rawSurpriseScore);
+
+  // Republicans: DESCENDING (surprises toward center, safe seats on outer right flank)
+  normGop.sort((a, b) => b.rawSurpriseScore - a.rawSurpriseScore);
+
+  return {
+    chamber: 'senate',
+    totalSeats: 100,
+    majorityThreshold: 51,
+    demSeats: normDem,
+    gopSeats: normGop,
+    uncalledCount,
+    maxRawSurprise
+  };
+}
+
+/**
+ * Computes the 435-seat distribution for the U.S. House of Representatives.
+ * Normalizes heights and sorts according to Option 1B (surprises pushing towards center).
+ */
+export function calculateHouseSeatDistribution(
+  results: StateElectionResult[],
+  minHeightRatio = 0.20
+): ChamberSurpriseDistribution {
+  const rawDemSeats: VisualizedSeat[] = [];
+  const rawGopSeats: VisualizedSeat[] = [];
+  let uncalledCount = 0;
+
+  results.forEach(st => {
+    if (!st.house || st.id === 'DC') return;
+    const h = st.house;
+    const totalDem = h.demSeats;
+    const totalGop = h.gopSeats;
+    uncalledCount += h.uncalledSeats;
+
+    const totalPop = (h.popularDemVotes || 0) + (h.popularGopVotes || 0);
+    const currMargin = totalPop > 0
+      ? Number((((h.popularDemVotes - h.popularGopVotes) / totalPop) * 100).toFixed(1))
+      : h.historical2022.margin;
+    const demStateSwing = Number((currMargin - h.historical2022.margin).toFixed(1));
+    const gopStateSwing = Number((-demStateSwing).toFixed(1));
+
+    const histDem = h.historical2022.demSeats;
+    const histGop = h.historical2022.gopSeats;
+    const flipsToDemCount = Math.max(0, totalDem - histDem);
+    const flipsToGopCount = Math.max(0, totalGop - histGop);
+
+    const bgDemDistricts = (h.keyBattlegroundDistricts || []).filter(
+      d => d.status === 'called_dem' || (d.reportingPct >= 100 && d.demVotes > d.gopVotes)
+    );
+    const bgGopDistricts = (h.keyBattlegroundDistricts || []).filter(
+      d => d.status === 'called_gop' || (d.reportingPct >= 100 && d.gopVotes > d.demVotes)
+    );
+
+    // Build DEM seats for this state
+    let remainingDem = totalDem;
+    let bgDemIdx = 0;
+    let demFlipsAssigned = 0;
+
+    while (remainingDem > 0) {
+      const seatIndex = totalDem - remainingDem + 1;
+      let districtLabel = `${st.stateCode}-Seat ${seatIndex}`;
+      let swing = demStateSwing;
+      let isFlip = false;
+
+      if (bgDemIdx < bgDemDistricts.length) {
+        const bg = bgDemDistricts[bgDemIdx++];
+        districtLabel = `${bg.district} (${bg.demName})`;
+        swing = bg.swingVs2022;
+        isFlip = swing > 3.0 || demFlipsAssigned < flipsToDemCount;
+        if (isFlip) demFlipsAssigned++;
+      } else if (demFlipsAssigned < flipsToDemCount) {
+        isFlip = true;
+        demFlipsAssigned++;
+        districtLabel = `${st.stateCode}-Flip to Dem #${demFlipsAssigned}`;
+        swing = Math.max(demStateSwing, 4.0);
+      } else {
+        districtLabel = `${st.stateCode}-Held Dem #${seatIndex}`;
+      }
+
+      const swingBonus = Math.max(0, swing);
+      const flipBonus = isFlip ? 15.0 : 0.0;
+      const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
+
+      rawDemSeats.push({
+        id: `house-dem-${st.stateCode}-${seatIndex}`,
+        stateCode: st.stateCode,
+        label: `${st.stateName}: ${districtLabel}`,
+        chamber: 'house',
+        party: 'dem',
+        isHoldover: false,
+        isFlip,
+        swingVs2022: swing,
+        rawSurpriseScore,
+        normalizedHeight: minHeightRatio,
+        reportingPct: h.reportingPct,
+        margin2026: currMargin,
+        margin2022: h.historical2022.margin
+      });
+
+      remainingDem--;
+    }
+
+    // Build GOP seats for this state
+    let remainingGop = totalGop;
+    let bgGopIdx = 0;
+    let gopFlipsAssigned = 0;
+
+    while (remainingGop > 0) {
+      const seatIndex = totalGop - remainingGop + 1;
+      let districtLabel = `${st.stateCode}-Seat ${seatIndex}`;
+      let swing = gopStateSwing;
+      let isFlip = false;
+
+      if (bgGopIdx < bgGopDistricts.length) {
+        const bg = bgGopDistricts[bgGopIdx++];
+        districtLabel = `${bg.district} (${bg.gopName})`;
+        swing = -bg.swingVs2022;
+        isFlip = swing > 3.0 || gopFlipsAssigned < flipsToGopCount;
+        if (isFlip) gopFlipsAssigned++;
+      } else if (gopFlipsAssigned < flipsToGopCount) {
+        isFlip = true;
+        gopFlipsAssigned++;
+        districtLabel = `${st.stateCode}-Flip to GOP #${gopFlipsAssigned}`;
+        swing = Math.max(gopStateSwing, 4.0);
+      } else {
+        districtLabel = `${st.stateCode}-Held GOP #${seatIndex}`;
+      }
+
+      const swingBonus = Math.max(0, swing);
+      const flipBonus = isFlip ? 15.0 : 0.0;
+      const rawSurpriseScore = Number((swingBonus + flipBonus).toFixed(2));
+
+      rawGopSeats.push({
+        id: `house-gop-${st.stateCode}-${seatIndex}`,
+        stateCode: st.stateCode,
+        label: `${st.stateName}: ${districtLabel}`,
+        chamber: 'house',
+        party: 'gop',
+        isHoldover: false,
+        isFlip,
+        swingVs2022: swing,
+        rawSurpriseScore,
+        normalizedHeight: minHeightRatio,
+        reportingPct: h.reportingPct,
+        margin2026: -currMargin,
+        margin2022: -h.historical2022.margin
+      });
+
+      remainingGop--;
+    }
+  });
+
+  // Normalize heights across called seats
+  const { demSeats: normDem, gopSeats: normGop, maxRawSurprise } = normalizeSeatHeights(
+    rawDemSeats,
+    rawGopSeats,
+    minHeightRatio
+  );
+
+  // Option 1B Sorting:
+  // Democrats: ASCENDING (safe seats on outer left flank, surprises toward center)
+  normDem.sort((a, b) => a.rawSurpriseScore - b.rawSurpriseScore);
+
+  // Republicans: DESCENDING (surprises toward center, safe seats on outer right flank)
+  normGop.sort((a, b) => b.rawSurpriseScore - a.rawSurpriseScore);
+
+  return {
+    chamber: 'house',
+    totalSeats: 435,
+    majorityThreshold: 218,
+    demSeats: normDem,
+    gopSeats: normGop,
+    uncalledCount,
+    maxRawSurprise
+  };
+}
+
+
