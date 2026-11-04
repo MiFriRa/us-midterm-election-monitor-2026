@@ -214,7 +214,7 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
                               onMouseEnter={() => setHoveredSeat(seat)}
                               onMouseLeave={() => setHoveredSeat(null)}
                             >
-                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Højde: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
+                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Height: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
                             </rect>
                           );
                         })}
@@ -242,7 +242,7 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
                               onMouseEnter={() => setHoveredSeat(seat)}
                               onMouseLeave={() => setHoveredSeat(null)}
                             >
-                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Højde: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
+                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Height: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
                             </rect>
                           );
                         })}
@@ -296,7 +296,7 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
                               onMouseEnter={() => setHoveredSeat(seat)}
                               onMouseLeave={() => setHoveredSeat(null)}
                             >
-                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Højde: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
+                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Height: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
                             </rect>
                           );
                         })}
@@ -320,7 +320,7 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
                               onMouseEnter={() => setHoveredSeat(seat)}
                               onMouseLeave={() => setHoveredSeat(null)}
                             >
-                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Højde: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
+                              <title>{`${seat.label} · Swing: ${seat.swingVs2022 > 0 ? '+' : ''}${seat.swingVs2022}% ${seat.isFlip ? '⚡ FLIP' : ''} (Height: ${Math.round(seat.normalizedHeight * 100)}%)`}</title>
                             </rect>
                           );
                         })}
@@ -371,16 +371,16 @@ export const ChamberBalanceBar: React.FC<ChamberBalanceBarProps> = ({
                       </span>
                     ) : (
                       <span className="flex items-center justify-between w-full text-slate-400">
-                        <span>Flanker: Sikre</span>
-                        <span className="text-slate-300 font-bold">▲ Højde: Overraskelse</span>
-                        <span>Midte: Flips ({item.id === 'senate' ? '51' : '218'})</span>
+                        <span>Flanks: Safe Base</span>
+                        <span className="text-slate-300 font-bold">▲ Bar Height: Surprise vs. 2022</span>
+                        <span>Center: Flips ({item.id === 'senate' ? '51' : '218'})</span>
                       </span>
                     )
                   ) : (
                     <span className="flex items-center justify-between w-full text-slate-500">
                       <span>Baseline: 14 Holdovers</span>
-                      <span>26 for flertal</span>
-                      <span>36 Kæmpede 2026</span>
+                      <span>26 to Win</span>
+                      <span>36 Contested in 2026</span>
                     </span>
                   )}
                 </div>

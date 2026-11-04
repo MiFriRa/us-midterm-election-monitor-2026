@@ -454,7 +454,7 @@ export default function App() {
         onExportCsv={handleExportCsv}
       />
 
-      {/* 1) Status på optælling + 3) Fordeling af pladser i Senate, House & Governors */}
+      {/* 1) Counting Status + 3) Seat Distribution in Senate, House & Governors */}
       <ChamberBalanceBar
         chamber={chamber}
         onChamberChange={(c) => setChamber(c)}
