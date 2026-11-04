@@ -121,7 +121,7 @@ export const StateDetailDrawer: React.FC<StateDetailDrawerProps> = ({
 
   return (
     <aside
-      className="absolute top-3 right-3 sm:right-6 w-80 sm:w-96 max-h-[calc(100%-24px)] bg-[#0c101a]/95 border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-30 backdrop-blur-md animate-in fade-in slide-in-from-right-4 duration-200"
+      className="absolute top-2 left-2 right-2 sm:left-auto sm:right-6 sm:w-96 max-h-[calc(100%-16px)] sm:max-h-[calc(100%-24px)] bg-[#0c101a]/95 border border-slate-700/80 rounded-2xl shadow-2xl flex flex-col overflow-hidden z-30 backdrop-blur-md animate-in fade-in slide-in-from-right-4 duration-200"
       aria-label={`Details for ${state.stateName}`}
     >
       {/* Bauhaus Clean Header */}

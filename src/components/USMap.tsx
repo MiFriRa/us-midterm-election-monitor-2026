@@ -283,31 +283,31 @@ export const USMap: React.FC<USMapProps> = ({
     <div className="relative w-full h-full flex-1 min-h-0 flex flex-col bg-[#070a10] overflow-hidden">
       
       {/* Simple, Clean Map Toolbar — Monochrome Slate UI */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-5 py-2 border-b border-slate-800/80 text-xs shrink-0 z-10 bg-[#090d14]">
+      <div className="flex flex-wrap items-center justify-between gap-1.5 sm:gap-2 px-3 sm:px-5 py-1.5 sm:py-2 border-b border-slate-800/80 text-xs shrink-0 z-10 bg-[#090d14]">
         
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex flex-wrap items-center gap-1.5 sm:gap-2">
           <div className="flex items-center p-0.5 bg-slate-900 rounded-lg border border-slate-800">
             <button
               onClick={() => setViewType('cartogram')}
-              className={`px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 sm:px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewType === 'cartogram'
                   ? 'bg-slate-800 text-white shadow-sm font-bold border border-slate-600/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Grid className="w-3.5 h-3.5" />
-              <span>Equal-Area Cartogram</span>
+              <Grid className="w-3.5 h-3.5 shrink-0" />
+              <span><span className="hidden sm:inline">Equal-Area </span>Cartogram</span>
             </button>
             <button
               onClick={() => setViewType('geographic')}
-              className={`px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
+              className={`px-2 sm:px-3 py-1 text-xs font-mono rounded-md transition-all flex items-center gap-1.5 cursor-pointer ${
                 viewType === 'geographic'
                   ? 'bg-slate-800 text-white shadow-sm font-bold border border-slate-600/80'
                   : 'text-slate-400 hover:text-white'
               }`}
             >
-              <Compass className="w-3.5 h-3.5" />
-              <span>Geographic</span>
+              <Compass className="w-3.5 h-3.5 shrink-0" />
+              <span><span className="hidden sm:inline">Geo</span><span className="sm:hidden">Geo</span><span className="hidden sm:inline">graphic</span></span>
             </button>
           </div>
 
@@ -315,44 +315,44 @@ export const USMap: React.FC<USMapProps> = ({
             <div className="flex items-center p-0.5 bg-slate-900 rounded-lg border border-slate-800">
               <button
                 onClick={() => onMapModeChange('purple_margin')}
-                className={`px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
+                className={`px-2 sm:px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
                   mapMode === 'purple_margin' || mapMode === 'political_impact'
                     ? 'bg-slate-800 text-white font-bold border border-slate-600/80'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
-                2026 Margin
+                <span className="hidden sm:inline">2026 </span>Margin
               </button>
               <button
                 onClick={() => onMapModeChange('swing_shift')}
-                className={`px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
+                className={`px-2 sm:px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
                   mapMode === 'swing_shift'
                     ? 'bg-slate-800 text-white font-bold border border-slate-600/80'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
-                Swing vs. 2022
+                <span className="hidden sm:inline">Swing vs. 2022</span><span className="sm:hidden">Swing</span>
               </button>
               <button
                 onClick={() => onMapModeChange('historical_2022')}
-                className={`px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
+                className={`px-2 sm:px-3 py-1 text-xs font-mono rounded-md transition-all cursor-pointer ${
                   mapMode === 'historical_2022'
                     ? 'bg-slate-800 text-white font-bold border border-slate-600/80'
                     : 'text-slate-400 hover:text-white'
                 }`}
               >
-                2022 Baseline
+                <span className="hidden sm:inline">2022 </span>Baseline
               </button>
             </div>
           )}
         </div>
 
         {/* Clean Political Color Scale Only (Red - Purple - Blue) */}
-        <div className="flex items-center gap-3 text-xs font-mono">
-          <div className="flex items-center gap-2">
-            <span className="text-red-400 font-bold">GOP</span>
-            <div className="h-2 w-24 sm:w-32 rounded-full bg-gradient-to-r from-red-600 via-purple-600 to-blue-600 border border-slate-700" />
-            <span className="text-blue-400 font-bold">DEM</span>
+        <div className="flex items-center gap-2 sm:gap-3 text-xs font-mono">
+          <div className="flex items-center gap-1.5 sm:gap-2">
+            <span className="text-red-400 font-bold text-[11px] sm:text-xs">GOP</span>
+            <div className="h-2 w-16 sm:w-28 lg:w-32 rounded-full bg-gradient-to-r from-red-600 via-purple-600 to-blue-600 border border-slate-700" />
+            <span className="text-blue-400 font-bold text-[11px] sm:text-xs">DEM</span>
           </div>
           <span className="hidden md:inline text-slate-400 text-[11px]">
             (Purple = Tossup)
@@ -362,7 +362,7 @@ export const USMap: React.FC<USMapProps> = ({
       </div>
 
       {/* Main Map Render Area — Maximized so the map fills the entire viewport */}
-      <div className="relative flex-1 min-h-0 w-full flex items-center justify-center p-2 sm:p-4 overflow-hidden">
+      <div className="relative flex-1 min-h-0 w-full flex items-center justify-center p-1 sm:p-4 overflow-hidden">
         
         {viewType === 'geographic' ? (
           <svg

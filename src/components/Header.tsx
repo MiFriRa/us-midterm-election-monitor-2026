@@ -40,12 +40,12 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="border-b border-slate-800/80 bg-[#090d14] shrink-0 z-40">
-      <div className="w-full px-5 h-11 flex items-center justify-between gap-4">
+      <div className="w-full px-3 sm:px-5 h-11 flex items-center justify-between gap-2 sm:gap-4">
         
         {/* Brand & Identity — Quiet, High-Contrast Editorial Typography */}
-        <div className="flex items-center gap-3 shrink-0">
-          <span className="text-sm sm:text-base font-bold tracking-tight text-white whitespace-nowrap font-mono">
-            US Midterm Election Monitor 2026
+        <div className="flex items-center gap-2 sm:gap-3 shrink-0 min-w-0">
+          <span className="text-xs sm:text-base font-bold tracking-tight text-white whitespace-nowrap font-mono truncate">
+            US Midterm <span className="hidden sm:inline">Election </span>Monitor 2026
           </span>
           <span className="text-slate-700 hidden sm:inline">·</span>
           <a

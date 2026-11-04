@@ -28,6 +28,7 @@ export default function App() {
   const [chamber, setChamber] = useState<ChamberType>('senate');
   const [mapMode, setMapMode] = useState<MapDisplayMode>('purple_margin');
   const [selectedStateId, setSelectedStateId] = useState<string | null>(null);
+  const [mobileTab, setMobileTab] = useState<'all' | 'map' | 'surprises' | 'results'>('all');
   // Default to final index (BASE_STATES, populated with real civicAPI returns) while initial live fetch completes
   const [currentHourIndex, setCurrentHourIndex] = useState<number>(HOURLY_TIMELINE.length - 1);
   const [isPlaying, setIsPlaying] = useState<boolean>(false);
@@ -466,13 +467,69 @@ export default function App() {
         nationalReportingPct={nationalReportingPct}
         currentCetLabel={currentCetLabel}
         statesData={currentStatesData}
+        forceFullCards={mobileTab === 'results'}
       />
 
+      {/* Mobile View Switcher (Visible on < md) */}
+      <div className="md:hidden flex items-center justify-between px-3 py-1.5 bg-[#090d14] border-b border-slate-800/80 shrink-0 z-20">
+        <div className="flex items-center gap-1 p-0.5 bg-slate-900 rounded-lg border border-slate-800 w-full font-mono text-[11px]">
+          <button
+            onClick={() => setMobileTab('all')}
+            className={`flex-1 py-1 font-semibold rounded transition-all text-center cursor-pointer ${
+              mobileTab === 'all'
+                ? 'bg-slate-200 text-slate-950 font-bold shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Alle 3
+          </button>
+          <button
+            onClick={() => setMobileTab('map')}
+            className={`flex-1 py-1 font-semibold rounded transition-all text-center cursor-pointer ${
+              mobileTab === 'map'
+                ? 'bg-slate-200 text-slate-950 font-bold shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Kort
+          </button>
+          <button
+            onClick={() => setMobileTab('surprises')}
+            className={`flex-1 py-1 font-semibold rounded transition-all text-center cursor-pointer ${
+              mobileTab === 'surprises'
+                ? 'bg-slate-200 text-slate-950 font-bold shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Overraskelser ({topSurprises.length})
+          </button>
+          <button
+            onClick={() => setMobileTab('results')}
+            className={`flex-1 py-1 font-semibold rounded transition-all text-center cursor-pointer ${
+              mobileTab === 'results'
+                ? 'bg-slate-200 text-slate-950 font-bold shadow-sm'
+                : 'text-slate-400 hover:text-white'
+            }`}
+          >
+            Resultater
+          </button>
+        </div>
+      </div>
+
       {/* Main Split Workspace: Big USA Map (Left) + 2) Biggest Surprises vs. 2022 (Right Sidebar) */}
-      <main className="relative flex-1 min-h-0 w-full flex flex-col lg:flex-row overflow-hidden">
+      <main className="relative flex-1 min-h-0 w-full flex flex-col md:flex-row overflow-y-auto md:overflow-hidden">
         
-        {/* Left: Full-Height USA Map Canvas */}
-        <div className="relative flex-1 min-h-0 h-full flex flex-col overflow-hidden">
+        {/* Left: USA Map Canvas */}
+        <div
+          className={`relative min-h-0 flex flex-col overflow-hidden ${
+            'md:flex-1 md:h-full ' +
+            (mobileTab === 'map'
+              ? 'flex-1 h-full'
+              : mobileTab === 'all'
+              ? 'flex-1 min-h-[220px]'
+              : 'hidden md:flex')
+          }`}
+        >
           {isBacktestMode && (
             <div className="absolute top-14 left-4 right-4 z-20 bg-slate-900/95 border border-slate-700 rounded-xl p-2 px-3 flex items-center justify-between text-xs text-slate-200 backdrop-blur-md">
               <span className="font-bold font-mono">
@@ -508,12 +565,24 @@ export default function App() {
         </div>
 
         {/* Right: 2) Biggest Surprises Relative to 2022 */}
-        <TopSurprisesDeck
-          surprises={topSurprises}
-          selectedStateId={selectedStateId}
-          onSelectState={(id: string) => setSelectedStateId(selectedStateId === id ? null : id)}
-          nationalReportingPct={nationalReportingPct}
-        />
+        <div
+          className={`${
+            'md:w-72 lg:w-80 xl:w-96 md:h-full md:border-l md:border-slate-800/80 md:flex md:flex-col ' +
+            (mobileTab === 'surprises'
+              ? 'flex-1 h-full flex flex-col w-full'
+              : mobileTab === 'all'
+              ? 'w-full shrink-0 border-t border-slate-800/80 flex flex-col'
+              : 'hidden md:flex')
+          }`}
+        >
+          <TopSurprisesDeck
+            surprises={topSurprises}
+            selectedStateId={selectedStateId}
+            onSelectState={(id: string) => setSelectedStateId(selectedStateId === id ? null : id)}
+            nationalReportingPct={nationalReportingPct}
+            layoutMode={mobileTab === 'surprises' ? 'vertical' : 'auto'}
+          />
+        </div>
 
       </main>
 
